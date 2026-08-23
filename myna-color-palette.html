@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Myna — Color Palette Reference</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f3f3f3; color: #111212; padding: 40px 24px 80px; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 28px; margin-bottom: 6px; }
+  .sub { color: #676767; margin-bottom: 36px; font-size: 14px; line-height: 1.6; }
+  h2 { font-size: 19px; margin: 40px 0 6px; padding-bottom: 8px; border-bottom: 2px solid #e2544c; }
+  .sec-note { color: #777; font-size: 13px; margin-bottom: 16px; line-height: 1.5; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .swatch { height: 64px; display: flex; align-items: flex-end; padding: 6px 10px; }
+  .swatch.bordered { border-bottom: 1px solid #eee; }
+  .swatch.grad { background: linear-gradient(-90deg, #f2a63b 0%, #e2544c 100%); }
+  .hexchip { font-family: Consolas, monospace; font-size: 12px; background: rgba(255,255,255,.88); color: #111212; border-radius: 4px; padding: 2px 7px; font-weight: 600; }
+  .info { padding: 10px 12px 12px; }
+  .name { font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
+  .varname { font-family: Consolas, monospace; font-size: 11px; color: #e2544c; margin-bottom: 6px; word-break: break-all; }
+  .use { font-size: 12px; color: #555; line-height: 1.45; }
+  .use code { background: #f3f3f3; border-radius: 3px; padding: 1px 4px; font-size: 11px; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #fff; background: #e2544c; border-radius: 3px; padding: 2px 6px; margin-left: 6px; vertical-align: middle; }
+  .tag.warn { background: #f2a63b; }
+  .tag.blue { background: #1BA2DB; }
+  footer { margin-top: 56px; color: #999; font-size: 12px; text-align: center; line-height: 1.6; }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0 20px; }
+  .legend span { font-size: 12px; color: #555; display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Myna — Project Color Palette</h1>
+  <div class="sub">
+    Extracted from the source design tokens of the <strong>Myna</strong> platform &mdash;
+    the <strong>frontend</strong> education site (<code>frontend/public/assets/scss/default/_variable.scss</code>, Next.js + Bootstrap/Histudy theme)
+    and the <strong>Admin dashboard</strong> (<code>Admin/src/assets/scss/_variables.scss</code> + <code>_root.scss</code>, Bootstrap 5.3 <code>bs-</code> theme).
+    Both apps share one brand identity: a warm <strong>coral-red primary</strong> paired with an <strong>orange gradient</strong>.
+    Dark mode is toggled via <code>[data-theme="dark"]</code> (frontend) and <code>[data-bs-theme="dark"]</code> (admin).
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:#e2544c"></span> Shared brand token</span>
+    <span><span class="dot" style="background:#1BA2DB"></span> Admin dashboard only</span>
+    <span><span class="dot" style="background:#f2a63b"></span> Frontend template only</span>
+  </div>
+
+  <h2>1 · Brand / Primary Colors</h2>
+  <div class="sec-note">The core identity. Coral-red is the single most-used interactive color across both apps (buttons, links, active nav, focus rings, progress bars).</div>
+  <div class="grid">
+    <div class="card"><div class="swatch" style="background:#e2544c"><span class="hexchip">#E2544C</span></div><div class="info"><div class="name">Primary Coral <span class="tag">Main Brand</span></div><div class="varname">--color-primary · $primary</div><div class="use">Buttons, links, active sidebar/nav item, focus rings, checked controls, logo accent, admin topbar (dark). Bootstrap <code>.btn-success</code>/<code>.text-success</code> are overridden to this coral in the frontend.</div></div></div>
+    <div class="card"><div class="swatch grad"><span class="hexchip">gradient</span></div><div class="info"><div class="name">Primary Gradient</div><div class="varname">--gradient-primary</div><div class="use"><code>linear-gradient(-90deg, #f2a63b 0%, #e2544c 100%)</code> &mdash; gradient buttons, highlighted banners &amp; hero CTAs.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#ed7236"><span class="hexchip">#ED7236</span></div><div class="info"><div class="name">Secondary Orange</div><div class="varname">--color-secondary · $secondary</div><div class="use">Secondary accent: category-card hovers, hero highlights, decorative shapes, secondary buttons.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#ed9035"><span class="hexchip">#ED9035</span></div><div class="info"><div class="name">Text Secondary / Orange</div><div class="varname">--color-textSecondary · $orange · --color-extra01</div><div class="use">Secondary text emphasis and orange accent used in category tiles / highlights.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#f2a63b"><span class="hexchip">#F2A63B</span></div><div class="info"><div class="name">Tertiary Amber</div><div class="varname">--color-tertiary · --color-warning · --color-extra05</div><div class="use">Star ratings, warning states, breadcrumb accents, gradient start color. Doubles as the warning token.</div></div></div>
+  </div>
+
+  <h2>2 · Status / Feedback Colors</h2>
+  <div class="sec-note">Success, error, warning and info states — toasts, badges, validation. Note the two apps differ on the success green.</div>
+  <div class="grid">
+    <div class="card"><div class="swatch" style="background:#16a34a"><span class="hexchip">#16A34A</span></div><div class="info"><div class="name">Success (Admin) <span class="tag blue">Admin</span></div><div class="varname">--color-success · $success</div><div class="use">Success toasts, passed states, positive badges in the admin dashboard.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#3EB75E"><span class="hexchip">#3EB75E</span></div><div class="info"><div class="name">Success Green (Base)</div><div class="varname">$green</div><div class="use">Bootstrap base green in the admin theme map (charts, <code>.text-green</code> helpers).</div></div></div>
+    <div class="card"><div class="swatch" style="background:#bd3933"><span class="hexchip">#BD3933</span></div><div class="info"><div class="name">Success (Frontend)</div><div class="varname">--color-success</div><div class="use">Frontend <code>--color-success</code> &amp; the darkened coral used for <code>.btn-success:hover</code> / progress-bar hover.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#f40500"><span class="hexchip">#F40500</span></div><div class="info"><div class="name">Danger</div><div class="varname">--color-danger · $danger</div><div class="use">Errors, failed states, destructive actions, validation errors.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#FF0003"><span class="hexchip">#FF0003</span></div><div class="info"><div class="name">Danger Red (Base)</div><div class="varname">$red</div><div class="use">Bootstrap base red in the admin theme map.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#e2544c"><span class="hexchip">#E2544C</span></div><div class="info"><div class="name">Progress Bar Coral</div><div class="use">Frontend progress bars &amp; overridden Bootstrap success utilities (<code>index.scss</code>): <code>#e2544c</code> with hover <code>#bd3933</code>.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#f2a63b"><span class="hexchip">#F2A63B</span></div><div class="info"><div class="name">Warning</div><div class="varname">--color-warning · $warning</div><div class="use">Warning states and attention badges (same as tertiary amber).</div></div></div>
+    <div class="card"><div class="swatch" style="background:#FF8F3C"><span class="hexchip">#FF8F3C</span></div><div class="info"><div class="name">Warning Orange (Base)</div><div class="varname">$orange (base map)</div><div class="use">Bootstrap base orange in the admin theme map.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#1BA2DB"><span class="hexchip">#1BA2DB</span></div><div class="info"><div class="name">Info</div><div class="varname">--color-info · $info · $cyan</div><div class="use">Informational badges, notices, info buttons.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#f8b81f"><span class="hexchip">#F8B81F</span></div><div class="info"><div class="name">Yellow (Base)</div><div class="varname">$yellow</div><div class="use">Bootstrap base yellow — chart series &amp; yellow helpers in admin.</div></div></div>
+  </div>
+
+  <h2>3 · Text Colors</h2>
+  <div class="grid">
+    <div class="card"><div class="swatch bordered" style="background:#000000"><span class="hexchip">#000000</span></div><div class="info"><div class="name">Heading Black</div><div class="varname">--color-heading · --color-black · --footer-text</div><div class="use">All headings (h1–h6), primary titles, footer text on light background.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#181818"><span class="hexchip">#181818</span></div><div class="info"><div class="name">Near-Black / Gray 900</div><div class="varname">$gray-900</div><div class="use">Darkest gray in the admin scale — high-contrast text &amp; icons.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#676767"><span class="hexchip">#676767</span></div><div class="info"><div class="name">Body Text</div><div class="varname">--color-body · --color-placeholder · --dark-footer-text</div><div class="use">Default body copy, paragraphs, meta text, input placeholders.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#808080"><span class="hexchip">#808080</span></div><div class="info"><div class="name">Gray 600 / Menu Text</div><div class="varname">$gray-600 · $menu-item-color · $dropdown-item</div><div class="use">Admin top-nav &amp; dropdown item text, muted body copy.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#79829c"><span class="hexchip">#79829C</span></div><div class="info"><div class="name">Sidebar Text</div><div class="varname">--bs-sidebar-menu-item-color</div><div class="use">Admin sidebar menu &amp; sub-item text (light theme).</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#bababa"><span class="hexchip">#BABABA</span></div><div class="info"><div class="name">Muted / Title</div><div class="varname">--color-title · $gray-400</div><div class="use">Footer copy on dark, muted labels, disabled text.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#525151"><span class="hexchip">#525151</span></div><div class="info"><div class="name">Gray 60</div><div class="varname">--color-extra09</div><div class="use">Secondary dark-gray text / icons.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#404040"><span class="hexchip">#404040</span></div><div class="info"><div class="name">Gray 70</div><div class="varname">--color-extra10 · $gray-700</div><div class="use">Dark-gray UI text &amp; borders on light surfaces.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#ffffff"><span class="hexchip">#FFFFFF</span></div><div class="info"><div class="name">White</div><div class="varname">--color-white · --edu-btn-color · $white</div><div class="use">Text on coral buttons, text on dark footer, card &amp; body background in light mode. Most-used color overall.</div></div></div>
+  </div>
+
+  <h2>4 · Light Backgrounds &amp; Surfaces</h2>
+  <div class="grid">
+    <div class="card"><div class="swatch bordered" style="background:#ffffff"><span class="hexchip">#FFFFFF</span></div><div class="info"><div class="name">Body / Card BG</div><div class="varname">--color-bg-body · --bs-sidebar-bg · --bs-header-bg</div><div class="use">Page body, cards, sidebar &amp; header background in light mode.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#f3f3f3"><span class="hexchip">#F3F3F3</span></div><div class="info"><div class="name">Section BG</div><div class="varname">--bg-color · --cta-color-bg · --color-lighten01 · --bs-footer-bg</div><div class="use">Large section bands, CTA areas, soft card backgrounds, admin footer.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#f0f4f5"><span class="hexchip">#F0F4F5</span></div><div class="info"><div class="name">Gray 100</div><div class="varname">$gray-100</div><div class="use">Lightest admin gray — subtle panel fills &amp; hovers.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#f8f9fa"><span class="hexchip">#F8F9FA</span></div><div class="info"><div class="name">Topbar Search BG</div><div class="varname">--bs-topbar-search-bg · --bs-dropdown-topbar</div><div class="use">Admin search input &amp; dropdown surfaces.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#EAF0F2"><span class="hexchip">#EAF0F2</span></div><div class="info"><div class="name">Topbar Search (alt)</div><div class="varname">$topbar-search-bg</div><div class="use">Alternate admin topbar search-field background.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#fff3ef"><span class="hexchip">#FFF3EF</span></div><div class="info"><div class="name">Coral Tint 02</div><div class="varname">--color-lighten02 · --bs-sidebar-menu-item-active-bg</div><div class="use">Soft coral-tinted section BG &amp; admin active sidebar-item background.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#fff7eb"><span class="hexchip">#FFF7EB</span></div><div class="info"><div class="name">Warm Tint 03</div><div class="varname">--color-lighten03</div><div class="use">Warm amber-tinted section background.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#fff9f3"><span class="hexchip">#FFF9F3</span></div><div class="info"><div class="name">Warm Off-white 04</div><div class="varname">--color-lighten04</div><div class="use">Warmest off-white section background.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#e8f5e9"><span class="hexchip">#E8F5E9</span></div><div class="info"><div class="name">Green Active Tint</div><div class="varname">--bs-sidebar-menu-item-active-bg (colored)</div><div class="use">Active sidebar-item background in the admin "colored" sidebar variant.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#e8e8e8"><span class="hexchip">#E8E8E8</span></div><div class="info"><div class="name">Boxed Body BG</div><div class="varname">--bs-boxed-body-bg</div><div class="use">Admin boxed-layout page background.</div></div></div>
+  </div>
+
+  <h2>5 · Dark Theme Colors</h2>
+  <div class="sec-note">Frontend: <code>[data-theme="dark"]</code>. Admin: <code>[data-bs-theme="dark"]</code>. Deep navy/slate surfaces with coral kept as the accent.</div>
+  <div class="grid">
+    <div class="card"><div class="swatch" style="background:#020b17"><span class="hexchip">#020B17</span></div><div class="info"><div class="name">Dark Page BG</div><div class="varname">--dark-bg-color</div><div class="use">Deep navy page/section background (frontend dark mode).</div></div></div>
+    <div class="card"><div class="swatch" style="background:#111822"><span class="hexchip">#111822</span></div><div class="info"><div class="name">Dark Body BG</div><div class="varname">--dark-color-bg-body</div><div class="use">Body background in frontend dark mode.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#1c242f"><span class="hexchip">#1C242F</span></div><div class="info"><div class="name">Dark Surface</div><div class="varname">--bg-color-2</div><div class="use">Cards, dashboard sections, tables &amp; badges in dark mode.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#282f3a"><span class="hexchip">#282F3A</span></div><div class="info"><div class="name">Dark Border</div><div class="varname">--dark-color-border</div><div class="use">Borders &amp; dividers in dark mode.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#22272e"><span class="hexchip">#22272E</span></div><div class="info"><div class="name">Dark Extra / Gray 800</div><div class="varname">--color-extra11 · $gray-800</div><div class="use">Alternate dark surface tone.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#111212"><span class="hexchip">#111212</span></div><div class="info"><div class="name">Footer Black</div><div class="varname">--color-dark</div><div class="use">Site footer background (light &amp; dark), dark hero sections.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#2a3142"><span class="hexchip">#2A3142</span></div><div class="info"><div class="name">Admin Dark Header</div><div class="varname">--bs-header-dark-bg</div><div class="use">Admin topbar background in dark mode.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#2b3a4a"><span class="hexchip">#2B3A4A</span></div><div class="info"><div class="name">Admin Dark Sidebar</div><div class="varname">--bs-sidebar-dark-bg</div><div class="use">Admin vertical sidebar background (dark sidebar variant).</div></div></div>
+    <div class="card"><div class="swatch" style="background:#323a4e"><span class="hexchip">#323A4E</span></div><div class="info"><div class="name">Admin Dark Footer/Nav</div><div class="varname">--bs-footer-bg · --bs-topnav-bg (dark)</div><div class="use">Admin footer &amp; horizontal-nav background in dark mode.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#263442"><span class="hexchip">#263442</span></div><div class="info"><div class="name">Dark Active Sidebar Item</div><div class="varname">--bs-sidebar-dark-menu-item-active-bg</div><div class="use">Active/hover sidebar item background in admin dark sidebar.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#30384b"><span class="hexchip">#30384B</span></div><div class="info"><div class="name">Dark Tertiary BG</div><div class="varname">$body-tertiary-bg-dark</div><div class="use">Tertiary surface (striped tables, subtle fills) in admin dark mode.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#ffffff"><span class="hexchip">#FFFFFF</span></div><div class="info"><div class="name">Dark-mode Heading</div><div class="varname">--dark-color-heading</div><div class="use">Headings switch to white in frontend dark mode.</div></div></div>
+  </div>
+
+  <h2>6 · Borders &amp; Dividers</h2>
+  <div class="grid">
+    <div class="card"><div class="swatch bordered" style="background:#e5e5e5"><span class="hexchip">#E5E5E5</span></div><div class="info"><div class="name">Default Border</div><div class="varname">--color-border · $gray-200</div><div class="use">Standard border for cards, tabs, list separators, outline buttons.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#dee2e6"><span class="hexchip">#DEE2E6</span></div><div class="info"><div class="name">Bootstrap Border / Gray 300</div><div class="varname">$gray-300</div><div class="use">Default Bootstrap border on admin form controls, table cells, dividers.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:#282f3a"><span class="hexchip">#282F3A</span></div><div class="info"><div class="name">Dark Border</div><div class="varname">--dark-color-border</div><div class="use">Card outlines &amp; dividers in dark mode.</div></div></div>
+  </div>
+
+  <h2>7 · Extra / Accent Palette</h2>
+  <div class="sec-note">Category cards, charts &amp; decorative shapes — <code>--color-extra01…08</code> in the frontend, mirrored by the Bootstrap base palette (<code>$blue</code>, <code>$indigo</code>…) in the admin.</div>
+  <div class="grid">
+    <div class="card"><div class="swatch" style="background:#ed9035"><span class="hexchip">#ED9035</span></div><div class="info"><div class="name">Extra 01 · Orange</div><div class="varname">--color-extra01</div><div class="use">Accent orange for category tiles / highlights.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#8e56ff"><span class="hexchip">#8E56FF</span></div><div class="info"><div class="name">Extra 02 · Purple</div><div class="varname">--color-extra02 · $purple</div><div class="use">Category card accent / chart series.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#f92596"><span class="hexchip">#F92596</span></div><div class="info"><div class="name">Extra 03 · Pink</div><div class="varname">--color-extra03 · $pink</div><div class="use">Category card accent / chart series.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#5866eb"><span class="hexchip">#5866EB</span></div><div class="info"><div class="name">Extra 04 · Blue</div><div class="varname">--color-extra04 · $blue</div><div class="use">Category card accent / chart series.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#f2a63b"><span class="hexchip">#F2A63B</span></div><div class="info"><div class="name">Extra 05 · Amber</div><div class="varname">--color-extra05</div><div class="use">Category card accent (same as tertiary).</div></div></div>
+    <div class="card"><div class="swatch" style="background:#39c0fa"><span class="hexchip">#39C0FA</span></div><div class="info"><div class="name">Extra 06 · Sky Blue</div><div class="varname">--color-extra06</div><div class="use">Category card accent / chart series.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#da04f8"><span class="hexchip">#DA04F8</span></div><div class="info"><div class="name">Extra 07 · Magenta</div><div class="varname">--color-extra07</div><div class="use">Category card accent / chart series.</div></div></div>
+    <div class="card"><div class="swatch" style="background:#4664e4"><span class="hexchip">#4664E4</span></div><div class="info"><div class="name">Extra 08 · Indigo</div><div class="varname">--color-extra08 · $indigo</div><div class="use">Category card accent / chart series.</div></div></div>
+  </div>
+
+  <h2>8 · Social Media Colors</h2>
+  <div class="sec-note">Footer social icons — defined as tokens in <code>:root</code>.</div>
+  <div class="grid">
+    <div class="card"><div class="swatch" style="background:#1877f2"><span class="hexchip">#1877F2</span></div><div class="info"><div class="name">Facebook</div><div class="varname">--color-facebook</div></div></div>
+    <div class="card"><div class="swatch" style="background:#1da1f2"><span class="hexchip">#1DA1F2</span></div><div class="info"><div class="name">Twitter</div><div class="varname">--color-twitter</div></div></div>
+    <div class="card"><div class="swatch" style="background:#cd201f"><span class="hexchip">#CD201F</span></div><div class="info"><div class="name">YouTube</div><div class="varname">--color-youtube</div></div></div>
+    <div class="card"><div class="swatch" style="background:#0a66c2"><span class="hexchip">#0A66C2</span></div><div class="info"><div class="name">LinkedIn</div><div class="varname">--color-linkedin</div></div></div>
+    <div class="card"><div class="swatch" style="background:#C231A1"><span class="hexchip">#C231A1</span></div><div class="info"><div class="name">Instagram</div><div class="varname">--color-instagram</div></div></div>
+    <div class="card"><div class="swatch" style="background:#E60022"><span class="hexchip">#E60022</span></div><div class="info"><div class="name">Pinterest</div><div class="varname">--color-pinterest</div></div></div>
+    <div class="card"><div class="swatch" style="background:#00ADEF"><span class="hexchip">#00ADEF</span></div><div class="info"><div class="name">Vimeo</div><div class="varname">--color-vimeo</div></div></div>
+    <div class="card"><div class="swatch" style="background:#6441A3"><span class="hexchip">#6441A3</span></div><div class="info"><div class="name">Twitch</div><div class="varname">--color-twitch</div></div></div>
+    <div class="card"><div class="swatch" style="background:#7289da"><span class="hexchip">#7289DA</span></div><div class="info"><div class="name">Discord</div><div class="varname">--color-discord</div></div></div>
+  </div>
+
+  <h2>9 · Shadows &amp; Overlays</h2>
+  <div class="grid">
+    <div class="card"><div class="swatch bordered" style="background:rgba(26,46,85,.15)"><span class="hexchip">rgba(26,46,85,.1)</span></div><div class="info"><div class="name">Shadow Darker</div><div class="varname">--shadow-darker / --shadow-darker2</div><div class="use">Card shadows: <code>0 10px 50px</code> / <code>0 20px 50px</code>.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:rgba(20,36,66,.2)"><span class="hexchip">rgba(20,36,66,.15)</span></div><div class="info"><div class="name">Shadow Dark</div><div class="varname">--shadow-dark</div><div class="use"><code>0 10px 30px</code> hover shadow.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:rgba(0,0,0,.1)"><span class="hexchip">rgba(0,0,0,.05 / .1)</span></div><div class="info"><div class="name">Neutral Shadows</div><div class="varname">--shadow-darkest / --shadow-darker3</div><div class="use">Cards, toasts, dropdowns. <code>0 10px 30px</code> / <code>0 4px 50px</code>.</div></div></div>
+    <div class="card"><div class="swatch bordered" style="background:rgba(226,84,76,.25)"><span class="hexchip">rgba(226,84,76,.2)</span></div><div class="info"><div class="name">Coral Glow</div><div class="varname">--shadow-darker4</div><div class="use"><code>0 20px 70px</code> glow under coral CTAs (brand-tinted shadow).</div></div></div>
+    <div class="card"><div class="swatch" style="background:rgba(0,0,0,.5)"><span class="hexchip">rgba(0,0,0,.5)</span></div><div class="info"><div class="name">Overlay 50%</div><div class="use">Lightbox caption/toolbar, modal backdrops.</div></div></div>
+  </div>
+
+  <h2>10 · Design Tokens (Non-color)</h2>
+  <div class="sec-note">Shared spacing, radius, typography &amp; motion tokens that ship alongside the colors in <code>_variable.scss</code>.</div>
+  <div class="grid">
+    <div class="card"><div class="info" style="padding:14px"><div class="name">Border Radius</div><div class="use"><code>--radius-small: 4px</code> · <code>--radius: 10px</code> · <code>--radius-big: 16px</code> · <code>--border-width: 2px</code></div></div></div>
+    <div class="card"><div class="info" style="padding:14px"><div class="name">Font Family</div><div class="use"><code>--font-primary / --font-secondary: 'Poppins', sans-serif</code> · icon font <code>'icomoon'</code></div></div></div>
+    <div class="card"><div class="info" style="padding:14px"><div class="name">Font Weights</div><div class="use">300 light · 400 regular · 500 medium · 600 semi-bold · 700 bold · 800 extra-bold</div></div></div>
+    <div class="card"><div class="info" style="padding:14px"><div class="name">Body Font Size</div><div class="use"><code>--font-size-b1: 15px</code> (lh 1.73) · <code>--font-size-b2: 13px</code> (lh 1.85)</div></div></div>
+    <div class="card"><div class="info" style="padding:14px"><div class="name">Heading Scale</div><div class="use">h1 50px · h2 36px · h3 28px · h4 20px · h5 18px · h6 16px</div></div></div>
+    <div class="card"><div class="info" style="padding:14px"><div class="name">Transitions</div><div class="use"><code>--transition: 0.3s</code> · <code>--transition-2: 0.5s</code> · transform <code>.65s cubic-bezier(.23,1,.32,1)</code></div></div></div>
+  </div>
+
+  <footer>
+    Generated 10 Aug 2026 · extracted from Myna source design tokens<br>
+    frontend/public/assets/scss/default/_variable.scss &nbsp;·&nbsp; Admin/src/assets/scss/_variables.scss &amp; custom/components/_root.scss
+  </footer>
+</div>
+</body>
+</html>

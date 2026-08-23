@@ -1,0 +1,89 @@
+// ============================================
+// SRKR Landing Page — Global Color Tokens
+// Source: Myna Color Palette (myna-color-palette.html)
+// RULE: All colors in SRKR components MUST reference
+//       these variables. No hardcoded hex values.
+// ============================================
+
+:root {
+  // ── Brand / Primary ──
+  --srkr-primary:             #E2544C;
+  --srkr-primary-hover:       #BD3933;
+  --srkr-secondary:           #ED7236;
+  --srkr-tertiary:            #F2A63B;
+  --srkr-text-secondary:      #ED9035;
+  --srkr-gradient-primary:    linear-gradient(-90deg, #F2A63B 0%, #E2544C 100%);
+
+  // ── Text ──
+  --srkr-heading:             #000000;
+  --srkr-heading-alt:         #181818;
+  --srkr-body:                #676767;
+  --srkr-body-alt:            #808080;
+  --srkr-muted:               #BABABA;
+  --srkr-dark-gray:           #525151;
+  --srkr-darker-gray:         #404040;
+  --srkr-white:               #FFFFFF;
+  --srkr-black:               #000000;
+
+  // ── Backgrounds ──
+  --srkr-bg-body:             #FFFFFF;
+  --srkr-bg-section:          #F3F3F3;
+  --srkr-bg-section-alt:      #F0F4F5;
+  --srkr-bg-coral-tint:       #FFF3EF;
+  --srkr-bg-warm-tint:        #FFF7EB;
+  --srkr-bg-warm-offwhite:    #FFF9F3;
+  --srkr-bg-footer:           #111212;
+  --srkr-gallery-scrim:       rgba(3, 8, 25, 0.88);
+
+  // ── Borders ──
+  --srkr-border:              #E5E5E5;
+  --srkr-border-bootstrap:    #DEE2E6;
+  --srkr-border-dark:         #282F3A;
+
+  // ── Shadows ──
+  --srkr-shadow-card:         0 10px 50px rgba(26, 46, 85, 0.1);
+  --srkr-shadow-hover:        0 10px 30px rgba(20, 36, 66, 0.15);
+  --srkr-shadow-coral-glow:   0 20px 70px rgba(226, 84, 76, 0.2);
+  --srkr-shadow-neutral:      0 4px 50px rgba(0, 0, 0, 0.05);
+
+  // ── Status / Feedback ──
+  --srkr-success:             #3EB75E;
+  --srkr-danger:              #F40500;
+  --srkr-warning:             #F2A63B;
+  --srkr-info:                #1BA2DB;
+
+  // ── WhatsApp ──
+  --srkr-whatsapp:            #25D366;
+  --srkr-whatsapp-hover:      #1EBE57;
+
+  // ── Extra / Accent Palette ──
+  --srkr-extra-purple:        #8E56FF;
+  --srkr-extra-pink:          #F92596;
+  --srkr-extra-blue:          #5866EB;
+  --srkr-extra-sky:           #39C0FA;
+  --srkr-extra-magenta:       #DA04F8;
+  --srkr-extra-indigo:        #4664E4;
+
+  // ── Social Media ──
+  --srkr-facebook:            #1877F2;
+  --srkr-twitter:             #1DA1F2;
+  --srkr-youtube:             #CD201F;
+  --srkr-linkedin:            #0A66C2;
+  --srkr-instagram:           #C231A1;
+
+  // ── Typography ──
+  --srkr-font-primary:        'Poppins', sans-serif;
+  --srkr-font-size-body:      15px;
+  --srkr-font-size-small:     13px;
+  --srkr-line-height-body:    1.73;
+
+  // ── Spacing & Radius ──
+  --srkr-radius-small:        4px;
+  --srkr-radius:              10px;
+  --srkr-radius-big:          16px;
+  --srkr-border-width:        2px;
+
+  // ── Transitions ──
+  --srkr-transition:          0.3s;
+  --srkr-transition-slow:     0.5s;
+}
