@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 const navItems = [
     { label: 'Who We Are', href: '#who-we-are' },
     { label: 'Programs', href: '#programs' },
-    { label: 'Certifications', href: '#certifications' },
+    { label: 'Courses', href: '#courses' },
     { label: 'Our Team', href: '#team' },
     { label: 'Contact Us', href: '#contact' },
 ];
 
-const SrkrHeader = () => {
+const SrkrHeader = ({ onOpenRegister }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
@@ -100,7 +100,13 @@ const SrkrHeader = () => {
                             </svg>
                             <span>Join Community</span>
                         </a>
-                        <a href="/sign-in" className="srkr-btn-login">Login / Sign Up</a>
+                        <button 
+                            type="button" 
+                            className="srkr-btn-login"
+                            onClick={() => onOpenRegister && onOpenRegister()}
+                        >
+                            Register
+                        </button>
                     </div>
 
                     <button
@@ -130,7 +136,16 @@ const SrkrHeader = () => {
                         </a>
                     </li>
                     <li>
-                        <a href="/sign-in">Login / Sign Up</a>
+                        <button 
+                            type="button"
+                            className="srkr-mobile-register-link"
+                            onClick={() => {
+                                setMobileOpen(false);
+                                onOpenRegister && onOpenRegister();
+                            }}
+                        >
+                            Register
+                        </button>
                     </li>
                 </ul>
             </div>

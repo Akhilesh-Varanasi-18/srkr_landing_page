@@ -1,85 +1,211 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import teamData from './team-data';
 
 const Team = () => {
-    const [selectedMember, setSelectedMember] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [direction, setDirection] = useState(1);
+    const [isPaused, setIsPaused] = useState(false);
+    const reduceMotion = useReducedMotion();
 
-    const openModal = (member) => setSelectedMember(member);
-    const closeModal = () => setSelectedMember(null);
+    const activeMember = teamData[currentIndex];
+
+    const goToNext = useCallback(() => {
+        setDirection(1);
+        setCurrentIndex((prev) => (prev + 1) % teamData.length);
+    }, []);
+
+    const goToPrev = useCallback(() => {
+        setDirection(-1);
+        setCurrentIndex((prev) => (prev - 1 + teamData.length) % teamData.length);
+    }, []);
+
+    const selectMember = (index) => {
+        setDirection(index > currentIndex ? 1 : -1);
+        setCurrentIndex(index);
+    };
+
+    // Auto-advance every 5 seconds if not paused
+    useEffect(() => {
+        if (isPaused) return undefined;
+        const timer = setInterval(() => {
+            goToNext();
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [isPaused, goToNext]);
 
     return (
-        <>
-            <section id="team" className="srkr-team">
-                <div className="srkr-team-container">
-                    <div className="srkr-section-title" data-sal="slide-up" data-sal-delay="100" data-sal-duration="800">
-                        {/* <span className="srkr-section-badge">👥 Our Team</span> */}
-                        <h2>Meet the <span>Team</span></h2>
-                        <p>
-                            Passionate educators and industry professionals dedicated 
-                            to shaping the next generation of tech leaders.
-                        </p>
-                    </div>
-
-                    <div className="srkr-team-grid">
-                        {teamData.map((member, index) => (
-                            <div
-                                key={member.id}
-                                className="srkr-team-card"
-                                data-sal="slide-up"
-                                data-sal-delay={`${150 + index * 100}`}
-                                data-sal-duration="800"
-                                onClick={() => openModal(member)}
-                            >
-                                <div className="srkr-team-photo">
-                                    <img src={member.photo} alt={member.name} />
-                                </div>
-                                <div className="srkr-team-info">
-                                    <h4>{member.name}</h4>
-                                    <div className="srkr-team-role">{member.role}</div>
-                                    <p>{member.shortBio}</p>
-                                </div>
-                                {member.linkedin && member.linkedin !== '#' && (
-                                    <div className="srkr-team-social">
-                                        <a
-                                            href={member.linkedin}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-label={`${member.name} LinkedIn`}
-                                        >
-                                            in
-                                        </a>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+        <section id="team" className="srkr-team">
+            <div className="srkr-team-container">
+                {/* Section Title */}
+                <div className="srkr-section-title" data-sal="slide-up" data-sal-delay="100" data-sal-duration="800">
+                    <h2>Meet the <span>Team</span></h2>
+                    <p>
+                        Passionate educators and industry practitioners shaping the next generation of engineers 
+                        through hands-on mentorship, enterprise platforms, and competitive coding mastery.
+                    </p>
                 </div>
-            </section>
 
-            {/* Team Member Detail Modal */}
-            <div
-                className={`srkr-modal-overlay ${selectedMember ? 'open' : ''}`}
-                onClick={closeModal}
-            >
-                {selectedMember && (
-                    <div className="srkr-modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="srkr-modal-close" onClick={closeModal}>✕</button>
-                        <img
-                            className="srkr-modal-photo"
-                            src={selectedMember.photo}
-                            alt={selectedMember.name}
-                        />
-                        <h3>{selectedMember.name}</h3>
-                        <div className="srkr-modal-role">{selectedMember.role}</div>
-                        <div className="srkr-modal-bio">
-                            <p>{selectedMember.fullBio}</p>
+                {/* Main Spotlight Showcase */}
+                <div 
+                    className="srkr-team-spotlight-wrapper"
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
+                    onFocus={() => setIsPaused(true)}
+                    onBlur={() => setIsPaused(false)}
+                >
+                    <div className="srkr-team-spotlight-card">
+                        {/* LEFT COLUMN: Cutout Image with Ambient Glow */}
+                        <div className="srkr-team-left-visual">
+                            {/* Glowing radial ambient backdrop */}
+                            <div 
+                                className="srkr-team-aura-glow"
+                                style={{ background: activeMember.accentColor }}
+                                aria-hidden="true"
+                            />
+
+                            <div className="srkr-team-image-stage">
+                                <AnimatePresence mode="wait" initial={false}>
+                                    <motion.div
+                                        key={activeMember.id}
+                                        className="srkr-team-photo-container"
+                                        initial={reduceMotion ? false : { opacity: 0, scale: 0.94, x: direction * -30 }}
+                                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                                        exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96, x: direction * 30 }}
+                                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                    >
+                                        <img 
+                                            src={activeMember.photo} 
+                                            alt={activeMember.name} 
+                                            className="srkr-team-cutout-img"
+                                        />
+                                    </motion.div>
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                        {/* RIGHT COLUMN: Trainer Profile, Highlights & Skill Points */}
+                        <div className="srkr-team-right-info">
+                            <AnimatePresence mode="wait" initial={false}>
+                                <motion.div
+                                    key={activeMember.id}
+                                    className="srkr-team-info-content"
+                                    initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={reduceMotion ? undefined : { opacity: 0, y: -18 }}
+                                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                                >
+                                    {/* Role Badge & LinkedIn Link */}
+                                    <div className="srkr-team-role-row">
+                                        <span 
+                                            className="srkr-team-role-pill"
+                                            style={{ 
+                                                color: activeMember.accentColor, 
+                                                background: activeMember.accentBg 
+                                            }}
+                                        >
+                                            {activeMember.role}
+                                        </span>
+
+                                        {activeMember.linkedin && (
+                                            <a
+                                                href={activeMember.linkedin}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="srkr-team-linkedin-pill"
+                                                title={`Connect with ${activeMember.name} on LinkedIn`}
+                                            >
+                                                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+                                                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64a1.5 1.5 0 0 0-1.5 1.5 1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5 1.5 1.5 0 0 0-1.5-1.5Z" />
+                                                </svg>
+                                                <span>LinkedIn Profile</span>
+                                                <span className="srkr-team-linkedin-arrow">↗</span>
+                                            </a>
+                                        )}
+                                    </div>
+
+                                    {/* Name & Tagline */}
+                                    <h3 className="srkr-team-member-name">{activeMember.name}</h3>
+                                    <p className="srkr-team-member-tagline">{activeMember.tagline}</p>
+
+                                    {/* Skill Highlights List */}
+                                    <div className="srkr-team-highlights-box">
+                                        <ul className="srkr-team-points-list">
+                                            {activeMember.highlights.map((point, pIdx) => (
+                                                <li key={pIdx}>
+                                                    <span className="srkr-team-check-icon">
+                                                        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                            <polyline points="3 8 6.5 11.5 13 4" />
+                                                        </svg>
+                                                    </span>
+                                                    <span>{point}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+
+                                    {/* Skills / Tech Tags */}
+                                    {activeMember.tags && (
+                                        <div className="srkr-team-tags-row">
+                                            {activeMember.tags.map((tag, tIdx) => (
+                                                <span key={tIdx} className="srkr-team-tag-pill">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </motion.div>
+                            </AnimatePresence>
+
+                            {/* BOTTOM CONTROLS & AVATAR THUMBNAIL SELECTOR */}
+                            <div className="srkr-team-bottom-controls">
+                                {/* Thumbnail Avatars */}
+                                <div className="srkr-team-avatars-nav" role="tablist" aria-label="Team members">
+                                    {teamData.map((member, idx) => (
+                                        <button
+                                            key={member.id}
+                                            type="button"
+                                            role="tab"
+                                            aria-selected={idx === currentIndex}
+                                            className={`srkr-team-avatar-thumb-btn ${idx === currentIndex ? 'active' : ''}`}
+                                            onClick={() => selectMember(idx)}
+                                            title={member.name}
+                                        >
+                                            <img src={member.photo} alt={member.name} />
+                                            <span className="srkr-team-avatar-thumb-label">{member.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Arrow Navigation Buttons */}
+                                <div className="srkr-team-nav-arrows">
+                                    <button 
+                                        type="button" 
+                                        className="srkr-team-arrow-btn"
+                                        onClick={goToPrev}
+                                        aria-label="Previous trainer"
+                                    >
+                                        ‹
+                                    </button>
+                                    <span className="srkr-team-counter">
+                                        0{currentIndex + 1} <small>/ 0{teamData.length}</small>
+                                    </span>
+                                    <button 
+                                        type="button" 
+                                        className="srkr-team-arrow-btn"
+                                        onClick={goToNext}
+                                        aria-label="Next trainer"
+                                    >
+                                        ›
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                )}
+                </div>
             </div>
-        </>
+        </section>
     );
 };
 

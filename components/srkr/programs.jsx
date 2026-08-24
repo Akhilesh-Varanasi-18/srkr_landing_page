@@ -1,76 +1,159 @@
 'use client'
-import React from 'react';
+import React, { useState } from 'react';
+import Slider from 'react-slick';
+import programsData from './programs-data';
+import ProgramDetailModal from './program-detail-modal';
 
-const programsData = [
-    {
-        id: 'ignite',
-        icon: '🔥',
-        name: 'Ignite Coder',
-        year: '1st Year',
-        description: 'Build your coding foundation from scratch. Learn programming fundamentals, problem-solving techniques, and develop the mindset to think like a coder.',
-        className: 'ignite',
-    },
-    {
-        id: 'skillup',
-        icon: '📈',
-        name: 'SkillUp Coder',
-        year: '2nd Year',
-        description: 'Level up with intermediate data structures, algorithms, and project-based learning. Gain hands-on experience building real-world applications.',
-        className: 'skillup',
-    },
-    {
-        id: 'aiready',
-        icon: '🤖',
-        name: 'AI Ready Engineers',
-        year: '3rd Year',
-        description: 'Master AI, Machine Learning, and emerging technologies. Get industry-ready with advanced projects, certifications, and placement preparation.',
-        className: 'aiready',
-    },
-    {
-        id: 'owlcoder',
-        icon: '🦉',
-        name: 'Owl Coder',
-        year: 'Expert Level',
-        description: 'An exclusive program for coding champions. Tackle competitive programming, advanced algorithms, and system design to stand out from the crowd.',
-        className: 'owlcoder',
-    },
-];
+// Custom Prev Arrow for Slick Carousel
+function PrevArrow(props) {
+    const { className, style, onClick } = props;
+    return (
+        <button
+            type="button"
+            className="srkr-slick-arrow srkr-slick-prev"
+            style={{ ...style }}
+            onClick={onClick}
+            aria-label="Previous Program"
+        >
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+            </svg>
+        </button>
+    );
+}
+
+// Custom Next Arrow for Slick Carousel
+function NextArrow(props) {
+    const { className, style, onClick } = props;
+    return (
+        <button
+            type="button"
+            className="srkr-slick-arrow srkr-slick-next"
+            style={{ ...style }}
+            onClick={onClick}
+            aria-label="Next Program"
+        >
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 6l6 6-6 6" />
+            </svg>
+        </button>
+    );
+}
 
 const Programs = () => {
+    const [selectedProgram, setSelectedProgram] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleOpenProgram = (program) => {
+        setSelectedProgram(program);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseProgram = () => {
+        setIsModalOpen(false);
+        setSelectedProgram(null);
+    };
+
+    // Slick Carousel settings
+    const sliderSettings = {
+        dots: false,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 4000,
+        pauseOnHover: true,
+        pauseOnFocus: true,
+        swipe: true,
+        swipeToSlide: true,
+        touchThreshold: 10,
+        prevArrow: <PrevArrow />,
+        nextArrow: <NextArrow />,
+        responsive: [
+            {
+                breakpoint: 1199,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 850,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: true,
+                }
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false,
+                }
+            }
+        ]
+    };
+
     return (
         <section id="programs" className="srkr-programs">
             <div className="srkr-programs-container">
+                {/* Section Header */}
                 <div className="srkr-section-title" data-sal="slide-up" data-sal-delay="100" data-sal-duration="800">
-                    {/* <span className="srkr-section-badge">💻 Our Programs</span> */}
                     <h2>Programs We <span>Offer</span></h2>
                     <p>
-                        Structured learning paths tailored for every stage of your engineering journey — 
-                        from fundamentals to expert-level mastery.
+                        Comprehensive engineering curriculums tailored from foundational coding in first year 
+                        to advanced competitive programming and modern AI-powered systems.
                     </p>
                 </div>
 
-                <div className="srkr-programs-grid">
-                    {programsData.map((program, index) => (
-                        <div
-                            key={program.id}
-                            className={`srkr-program-card ${program.className}`}
-                            data-sal="slide-up"
-                            data-sal-delay={`${150 + index * 100}`}
-                            data-sal-duration="800"
-                        >
-                            <div className="srkr-program-icon">
-                                {program.icon}
+                {/* 5-Card Slick Carousel */}
+                <div className="srkr-programs-carousel-wrapper">
+                    <Slider {...sliderSettings}>
+                        {programsData.map((program) => (
+                            <div key={program.id} className="srkr-program-slide-item">
+                                <div className={`srkr-program-card ${program.id}`}>
+                                    {/* Card Top / Header */}
+                                    <div className="srkr-program-card-header">
+                                        <div 
+                                            className="srkr-program-icon" 
+                                            style={{ background: program.accentBg }}
+                                        >
+                                            {program.icon}
+                                        </div>
+                                        <span className="srkr-program-year">{program.year}</span>
+                                    </div>
+
+                                    {/* Card Content */}
+                                    <h3 className="srkr-program-name">{program.name}</h3>
+                                    <span className="srkr-program-tagline">{program.tagline}</span>
+                                    <p className="srkr-program-desc">{program.description}</p>
+
+                                    {/* Action Button */}
+                                    <div className="srkr-program-card-footer">
+                                        <button
+                                            type="button"
+                                            className="srkr-program-btn"
+                                            onClick={() => handleOpenProgram(program)}
+                                        >
+                                            Explore Syllabus <span>→</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <span className="srkr-program-year">{program.year}</span>
-                            <h3>{program.name}</h3>
-                            <p>{program.description}</p>
-                            <a href="#" className="srkr-program-link">
-                                Learn More <span>→</span>
-                            </a>
-                        </div>
-                    ))}
+                        ))}
+                    </Slider>
                 </div>
             </div>
+
+            {/* In-depth Program & Syllabus Modal */}
+            <ProgramDetailModal
+                program={selectedProgram}
+                isOpen={isModalOpen}
+                onClose={handleCloseProgram}
+            />
         </section>
     );
 };

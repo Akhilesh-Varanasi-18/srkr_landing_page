@@ -39,10 +39,26 @@ export default function WhoWeAre() {
 				<div className="srkr-hero-content">
 					<img className="srkr-stepin-logo" src="/assets/images/srkr/project-images/about_torii/stepin_rotate_light.gif" alt="Step In" />
 					<h1>Your Gateway to<br /><span>Tech Excellence</span></h1>
-					<p>ToriiMinds is a comprehensive tech education platform designed to transform engineering students into industry-ready professionals. Through our structured programs, we bridge the gap between academic learning and real-world skills, empowering students from first year through graduation with coding, AI, and career-readiness training.</p>
+					<p>ToriiMinds is a comprehensive tech education platform transforming engineering students into industry-ready professionals through structured coding, AI integration, and career-readiness training from first year through graduation.</p>
 					<div className="srkr-hero-cta">
 						<a href="#programs" className="srkr-btn-primary">Explore Programs →</a>
-						<a href="#contact" className="srkr-btn-outline">Get in Touch</a>
+						<a href="#courses" className="srkr-btn-outline">Browse Courses</a>
+					</div>
+					<div className="srkr-hero-stats">
+						<div className="srkr-hero-stat-item">
+							<strong>5+</strong>
+							<span>Flagship Programs</span>
+						</div>
+						<div className="srkr-hero-stat-divider" />
+						<div className="srkr-hero-stat-item">
+							<strong>9</strong>
+							<span>Specialized Tracks</span>
+						</div>
+						<div className="srkr-hero-stat-divider" />
+						<div className="srkr-hero-stat-item">
+							<strong>100%</strong>
+							<span>Hands-on Labs</span>
+						</div>
 					</div>
 				</div>
 				<div className="srkr-hero-visual" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)} onFocus={() => setIsPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsPaused(false); }}>
