@@ -17,9 +17,8 @@ const BRANCH_OPTIONS = [
 const PASSOUT_YEAR_PROGRAM_MAP = {
     '2030': {
         yearLabel: '1st Year (2026 – 2030)',
-        programName: 'Ignite Coder',
-        icon: '🔥',
-        code: 'IGN-100',
+        programName: 'Bamboo Coder',
+        code: 'BMB-100',
         badge: 'Foundation Track',
         color: 'var(--srkr-primary)',
         bgColor: 'var(--srkr-bg-coral-tint)',
@@ -29,7 +28,6 @@ const PASSOUT_YEAR_PROGRAM_MAP = {
     '2029': {
         yearLabel: '2nd Year (2025 – 2029)',
         programName: 'SkillUp Coder',
-        icon: '📈',
         code: 'SKL-200',
         badge: 'Core Problem Solving',
         color: 'var(--srkr-secondary)',
@@ -40,7 +38,6 @@ const PASSOUT_YEAR_PROGRAM_MAP = {
     '2028': {
         yearLabel: '3rd Year (2024 – 2028)',
         programName: 'AI Ready Engineers',
-        icon: '🤖',
         code: 'AIR-300',
         badge: 'Industry Specialization',
         color: 'var(--srkr-primary)',
@@ -50,6 +47,31 @@ const PASSOUT_YEAR_PROGRAM_MAP = {
     }
 };
 
+// Shared props for the clean line-icon set
+const ico = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' };
+
+const GENDER_OPTIONS = [
+    {
+        value: 'Male', label: 'Male',
+        icon: (<svg {...ico}><circle cx="10" cy="14" r="5" /><path d="M15 9l5-5m0 0h-4m4 0v4" /></svg>)
+    },
+    {
+        value: 'Female', label: 'Female',
+        icon: (<svg {...ico}><circle cx="12" cy="8" r="5" /><path d="M12 13v8M9 18h6" /></svg>)
+    }
+];
+
+const RESIDENCE_OPTIONS = [
+    {
+        value: 'Hosteler', label: 'Hosteler',
+        icon: (<svg {...ico}><path d="M3 21h18M6 21V4h12v17M9.5 8h.01M14.5 8h.01M9.5 12h.01M14.5 12h.01M11 21v-4h2v4" /></svg>)
+    },
+    {
+        value: 'Day Scholar', label: 'Day Scholar',
+        icon: (<svg {...ico}><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M10 21v-6h4v6" /></svg>)
+    }
+];
+
 const RegistrationModal = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState({
         fullName: '',
@@ -57,6 +79,8 @@ const RegistrationModal = ({ isOpen, onClose }) => {
         collegeEmail: '',
         mobileNumber: '',
         branch: '',
+        gender: '',
+        residenceType: '',
         passoutYear: '2028',
     });
 
@@ -65,24 +89,13 @@ const RegistrationModal = ({ isOpen, onClose }) => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [regId, setRegId] = useState('');
 
-    // Reset form state when modal closes
+    // Reset transient state when the modal closes
     useEffect(() => {
         if (!isOpen) {
             setIsSuccess(false);
             setErrors({});
             setIsSubmitting(false);
         }
-    }, [isOpen]);
-
-    // Handle ESC key (or prevent closing on empty space)
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === 'Escape' && isOpen) {
-                // Keep modal open unless close button is clicked, per user specification
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen]);
 
     if (!isOpen) return null;
@@ -92,41 +105,32 @@ const RegistrationModal = ({ isOpen, onClose }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+    };
+
+    const selectValue = (name, value) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
     const validateForm = () => {
         const newErrors = {};
-
-        if (!formData.fullName.trim()) {
-            newErrors.fullName = 'Please enter your full name';
-        }
-
-        if (!formData.rollNumber.trim()) {
-            newErrors.rollNumber = 'Please enter your roll number';
-        }
-
+        if (!formData.fullName.trim()) newErrors.fullName = 'Please enter your full name';
+        if (!formData.rollNumber.trim()) newErrors.rollNumber = 'Please enter your roll number';
         if (!formData.collegeEmail.trim()) {
             newErrors.collegeEmail = 'Please enter your college email ID';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.collegeEmail.trim())) {
             newErrors.collegeEmail = 'Please enter a valid email address';
         }
-
         if (!formData.mobileNumber.trim()) {
             newErrors.mobileNumber = 'Please enter your mobile number';
         } else if (!/^\d{10}$/.test(formData.mobileNumber.replace(/[\s-+]/g, ''))) {
             newErrors.mobileNumber = 'Please enter a valid 10-digit mobile number';
         }
-
-        if (!formData.branch) {
-            newErrors.branch = 'Please select your branch';
-        }
-
-        if (!formData.passoutYear) {
-            newErrors.passoutYear = 'Please select your passout year';
-        }
+        if (!formData.branch) newErrors.branch = 'Please select your branch';
+        if (!formData.gender) newErrors.gender = 'Please select your gender';
+        if (!formData.residenceType) newErrors.residenceType = 'Please select hosteler or day scholar';
+        if (!formData.passoutYear) newErrors.passoutYear = 'Please select your passout year';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -135,10 +139,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-
         setIsSubmitting(true);
-
-        // Simulate seamless submission & generate registration reference ID
         setTimeout(() => {
             const randomCode = 'TM-SRKR-' + Math.floor(100000 + Math.random() * 900000);
             setRegId(randomCode);
@@ -147,26 +148,41 @@ const RegistrationModal = ({ isOpen, onClose }) => {
         }, 800);
     };
 
+    const renderSegment = (name, options) => (
+        <div className={`srkr-reg-segment ${errors[name] ? 'has-error' : ''}`} role="radiogroup">
+            {options.map((opt) => (
+                <button
+                    key={opt.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={formData[name] === opt.value}
+                    className={formData[name] === opt.value ? 'active' : ''}
+                    onClick={() => selectValue(name, opt.value)}
+                >
+                    {opt.icon}
+                    <span>{opt.label}</span>
+                </button>
+            ))}
+        </div>
+    );
+
     return (
-        <div 
-            className="srkr-reg-modal-overlay"
-            // Note: Click on backdrop intentionally does NOT close the modal per requirement
-            onClick={(e) => e.stopPropagation()}
-        >
-            <div 
+        <div className="srkr-reg-modal-overlay" onClick={(e) => e.stopPropagation()}>
+            <div
                 className="srkr-reg-modal-container"
-                role="dialog" 
+                role="dialog"
                 aria-modal="true"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Close Button — Modal only closes when clicked */}
-                <button 
-                    type="button" 
+                <button
+                    type="button"
                     className="srkr-reg-modal-close"
                     onClick={onClose}
                     aria-label="Close registration modal"
                 >
-                    ✕
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
                 </button>
 
                 {!isSuccess ? (
@@ -174,7 +190,11 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                         {/* Header */}
                         <div className="srkr-reg-modal-header">
                             <div className="srkr-reg-header-badge">
-                                <span>🎓 SRKR × ToriiMinds Student Portal</span>
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M22 10 12 5 2 10l10 5 10-5Z" />
+                                    <path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" />
+                                </svg>
+                                <span>SRKR × ToriiMinds Student Portal</span>
                             </div>
                             <h2>Register for <span>Torii Programs</span></h2>
                         </div>
@@ -184,18 +204,15 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                             {/* Row 1: Full Name & Roll Number */}
                             <div className="srkr-reg-row-2">
                                 <div className="srkr-reg-field">
-                                    <label htmlFor="fullName">
-                                        Student Full Name <span className="required">*</span>
-                                    </label>
+                                    <label htmlFor="fullName">Student Full Name <span className="required">*</span></label>
                                     <div className="srkr-reg-input-wrap">
-                                        <span className="srkr-reg-input-icon">👤</span>
+                                        <span className="srkr-reg-input-icon">
+                                            <svg {...ico}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                                        </span>
                                         <input
-                                            type="text"
-                                            id="fullName"
-                                            name="fullName"
+                                            type="text" id="fullName" name="fullName"
                                             placeholder="Enter your full name"
-                                            value={formData.fullName}
-                                            onChange={handleChange}
+                                            value={formData.fullName} onChange={handleChange}
                                             className={errors.fullName ? 'has-error' : ''}
                                         />
                                     </div>
@@ -203,18 +220,15 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 </div>
 
                                 <div className="srkr-reg-field">
-                                    <label htmlFor="rollNumber">
-                                        Roll Number / Reg. ID <span className="required">*</span>
-                                    </label>
+                                    <label htmlFor="rollNumber">Roll Number / Reg. ID <span className="required">*</span></label>
                                     <div className="srkr-reg-input-wrap">
-                                        <span className="srkr-reg-input-icon">🆔</span>
+                                        <span className="srkr-reg-input-icon">
+                                            <svg {...ico}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="2" /><path d="M15 9h3M15 13h3M7 16h10" /></svg>
+                                        </span>
                                         <input
-                                            type="text"
-                                            id="rollNumber"
-                                            name="rollNumber"
+                                            type="text" id="rollNumber" name="rollNumber"
                                             placeholder="Enter roll number"
-                                            value={formData.rollNumber}
-                                            onChange={handleChange}
+                                            value={formData.rollNumber} onChange={handleChange}
                                             className={errors.rollNumber ? 'has-error' : ''}
                                         />
                                     </div>
@@ -225,18 +239,15 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                             {/* Row 2: College Email & Mobile Number */}
                             <div className="srkr-reg-row-2">
                                 <div className="srkr-reg-field">
-                                    <label htmlFor="collegeEmail">
-                                        College / Institutional Email ID <span className="required">*</span>
-                                    </label>
+                                    <label htmlFor="collegeEmail">College / Institutional Email ID <span className="required">*</span></label>
                                     <div className="srkr-reg-input-wrap">
-                                        <span className="srkr-reg-input-icon">✉️</span>
+                                        <span className="srkr-reg-input-icon">
+                                            <svg {...ico}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
+                                        </span>
                                         <input
-                                            type="email"
-                                            id="collegeEmail"
-                                            name="collegeEmail"
+                                            type="email" id="collegeEmail" name="collegeEmail"
                                             placeholder="Enter college email ID"
-                                            value={formData.collegeEmail}
-                                            onChange={handleChange}
+                                            value={formData.collegeEmail} onChange={handleChange}
                                             className={errors.collegeEmail ? 'has-error' : ''}
                                         />
                                     </div>
@@ -244,18 +255,13 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 </div>
 
                                 <div className="srkr-reg-field">
-                                    <label htmlFor="mobileNumber">
-                                        WhatsApp / Mobile Number <span className="required">*</span>
-                                    </label>
-                                    <div className="srkr-reg-input-wrap">
+                                    <label htmlFor="mobileNumber">WhatsApp / Mobile Number <span className="required">*</span></label>
+                                    <div className="srkr-reg-input-wrap has-prefix">
                                         <span className="srkr-reg-input-prefix">+91</span>
                                         <input
-                                            type="tel"
-                                            id="mobileNumber"
-                                            name="mobileNumber"
+                                            type="tel" id="mobileNumber" name="mobileNumber"
                                             placeholder="9876543210"
-                                            value={formData.mobileNumber}
-                                            onChange={handleChange}
+                                            value={formData.mobileNumber} onChange={handleChange}
                                             className={errors.mobileNumber ? 'has-error' : ''}
                                             maxLength="10"
                                         />
@@ -264,30 +270,41 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            {/* Row 3: Branch Selection */}
+                            {/* Row 3: Branch */}
                             <div className="srkr-reg-field">
-                                <label htmlFor="branch">
-                                    Engineering Branch / Department <span className="required">*</span>
-                                </label>
+                                <label htmlFor="branch">Engineering Branch / Department <span className="required">*</span></label>
                                 <div className="srkr-reg-input-wrap">
-                                    <span className="srkr-reg-input-icon">🏛️</span>
+                                    <span className="srkr-reg-input-icon">
+                                        <svg {...ico}><path d="M3 21h18M5 21V6l7-3 7 3v15" /><path d="M9 9h.01M9 13h.01M15 9h.01M15 13h.01M10 21v-4h4v4" /></svg>
+                                    </span>
                                     <select
-                                        id="branch"
-                                        name="branch"
-                                        value={formData.branch}
-                                        onChange={handleChange}
+                                        id="branch" name="branch"
+                                        value={formData.branch} onChange={handleChange}
                                         className={errors.branch ? 'has-error' : ''}
                                     >
                                         <option value="">Select your branch...</option>
-                                        {BRANCH_OPTIONS.map((b, i) => (
-                                            <option key={i} value={b}>{b}</option>
-                                        ))}
+                                        {BRANCH_OPTIONS.map((b, i) => (<option key={i} value={b}>{b}</option>))}
                                     </select>
                                 </div>
                                 {errors.branch && <span className="srkr-reg-error">{errors.branch}</span>}
                             </div>
 
-                            {/* Row 4: Passout Year Selection */}
+                            {/* Row 4: Gender & Residence Type */}
+                            <div className="srkr-reg-row-2">
+                                <div className="srkr-reg-field">
+                                    <label>Gender <span className="required">*</span></label>
+                                    {renderSegment('gender', GENDER_OPTIONS)}
+                                    {errors.gender && <span className="srkr-reg-error">{errors.gender}</span>}
+                                </div>
+
+                                <div className="srkr-reg-field">
+                                    <label>Residence <span className="required">*</span></label>
+                                    {renderSegment('residenceType', RESIDENCE_OPTIONS)}
+                                    {errors.residenceType && <span className="srkr-reg-error">{errors.residenceType}</span>}
+                                </div>
+                            </div>
+
+                            {/* Row 5: Passout Year */}
                             <div className="srkr-reg-field">
                                 <label>
                                     Passout Year <span className="required">*</span>
@@ -302,17 +319,15 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                                 key={year}
                                                 type="button"
                                                 className={`srkr-reg-year-card ${isSelected ? 'active' : ''}`}
-                                                onClick={() => {
-                                                    setFormData(prev => ({ ...prev, passoutYear: year }));
-                                                    if (errors.passoutYear) setErrors(prev => ({ ...prev, passoutYear: '' }));
-                                                }}
+                                                style={isSelected ? { '--year-accent': yearInfo.color } : undefined}
+                                                onClick={() => selectValue('passoutYear', year)}
                                             >
                                                 <div className="srkr-reg-year-radio">
                                                     <span className={`srkr-radio-dot ${isSelected ? 'checked' : ''}`} />
                                                     <strong>Class of {year}</strong>
                                                 </div>
-                                                <span className="srkr-reg-year-mapped">
-                                                    {yearInfo.icon} {yearInfo.programName}
+                                                <span className="srkr-reg-year-mapped" style={{ color: yearInfo.color }}>
+                                                    {yearInfo.programName}
                                                 </span>
                                             </button>
                                         );
@@ -321,41 +336,36 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 {errors.passoutYear && <span className="srkr-reg-error">{errors.passoutYear}</span>}
                             </div>
 
-                            {/* MAPPED PROGRAM LIVE PREVIEW CARD */}
-                            <div 
+                            {/* Mapped program live preview */}
+                            <div
                                 className="srkr-reg-program-preview"
-                                style={{
-                                    backgroundColor: mappedProgram.bgColor,
-                                    borderColor: mappedProgram.borderColor
-                                }}
+                                style={{ backgroundColor: mappedProgram.bgColor, borderColor: mappedProgram.borderColor }}
                             >
                                 <div className="srkr-reg-program-preview-header">
-                                    <div className="srkr-reg-program-icon-box">
-                                        {mappedProgram.icon}
+                                    <div className="srkr-reg-program-icon-box" style={{ color: mappedProgram.color }}>
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M22 10 12 5 2 10l10 5 10-5Z" />
+                                            <path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" />
+                                            <path d="M22 10v6" />
+                                        </svg>
                                     </div>
                                     <div className="srkr-reg-program-details">
                                         <div className="srkr-reg-program-tags">
                                             <span className="srkr-reg-tag-code">{mappedProgram.code}</span>
-                                            <span className="srkr-reg-tag-badge">{mappedProgram.badge}</span>
+                                            <span className="srkr-reg-tag-badge" style={{ color: mappedProgram.color }}>{mappedProgram.badge}</span>
                                             <span className="srkr-reg-tag-year">{mappedProgram.yearLabel}</span>
                                         </div>
                                         <h4 className="srkr-reg-program-title">
-                                            Assigned Program: <strong>{mappedProgram.programName}</strong>
+                                            Assigned Program: <strong style={{ color: mappedProgram.color }}>{mappedProgram.programName}</strong>
                                         </h4>
                                     </div>
                                 </div>
-                                <p className="srkr-reg-program-desc">
-                                    {mappedProgram.description}
-                                </p>
+                                <p className="srkr-reg-program-desc">{mappedProgram.description}</p>
                             </div>
 
-                            {/* Form Submit CTA */}
+                            {/* Submit */}
                             <div className="srkr-reg-submit-wrap">
-                                <button 
-                                    type="submit" 
-                                    className="srkr-reg-submit-btn"
-                                    disabled={isSubmitting}
-                                >
+                                <button type="submit" className="srkr-reg-submit-btn" disabled={isSubmitting}>
                                     {isSubmitting ? (
                                         <>
                                             <span className="srkr-reg-spinner" />
@@ -363,7 +373,10 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                         </>
                                     ) : (
                                         <>
-                                            <span>Complete Registration →</span>
+                                            <span>Complete Registration</span>
+                                            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M5 12h14M13 6l6 6-6 6" />
+                                            </svg>
                                         </>
                                     )}
                                 </button>
@@ -374,7 +387,10 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                     /* SUCCESS STATE */
                     <div className="srkr-reg-success-card">
                         <div className="srkr-reg-success-icon-wrap">
-                            <span className="srkr-reg-success-icon">🎉</span>
+                            <svg className="srkr-reg-success-icon" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <path d="m9 11 3 3L22 4" />
+                            </svg>
                         </div>
 
                         <h3>Registration Successful!</h3>
@@ -388,29 +404,18 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                         </div>
 
                         <div className="srkr-reg-success-details">
-                            <div className="srkr-reg-success-row">
-                                <span>Roll Number:</span>
-                                <strong>{formData.rollNumber}</strong>
-                            </div>
-                            <div className="srkr-reg-success-row">
-                                <span>Branch:</span>
-                                <strong>{formData.branch}</strong>
-                            </div>
-                            <div className="srkr-reg-success-row">
-                                <span>Passout Year:</span>
-                                <strong>{formData.passoutYear}</strong>
-                            </div>
-                            <div className="srkr-reg-success-row">
-                                <span>Assigned Program:</span>
-                                <strong>{mappedProgram.icon} {mappedProgram.programName}</strong>
-                            </div>
+                            <div className="srkr-reg-success-row"><span>Roll Number</span><strong>{formData.rollNumber}</strong></div>
+                            <div className="srkr-reg-success-row"><span>Branch</span><strong>{formData.branch}</strong></div>
+                            <div className="srkr-reg-success-row"><span>Gender</span><strong>{formData.gender}</strong></div>
+                            <div className="srkr-reg-success-row"><span>Residence</span><strong>{formData.residenceType}</strong></div>
+                            <div className="srkr-reg-success-row"><span>Passout Year</span><strong>{formData.passoutYear}</strong></div>
+                            <div className="srkr-reg-success-row"><span>Assigned Program</span><strong>{mappedProgram.programName}</strong></div>
                         </div>
 
                         <div className="srkr-reg-success-actions">
                             <a
                                 href="https://chat.whatsapp.com/YOUR_INVITE_LINK"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                target="_blank" rel="noopener noreferrer"
                                 className="srkr-btn-whatsapp-join"
                             >
                                 <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
@@ -419,13 +424,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 <span>Join Official WhatsApp Community</span>
                             </a>
 
-                            <button 
-                                type="button" 
-                                className="srkr-btn-done"
-                                onClick={onClose}
-                            >
-                                Done
-                            </button>
+                            <button type="button" className="srkr-btn-done" onClick={onClose}>Done</button>
                         </div>
                     </div>
                 )}
@@ -435,4 +434,3 @@ const RegistrationModal = ({ isOpen, onClose }) => {
 };
 
 export default RegistrationModal;
-

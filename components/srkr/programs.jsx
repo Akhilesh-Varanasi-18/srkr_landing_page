@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import programsData from './programs-data';
 import ProgramDetailModal from './program-detail-modal';
@@ -40,9 +40,30 @@ function NextArrow(props) {
     );
 }
 
+// Resolve how many cards to show for a given viewport width.
+// 1 card on phones, 2 on tablets, 3 on desktop.
+const getSlidesToShow = (width) => {
+    if (width <= 767) return 1;
+    if (width <= 1199) return 2;
+    return 3;
+};
+
 const Programs = () => {
     const [selectedProgram, setSelectedProgram] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    // Drive slidesToShow from the real viewport width ourselves.
+    // react-slick's built-in `responsive` only reacts to matchMedia *change*
+    // events and never checks the initial match on mount, so on a direct
+    // mobile page load it stays stuck on the desktop default (3 cards).
+    // SSR-safe: start at desktop default, then correct on mount (no hydration mismatch).
+    const [slidesToShow, setSlidesToShow] = useState(3);
+
+    useEffect(() => {
+        const updateSlides = () => setSlidesToShow(getSlidesToShow(window.innerWidth));
+        updateSlides(); // run immediately on mount — this is the piece slick misses
+        window.addEventListener('resize', updateSlides);
+        return () => window.removeEventListener('resize', updateSlides);
+    }, []);
 
     const handleOpenProgram = (program) => {
         setSelectedProgram(program);
@@ -54,47 +75,23 @@ const Programs = () => {
         setSelectedProgram(null);
     };
 
-    // Slick Carousel settings
+    // Slick Carousel settings — slidesToShow is computed above, not via `responsive`.
     const sliderSettings = {
         dots: false,
         infinite: true,
         speed: 500,
-        slidesToShow: 3,
+        slidesToShow,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 4000,
+        autoplaySpeed: 4500,
         pauseOnHover: true,
         pauseOnFocus: true,
         swipe: true,
         swipeToSlide: true,
-        touchThreshold: 10,
+        touchThreshold: 12,
+        arrows: true,
         prevArrow: <PrevArrow />,
         nextArrow: <NextArrow />,
-        responsive: [
-            {
-                breakpoint: 1199,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 850,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    arrows: true,
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    arrows: false,
-                }
-            }
-        ]
     };
 
     return (
@@ -111,35 +108,41 @@ const Programs = () => {
 
                 {/* 5-Card Slick Carousel */}
                 <div className="srkr-programs-carousel-wrapper">
-                    <Slider {...sliderSettings}>
+                    {/* key={slidesToShow} forces a clean remount when the breakpoint
+                        changes so react-slick re-measures the track from scratch —
+                        without it, slick keeps the stale SSR (3-up) slide width and
+                        overflows the viewport on mobile. */}
+                    <Slider key={slidesToShow} {...sliderSettings}>
                         {programsData.map((program) => (
                             <div key={program.id} className="srkr-program-slide-item">
                                 <div className={`srkr-program-card ${program.id}`}>
-                                    {/* Card Top / Header */}
-                                    <div className="srkr-program-card-header">
-                                        <div 
-                                            className="srkr-program-icon" 
-                                            style={{ background: program.accentBg }}
-                                        >
-                                            {program.icon}
-                                        </div>
-                                        <span className="srkr-program-year">{program.year}</span>
+                                    {/* Full-width Top Logo Banner */}
+                                    <div className="srkr-program-banner-wrapper">
+                                        <img 
+                                            src={program.banner} 
+                                            alt={`${program.name} Banner`} 
+                                            className="srkr-program-banner-img"
+                                        />
+                                        <span className="srkr-program-year-pill">{program.year}</span>
                                     </div>
 
-                                    {/* Card Content */}
-                                    <h3 className="srkr-program-name">{program.name}</h3>
-                                    <span className="srkr-program-tagline">{program.tagline}</span>
-                                    <p className="srkr-program-desc">{program.description}</p>
+                                    {/* Card Content Body */}
+                                    <div className="srkr-program-card-body">
+                                        {program.tagline && (
+                                            <span className="srkr-program-tagline">{program.tagline}</span>
+                                        )}
+                                        <p className="srkr-program-desc">{program.description}</p>
 
-                                    {/* Action Button */}
-                                    <div className="srkr-program-card-footer">
-                                        <button
-                                            type="button"
-                                            className="srkr-program-btn"
-                                            onClick={() => handleOpenProgram(program)}
-                                        >
-                                            Explore Syllabus <span>→</span>
-                                        </button>
+                                        {/* Action Button */}
+                                        <div className="srkr-program-card-footer">
+                                            <button
+                                                type="button"
+                                                className="srkr-program-btn"
+                                                onClick={() => handleOpenProgram(program)}
+                                            >
+                                                Explore Syllabus <span>→</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

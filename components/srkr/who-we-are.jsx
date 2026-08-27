@@ -3,12 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
 const gallerySlides = [
-	['CEO_sir.JPG', 'Visionary Leadership', 'Guided by industry leaders shaping future-ready talent.'],
-	['placements.png', 'Winners Ways', 'Students placed across top product and service companies.'],
-	['MOU.JPG', 'Strategic Partnerships', 'Industry tie-ups that open real opportunities for students.'],
-	['certifications.JPG', 'Global Certifications', 'Credentials that help students stand out with confidence.'],
-	['Industrial_meets.jpg', 'Industry Connect', 'Expert meets, workshops and hackathons brought to campus.'],
-	['torii_team.JPG', 'Our Team', 'Mentors powering the transformation from classroom to career.'],
+	['Visionary_Leadership_hq.jpg', 'Visionary Leadership', 'Guided by industry visionaries and academic leaders shaping future-ready talent.'],
+	['Official_MOU.jpg', 'Official MOU', 'Strategic institutional collaboration with SRKR to deliver enterprise tech excellence.'],
+	['Bamboo_Coder.png', 'Bamboo Coder', '1st Year foundation track mastering computational logic and hands-on coding in C.'],
+	['SkillUp_Coder.png', 'SkillUp Coder', '2nd Year problem-solving track mastering Data Structures, Algorithms & LeetCode patterns.'],
+	['AI_Ready_Engineer.png', 'AI Ready Engineer Program', '3rd Year industry track mastering MERN Stack, Generative AI workflows, Cloud & ServiceNow.'],
+	['Moon_Coder.png', 'Moon Coder', 'Elite platform for learning advanced problem-solving methods. (Exclusive for 2029 batch)'],
+	['Owl_coder.png', 'Owl Coder', 'Elite platform for advanced coders and competitive champions. (Exclusive for 2028 batch)'],
+	['certifications.JPG', 'Global Certifications', 'Industry-recognized credentials in AWS Cloud, ServiceNow, Claude AI & DevOps.'],
+	['torii_team.JPG', 'Torii Team', 'Dedicated mentors, platform architects, and industry practitioners driving student transformation.'],
 ].map(([file, title, caption]) => ({ image: `/assets/images/srkr/project-images/about_torii/${file}`, title, caption }));
 
 export default function WhoWeAre() {
@@ -65,7 +68,7 @@ export default function WhoWeAre() {
 					<div className="srkr-gallery-heading" aria-live="polite"><AnimatePresence mode="wait" initial={false}><motion.strong key={gallerySlides[activeSlide].title} initial={reduceMotion ? false : { opacity: 0, y: 34, scale: 0.82 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={reduceMotion ? undefined : { opacity: 0, y: -12 }} transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 280, damping: 16 }}>{gallerySlides[activeSlide].title}</motion.strong></AnimatePresence></div>
 					<div className="srkr-gallery-stage-wrapper">
 						<div className="srkr-gallery-stage">
-							{gallerySlides.map((slide, index) => { const offset = getOffset(index); const distance = Math.abs(offset); const visible = distance <= 2; return <motion.button type="button" key={slide.image} className={`srkr-gallery-card ${index === activeSlide ? 'is-active' : ''}`} aria-label={`Show ${slide.title}`} onClick={() => setActiveSlide(index)} initial={false} animate={reduceMotion ? { opacity: index === activeSlide ? 1 : 0, x: 0, z: 0, rotateY: 0, scale: index === activeSlide ? 1 : 0.9 } : { opacity: visible ? 1 - distance * 0.22 : 0, x: `${offset * 39}%`, z: -distance * 125, rotateY: offset * -38, scale: 1 - distance * 0.1 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} style={{ zIndex: 10 - distance, pointerEvents: visible ? 'auto' : 'none' }}><img src={slide.image} alt={slide.title} /><span className="srkr-gallery-scrim" /><span className="srkr-gallery-description"><small>TORII MINDS</small><strong>{slide.title}</strong><span>{slide.caption}</span></span></motion.button>; })}
+							{gallerySlides.map((slide, index) => { const offset = getOffset(index); const distance = Math.abs(offset); const visible = distance <= 2; return <motion.button type="button" key={slide.image} className={`srkr-gallery-card ${index === activeSlide ? 'is-active' : ''}`} aria-label={`Show ${slide.title}`} onClick={() => setActiveSlide(index)} initial={false} animate={reduceMotion ? { opacity: index === activeSlide ? 1 : 0, x: 0, z: 0, rotateY: 0, scale: index === activeSlide ? 1 : 0.9 } : { opacity: visible ? 1 - distance * 0.22 : 0, x: `${offset * 39}%`, z: -distance * 125, rotateY: offset * -38, scale: 1 - distance * 0.1 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} style={{ zIndex: 10 - distance, pointerEvents: visible ? 'auto' : 'none' }}><img src={slide.image} alt={slide.title} /><span className="srkr-gallery-scrim" /><span className="srkr-gallery-description"><strong>{slide.title}</strong><span>{slide.caption}</span></span></motion.button>; })}
 						</div>
 						<div className="srkr-gallery-arrows">
 							<button type="button" className="srkr-gallery-arrow srkr-gallery-arrow-prev" aria-label="Previous gallery image" onClick={(e) => { e.stopPropagation(); moveSlide(-1); }}>‹</button>
