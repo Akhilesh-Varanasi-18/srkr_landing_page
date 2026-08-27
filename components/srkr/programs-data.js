@@ -5,10 +5,11 @@
 
 export const programsData = [
     {
-        id: 'ignite',
-        icon: '🔥',
-        name: 'Ignite Coder',
+        id: 'bamboo',
+        icon: '🎋',
+        name: 'Bamboo Coder',
         year: '1st Year',
+        banner: '/assets/images/srkr/project-images/Torii_Program_banners/Bamboo_Coder.png',
         tagline: 'Coding Foundation from Scratch',
         description: 'Build your programming foundation with core computer science principles, problem-solving mindset, and hands-on coding in C.',
         badge: 'Foundation Track',
@@ -16,9 +17,9 @@ export const programsData = [
         accentBg: 'var(--srkr-bg-coral-tint)',
         courses: [
             {
-                id: 'ignite-c',
+                id: 'bamboo-c',
                 title: 'C Programming & Logic Building',
-                code: 'IGN-101',
+                code: 'BMB-101',
                 duration: '60 Hours',
                 level: 'Beginner to Intermediate',
                 prerequisites: 'None — Designed for B.Tech 1st Year Students',
@@ -106,6 +107,7 @@ export const programsData = [
         icon: '📈',
         name: 'SkillUp Coder',
         year: '2nd Year',
+        banner: '/assets/images/srkr/project-images/Torii_Program_banners/Skill_up_coder.png',
         tagline: 'Core Data Structures & Applied Algorithms',
         description: 'Level up with fundamental data structures, algorithm optimization, and interview-standard problem solving.',
         badge: 'Core Engineering Track',
@@ -309,6 +311,7 @@ export const programsData = [
         icon: '🤖',
         name: 'AI Ready Program',
         year: '3rd Year',
+        banner: '/assets/images/srkr/project-images/Torii_Program_banners/AI_ready_eng.png',
         tagline: '',
         description: 'Comprehensive industry preparation featuring Full Stack Development, Flutter, Cloud, ServiceNow, and modern AI skills.',
         badge: 'Career & Industry Track',
@@ -822,6 +825,7 @@ export const programsData = [
         icon: '🦉',
         name: 'Owl Coder',
         year: 'Exclusive For 2028 Batch',
+        banner: '/assets/images/srkr/project-images/Torii_Program_banners/Owlcoder.png',
         tagline: 'Elite Competitive Programming & Advanced DSA',
         description: 'An exclusive program for coding champions focusing on advanced algorithms, competitive programming, and high-package placement preparation.',
         badge: 'Elite Competitive Track',
@@ -1059,6 +1063,7 @@ export const programsData = [
         icon: '🌙',
         name: 'Moon Coder',
         year: 'Exclusive For 2029 Batch',
+        banner: '/assets/images/srkr/project-images/Torii_Program_banners/Moon_coder.png',
         tagline: 'Core Problem Solving & DSA Readiness',
         description: 'Comprehensive 15-module core problem-solving curriculum taking learners from programming fundamentals through Linear Data Structures, Two Pointers, and Backtracking.',
         badge: 'Master Problem Solving Track',

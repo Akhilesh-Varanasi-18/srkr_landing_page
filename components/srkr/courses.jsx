@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import programsData from './programs-data';
 import ProgramDetailModal from './program-detail-modal';
 
@@ -176,13 +176,13 @@ const coursesList = [
         courseIndex: 3,
     },
     {
-        id: 'ignite-c',
-        programId: 'ignite',
-        code: 'IGN-101',
+        id: 'bamboo-c',
+        programId: 'bamboo',
+        code: 'BMB-101',
         title: 'C Programming & Logic Building',
         category: 'core',
         categoryLabel: 'Foundation',
-        programName: 'Ignite Coder',
+        programName: 'Bamboo Coder',
         programYear: '1st Year',
         duration: '60 Hours',
         modulesCount: '5 Modules',
@@ -269,24 +269,92 @@ const coursesList = [
     }
 ];
 
-const categories = [
-    { key: 'all', label: 'All Courses', count: 9 },
-    { key: 'dsa', label: 'DSA & Problem Solving', count: 4 },
-    { key: 'dev', label: 'Development & Mobile', count: 2 },
-    { key: 'cloud', label: 'Cloud & Automation', count: 2 },
-    { key: 'core', label: 'Fundamentals', count: 1 }
-];
+// How many cards to reveal before "View More" kicks in, per viewport.
+// Desktop shows everything (no collapse); mobile/tablet collapse with a
+// fixed-height internal scroller.
+const getLayout = (width) => {
+    if (width <= 767) return { count: 3, collapsible: true };   // mobile: 1 col × 3
+    if (width <= 1199) return { count: 4, collapsible: true };  // tablet: 2 cols × 2 rows
+    return { count: coursesList.length, collapsible: false };   // desktop: show all
+};
 
 const Courses = () => {
-    const [activeCategory, setActiveCategory] = useState('all');
     const [selectedProgram, setSelectedProgram] = useState(null);
     const [modalCourseIndex, setModalCourseIndex] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const filteredCourses = useMemo(() => {
-        if (activeCategory === 'all') return coursesList;
-        return coursesList.filter(c => c.category === activeCategory);
-    }, [activeCategory]);
+    // Reveal a sliver of the next card when expanded so it's obvious the list
+    // now scrolls (a pure scrollbar isn't a strong enough cue on touch).
+    const PEEK_PX = 92;
+
+    // View More / View Less state
+    const [expanded, setExpanded] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(coursesList.length);
+    const [collapsible, setCollapsible] = useState(false);
+    const [collapsedHeight, setCollapsedHeight] = useState(null);
+    const [atBottom, setAtBottom] = useState(false);
+    const gridRef = useRef(null);
+
+    // Track viewport → decide how many cards show before collapsing.
+    useEffect(() => {
+        const apply = () => {
+            const { count, collapsible: c } = getLayout(window.innerWidth);
+            setVisibleCount(count);
+            setCollapsible(c);
+            if (!c) setExpanded(false); // desktop is always fully expanded
+        };
+        apply();
+        window.addEventListener('resize', apply);
+        return () => window.removeEventListener('resize', apply);
+    }, []);
+
+    // Measure the exact pixel height of the first `visibleCount` cards. The grid
+    // locks to this height so "View More" scrolls the remaining cards inside it
+    // instead of growing the section. offsetTop/offsetHeight are layout-based
+    // (scroll-independent), and the grid is position:relative so it's the offset
+    // parent. Re-runs via ResizeObserver whenever the grid's width changes.
+    useEffect(() => {
+        const grid = gridRef.current;
+        if (!grid) return;
+        const measure = () => {
+            const cards = grid.querySelectorAll('.srkr-course-card');
+            if (!cards.length) return;
+            if (visibleCount >= cards.length) { setCollapsedHeight(null); return; }
+            const nth = cards[visibleCount - 1];
+            const h = nth.offsetTop + nth.offsetHeight;
+            setCollapsedHeight(prev => (prev == null || Math.abs(prev - h) > 1 ? h : prev));
+        };
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(grid);
+        return () => ro.disconnect();
+    }, [visibleCount]);
+
+    const toggleExpand = useCallback(() => {
+        setExpanded(prev => {
+            const next = !prev;
+            if (gridRef.current) gridRef.current.scrollTop = 0; // start at the top of the scroller
+            setAtBottom(false);
+            return next;
+        });
+    }, []);
+
+    const handleGridScroll = useCallback((e) => {
+        const el = e.currentTarget;
+        setAtBottom(el.scrollTop + el.clientHeight >= el.scrollHeight - 4);
+    }, []);
+
+    // Collapsed: exactly N cards. Expanded: N cards + a peek of the next card as
+    // a scroll affordance (height only nudges by PEEK_PX, it doesn't grow to fit
+    // all cards — the rest live inside the scroller).
+    const gridStyle = (collapsible && collapsedHeight != null)
+        ? {
+            maxHeight: `${expanded ? collapsedHeight + PEEK_PX : collapsedHeight}px`,
+            overflowY: expanded ? 'auto' : 'hidden',
+        }
+        : undefined;
+
+    const remaining = coursesList.length - visibleCount;
 
     const handleOpenSyllabus = (course) => {
         const foundProgram = programsData.find(p => p.id === course.programId);
@@ -319,31 +387,26 @@ const Courses = () => {
                         </p>
                     </div>
 
-                    {/* Filter Tabs */}
-                    <div className="srkr-courses-filter-tabs" data-sal="slide-up" data-sal-delay="150" data-sal-duration="700">
-                        {categories.map((cat) => (
-                            <button
-                                key={cat.key}
-                                type="button"
-                                className={`srkr-course-tab-btn ${activeCategory === cat.key ? 'active' : ''}`}
-                                onClick={() => setActiveCategory(cat.key)}
-                            >
-                                <span>{cat.label}</span>
-                                <span className="srkr-tab-count">{cat.count}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Courses Grid */}
-                    <div className="srkr-courses-grid">
-                        {filteredCourses.map((course, idx) => (
-                            <div 
-                                key={course.id} 
+                    {/* Courses Grid — collapses to a fixed-height scroller on mobile/tablet */}
+                    <div className="srkr-courses-grid-shell">
+                    <div
+                        className={`srkr-courses-grid ${collapsible ? 'is-collapsible' : ''} ${expanded ? 'is-expanded' : ''}`}
+                        ref={gridRef}
+                        style={gridStyle}
+                        onScroll={collapsible ? handleGridScroll : undefined}
+                    >
+                        {coursesList.map((course, idx) => (
+                            <div
+                                key={course.id}
                                 className="srkr-course-card"
                                 data-sal="slide-up"
                                 data-sal-delay={`${80 + (idx % 3) * 60}`}
                                 data-sal-duration="650"
-                                style={{ '--card-accent': course.accentColor }}
+                                style={{
+                                    '--card-accent': course.accentColor,
+                                    '--card-accent-bg': course.accentBg,
+                                    '--card-gradient': course.accentGradient,
+                                }}
                             >
                                 {/* Top Header Bar */}
                                 <div className="srkr-course-card-top">
@@ -401,8 +464,21 @@ const Courses = () => {
                                 {/* Card Bottom Bar */}
                                 <div className="srkr-course-card-footer">
                                     <div className="srkr-course-meta">
-                                        <span className="srkr-course-meta-pill">⏱ {course.duration}</span>
-                                        <span className="srkr-course-meta-pill">📚 {course.modulesCount}</span>
+                                        <span className="srkr-course-meta-pill">
+                                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <circle cx="12" cy="12" r="9" />
+                                                <path d="M12 7v5l3 2" />
+                                            </svg>
+                                            {course.duration}
+                                        </span>
+                                        <span className="srkr-course-meta-pill">
+                                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+                                                <path d="m2 17 10 5 10-5" />
+                                                <path d="m2 12 10 5 10-5" />
+                                            </svg>
+                                            {course.modulesCount}
+                                        </span>
                                     </div>
                                     <button 
                                         type="button" 
@@ -415,6 +491,33 @@ const Courses = () => {
                             </div>
                         ))}
                     </div>
+                        {/* Bottom fade cue — signals more cards below; hides at the end */}
+                        {collapsible && expanded && !atBottom && (
+                            <div className="srkr-courses-scroll-fade" aria-hidden="true" />
+                        )}
+                    </div>
+
+                    {/* View More / View Less toggle (mobile & tablet only) */}
+                    {collapsible && (
+                        <div className="srkr-courses-viewmore-wrap">
+                            <button
+                                type="button"
+                                className="srkr-courses-viewmore-btn"
+                                onClick={toggleExpand}
+                                aria-expanded={expanded}
+                            >
+                                <span>{expanded ? 'View Less' : `View More${remaining > 0 ? ` (${remaining})` : ''}`}</span>
+                                <svg
+                                    className={`srkr-viewmore-chevron ${expanded ? 'is-up' : ''}`}
+                                    viewBox="0 0 24 24" width="18" height="18"
+                                    fill="none" stroke="currentColor" strokeWidth="2.4"
+                                    strokeLinecap="round" strokeLinejoin="round"
+                                >
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </section>
 
