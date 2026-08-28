@@ -2,15 +2,24 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
+// Slide order tells the collaboration story in four beats:
+// 1) credibility & launch, 2) the year-wise program ladder,
+// 3) where and what students learn on, 4) outcomes and the people behind it.
 const gallerySlides = [
 	['Visionary_Leadership_hq.jpg', 'Visionary Leadership', 'Guided by industry visionaries and academic leaders shaping future-ready talent.'],
 	['Official_MOU.jpg', 'Official MOU', 'Strategic institutional collaboration with SRKR to deliver enterprise tech excellence.'],
+	['Prarambh_Event.jpg', 'Prarambh Launch', 'Our grand launch ceremony welcoming an entire engineering cohort into the ToriiMinds journey.'],
 	['Bamboo_Coder.png', 'Bamboo Coder', '1st Year foundation track mastering computational logic and hands-on coding in C.'],
 	['SkillUp_Coder.png', 'SkillUp Coder', '2nd Year problem-solving track mastering Data Structures, Algorithms & LeetCode patterns.'],
 	['AI_Ready_Engineer.png', 'AI Ready Engineer Program', '3rd Year industry track mastering MERN Stack, Generative AI workflows, Cloud & ServiceNow.'],
 	['Moon_Coder.png', 'Moon Coder', 'Elite platform for learning advanced problem-solving methods. (Exclusive for 2029 batch)'],
 	['Owl_coder.png', 'Owl Coder', 'Elite platform for advanced coders and competitive champions. (Exclusive for 2028 batch)'],
+	['Our_Class_Rooms.jpg', 'Our Classrooms', 'Modern smart classrooms where every student learns hands-on with live mentor guidance.'],
+	['Myna_AI_integrated_communication_platform.jpg', 'Myna AI Platform', 'AI-powered communication coach with 25 LSRW modules building interview and placement readiness.'],
+	['Torii_Connect_Program.jpg', 'Torii Connect', 'Flagship on-campus program introducing students to real tech domains, roles, and career pathways.'],
+	['Torii_Connect_Stalls.jpeg', 'Torii Connect Expo', 'Interactive domain stalls where students explore Data Structures, Java, DBMS, and hiring roles.'],
 	['certifications.JPG', 'Global Certifications', 'Industry-recognized credentials in AWS Cloud, ServiceNow, Claude AI & DevOps.'],
+	['claude_partner_network.jpeg', 'Claude Certified Associate', 'Official Claude Foundations credential validating hands-on skill with AI-assisted development workflows.'],
 	['torii_team.JPG', 'Torii Team', 'Dedicated mentors, platform architects, and industry practitioners driving student transformation.'],
 ].map(([file, title, caption]) => ({ image: `/assets/images/srkr/project-images/about_torii/${file}`, title, caption }));
 

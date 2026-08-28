@@ -606,7 +606,7 @@ export const programsData = [
                     },
                     {
                         moduleNumber: 'Module 4',
-                        title: 'DevOps Toolchain & Practices',
+                        title: 'DevOps',
                         duration: '40 Hours',
                         topics: [
                             'DevOps Culture, Branching Strategies & Git / GitHub Workflows',
@@ -618,22 +618,22 @@ export const programsData = [
                             'Hands-on Project: End-to-End CI/CD Pipeline Deploying App to EKS'
                         ]
                     },
+                    // {
+                    //     moduleNumber: 'Module 5',
+                    //     title: 'AI on AWS (GenAI & MLOps)',
+                    //     duration: '18 Hours',
+                    //     topics: [
+                    //         'AWS AI/ML Ecosystem & Foundation Models Overview',
+                    //         'Amazon Bedrock: Unified Claude, Llama & Nova Model Access',
+                    //         'Knowledge Bases for Retrieval-Augmented Generation (RAG)',
+                    //         'Bedrock AgentCore: Autonomous Multi-Tool AI Agents',
+                    //         'Amazon Q Developer: AI Pair-Programming (/dev, /transform, /test)',
+                    //         'Amazon SageMaker Fundamentals & Responsible AI Guardrails',
+                    //         'Hands-on Lab: Build a RAG Chatbot with Bedrock Knowledge Bases'
+                    //     ]
+                    // },
                     {
                         moduleNumber: 'Module 5',
-                        title: 'AI on AWS (GenAI & MLOps)',
-                        duration: '18 Hours',
-                        topics: [
-                            'AWS AI/ML Ecosystem & Foundation Models Overview',
-                            'Amazon Bedrock: Unified Claude, Llama & Nova Model Access',
-                            'Knowledge Bases for Retrieval-Augmented Generation (RAG)',
-                            'Bedrock AgentCore: Autonomous Multi-Tool AI Agents',
-                            'Amazon Q Developer: AI Pair-Programming (/dev, /transform, /test)',
-                            'Amazon SageMaker Fundamentals & Responsible AI Guardrails',
-                            'Hands-on Lab: Build a RAG Chatbot with Bedrock Knowledge Bases'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 6',
                         title: 'Capstone Project & AWS Certification Prep',
                         duration: '14 Hours',
                         topics: [
@@ -1089,7 +1089,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 1',
                         title: 'Programming Fundamentals',
-                        duration: '4 Weeks',
+                        duration: 'Core',
                         topics: [
                             'IDE & Compiler Setup',
                             'Variables & Data Types',
@@ -1104,7 +1104,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 2',
                         title: 'Arrays',
-                        duration: '2 Weeks',
+                        duration: 'Core',
                         topics: [
                             '1D Arrays & Memory Layout',
                             '2D Arrays & Matrix Traversals',
@@ -1114,7 +1114,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 3',
                         title: 'Strings',
-                        duration: '2 Weeks',
+                        duration: 'Core',
                         topics: [
                             'String Basics & Memory Representation',
                             'String Manipulation Problems',
@@ -1124,7 +1124,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 4',
                         title: 'Math & Number Problems',
-                        duration: '1 Week',
+                        duration: 'Core',
                         topics: [
                             'Number Theory & Digit Extraction Problems',
                             'Basic Math: GCD, LCM, Series & Prime Numbers'
@@ -1133,7 +1133,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 5',
                         title: 'Time & Space Complexity',
-                        duration: '1 Week',
+                        duration: 'Core',
                         topics: [
                             'Big-O Notation Fundamentals',
                             'Analyzing Loops, Nested Loops & Space Constraints'
@@ -1142,7 +1142,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 6',
                         title: 'Recursion',
-                        duration: '2 Weeks',
+                        duration: 'Core',
                         topics: [
                             'Recursion Fundamentals & Call Stack Memory',
                             'Array & String Recursion Problems',
@@ -1152,7 +1152,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 7',
                         title: 'Bit Manipulation (Basic)',
-                        duration: '1 Week',
+                        duration: 'Core',
                         topics: [
                             'Bitwise Operators (&, |, ^, ~, <<, >>)',
                             'Bitwise Masking & Problem Solving Basics'
@@ -1161,7 +1161,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 8',
                         title: 'Sorting',
-                        duration: '1 Week',
+                        duration: 'Core',
                         topics: [
                             'Bubble Sort Algorithm',
                             'Selection Sort Algorithm',
@@ -1171,7 +1171,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 9',
                         title: 'Searching',
-                        duration: '1 Week',
+                        duration: 'Core',
                         topics: [
                             'Linear Search Implementation',
                             'Binary Search Fundamentals & Iterative / Recursive Logic'
@@ -1180,7 +1180,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 10',
                         title: 'Hashing',
-                        duration: '1 Week',
+                        duration: 'Core',
                         topics: [
                             'HashMap & HashSet Architecture',
                             'Frequency Counting & Fast Lookup Problems'
@@ -1189,7 +1189,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 11',
                         title: 'Linked List',
-                        duration: '2 Weeks',
+                        duration: 'Core',
                         topics: [
                             'Singly Linked List (Creation, Insertion, Deletion)',
                             'Doubly Linked List Implementation',
@@ -1199,7 +1199,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 12',
                         title: 'Stack',
-                        duration: '1 Week',
+                        duration: 'Core',
                         topics: [
                             'Stack Concepts & Array/Linked List Implementation',
                             'Basic Applications (Balanced Parentheses & Evaluation)'
@@ -1208,7 +1208,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 13',
                         title: 'Queue',
-                        duration: '1 Week',
+                        duration: 'Core',
                         topics: [
                             'Queue Concept & Implementation',
                             'Circular Queue & Deque Basics'
@@ -1217,7 +1217,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 14',
                         title: 'Two Pointer & Sliding Window',
-                        duration: '2 Weeks',
+                        duration: 'Core',
                         topics: [
                             'Two Pointer Technique (Opposite Ends & Same Direction)',
                             'Sliding Window Technique (Fixed & Dynamic Window)',
@@ -1227,7 +1227,7 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 15',
                         title: 'Backtracking',
-                        duration: '2 Weeks',
+                        duration: 'Core',
                         topics: [
                             'Subsets & Permutations Generation',
                             'Basic Grid & Matrix Path Backtracking'

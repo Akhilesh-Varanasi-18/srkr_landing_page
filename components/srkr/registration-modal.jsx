@@ -1,51 +1,12 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-
-const BRANCH_OPTIONS = [
-    'Computer Science & Engineering (CSE)',
-    'Information Technology (IT)',
-    'Computer Science & Business Systems (CSBS)',
-    'Artificial Intelligence & Data Science (AI&DS)',
-    'Artificial Intelligence & Machine Learning (AIML)',
-    'Electronics & Communication Engineering (ECE)',
-    'Electrical & Electronics Engineering (EEE)',
-    'Mechanical Engineering (MECH)',
-    'Civil Engineering (CIVIL)',
-    'Other / Emerging Branch'
-];
-
-const PASSOUT_YEAR_PROGRAM_MAP = {
-    '2030': {
-        yearLabel: '1st Year (2026 – 2030)',
-        programName: 'Bamboo Coder',
-        code: 'BMB-100',
-        badge: 'Foundation Track',
-        color: 'var(--srkr-primary)',
-        bgColor: 'var(--srkr-bg-coral-tint)',
-        borderColor: 'rgba(226, 84, 76, 0.3)',
-        description: 'Comprehensive C programming, computational problem solving, data flow & modular coding logic.'
-    },
-    '2029': {
-        yearLabel: '2nd Year (2025 – 2029)',
-        programName: 'SkillUp Coder',
-        code: 'SKL-200',
-        badge: 'Core Problem Solving',
-        color: 'var(--srkr-secondary)',
-        bgColor: 'var(--srkr-bg-warm-tint)',
-        borderColor: 'rgba(237, 114, 54, 0.3)',
-        description: 'Data Structures, Algorithms, LeetCode patterns, and intermediate coding interview preparation.'
-    },
-    '2028': {
-        yearLabel: '3rd Year (2024 – 2028)',
-        programName: 'AI Ready Engineers',
-        code: 'AIR-300',
-        badge: 'Industry Specialization',
-        color: 'var(--srkr-primary)',
-        bgColor: 'var(--srkr-bg-coral-tint)',
-        borderColor: 'rgba(226, 84, 76, 0.3)',
-        description: 'Full Stack MERN + Generative AI, Flutter Mobile SDK, AWS Cloud & ServiceNow Enterprise Platforms.'
-    }
-};
+import {
+    BRANCH_OPTIONS,
+    PASSOUT_YEAR_PROGRAM_MAP,
+    FIELD_LIMITS,
+    validateRegistration
+} from '../../lib/registration-schema';
+import { WHATSAPP_COMMUNITY_URL } from '../../lib/site-config';
 
 // Shared props for the clean line-icon set
 const ico = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' };
@@ -88,13 +49,28 @@ const RegistrationModal = ({ isOpen, onClose }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [regId, setRegId] = useState('');
+    const [submitError, setSubmitError] = useState('');
 
-    // Reset transient state when the modal closes
+    // Reset transient state when the modal closes. The submitted values are
+    // cleared too, so reopening starts a fresh registration rather than showing
+    // the previous student's details.
     useEffect(() => {
         if (!isOpen) {
             setIsSuccess(false);
             setErrors({});
             setIsSubmitting(false);
+            setSubmitError('');
+            setRegId('');
+            setFormData({
+                fullName: '',
+                rollNumber: '',
+                collegeEmail: '',
+                mobileNumber: '',
+                branch: '',
+                gender: '',
+                residenceType: '',
+                passoutYear: '2028',
+            });
         }
     }, [isOpen]);
 
@@ -104,48 +80,69 @@ const RegistrationModal = ({ isOpen, onClose }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        // Keep the phone field to digits only so the +91 prefix stays accurate and
+        // the 10-digit maxLength can't be spent on spaces or dashes.
+        const nextValue = name === 'mobileNumber' ? value.replace(/[^\d]/g, '').slice(0, 10) : value;
+        setFormData(prev => ({ ...prev, [name]: nextValue }));
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+        if (submitError) setSubmitError('');
     };
 
     const selectValue = (name, value) => {
         setFormData(prev => ({ ...prev, [name]: value }));
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+        if (submitError) setSubmitError('');
     };
 
-    const validateForm = () => {
-        const newErrors = {};
-        if (!formData.fullName.trim()) newErrors.fullName = 'Please enter your full name';
-        if (!formData.rollNumber.trim()) newErrors.rollNumber = 'Please enter your roll number';
-        if (!formData.collegeEmail.trim()) {
-            newErrors.collegeEmail = 'Please enter your college email ID';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.collegeEmail.trim())) {
-            newErrors.collegeEmail = 'Please enter a valid email address';
-        }
-        if (!formData.mobileNumber.trim()) {
-            newErrors.mobileNumber = 'Please enter your mobile number';
-        } else if (!/^\d{10}$/.test(formData.mobileNumber.replace(/[\s-+]/g, ''))) {
-            newErrors.mobileNumber = 'Please enter a valid 10-digit mobile number';
-        }
-        if (!formData.branch) newErrors.branch = 'Please select your branch';
-        if (!formData.gender) newErrors.gender = 'Please select your gender';
-        if (!formData.residenceType) newErrors.residenceType = 'Please select hosteler or day scholar';
-        if (!formData.passoutYear) newErrors.passoutYear = 'Please select your passout year';
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validateForm()) return;
+        if (isSubmitting) return;
+
+        // Same rules the API enforces — this is purely for instant feedback.
+        const { values, errors: validationErrors } = validateRegistration(formData);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            setSubmitError('');
+            return;
+        }
+
+        setErrors({});
+        setSubmitError('');
         setIsSubmitting(true);
-        setTimeout(() => {
-            const randomCode = 'TM-SRKR-' + Math.floor(100000 + Math.random() * 900000);
-            setRegId(randomCode);
-            setIsSubmitting(false);
+
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(values)
+            });
+
+            let result = null;
+            try {
+                result = await response.json();
+            } catch {
+                result = null;
+            }
+
+            if (!response.ok || !result?.success) {
+                // Field-level problems (invalid or already registered) go back onto
+                // the inputs; anything else becomes a single banner message.
+                if (result?.errors && Object.keys(result.errors).length > 0) {
+                    setErrors(result.errors);
+                    setSubmitError(result.message || 'Please correct the highlighted fields.');
+                } else {
+                    setSubmitError(result?.message || 'Registration failed. Please try again.');
+                }
+                return;
+            }
+
+            setRegId(result.registrationId);
             setIsSuccess(true);
-        }, 800);
+        } catch (error) {
+            setSubmitError('Network error — please check your connection and try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const renderSegment = (name, options) => (
@@ -214,6 +211,9 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                             placeholder="Enter your full name"
                                             value={formData.fullName} onChange={handleChange}
                                             className={errors.fullName ? 'has-error' : ''}
+                                            maxLength={FIELD_LIMITS.fullName}
+                                            autoComplete="name"
+                                            aria-invalid={errors.fullName ? 'true' : 'false'}
                                         />
                                     </div>
                                     {errors.fullName && <span className="srkr-reg-error">{errors.fullName}</span>}
@@ -230,6 +230,9 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                             placeholder="Enter roll number"
                                             value={formData.rollNumber} onChange={handleChange}
                                             className={errors.rollNumber ? 'has-error' : ''}
+                                            maxLength={FIELD_LIMITS.rollNumber}
+                                            autoComplete="off"
+                                            aria-invalid={errors.rollNumber ? 'true' : 'false'}
                                         />
                                     </div>
                                     {errors.rollNumber && <span className="srkr-reg-error">{errors.rollNumber}</span>}
@@ -249,6 +252,9 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                             placeholder="Enter college email ID"
                                             value={formData.collegeEmail} onChange={handleChange}
                                             className={errors.collegeEmail ? 'has-error' : ''}
+                                            maxLength={FIELD_LIMITS.collegeEmail}
+                                            autoComplete="email"
+                                            aria-invalid={errors.collegeEmail ? 'true' : 'false'}
                                         />
                                     </div>
                                     {errors.collegeEmail && <span className="srkr-reg-error">{errors.collegeEmail}</span>}
@@ -263,7 +269,10 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                             placeholder="9876543210"
                                             value={formData.mobileNumber} onChange={handleChange}
                                             className={errors.mobileNumber ? 'has-error' : ''}
-                                            maxLength="10"
+                                            maxLength={FIELD_LIMITS.mobileNumber}
+                                            inputMode="numeric"
+                                            autoComplete="tel-national"
+                                            aria-invalid={errors.mobileNumber ? 'true' : 'false'}
                                         />
                                     </div>
                                     {errors.mobileNumber && <span className="srkr-reg-error">{errors.mobileNumber}</span>}
@@ -363,6 +372,16 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 <p className="srkr-reg-program-desc">{mappedProgram.description}</p>
                             </div>
 
+                            {/* Server / network failure message */}
+                            {submitError && (
+                                <div className="srkr-reg-alert" role="alert">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" />
+                                    </svg>
+                                    <span>{submitError}</span>
+                                </div>
+                            )}
+
                             {/* Submit */}
                             <div className="srkr-reg-submit-wrap">
                                 <button type="submit" className="srkr-reg-submit-btn" disabled={isSubmitting}>
@@ -414,7 +433,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
 
                         <div className="srkr-reg-success-actions">
                             <a
-                                href="https://chat.whatsapp.com/YOUR_INVITE_LINK"
+                                href={WHATSAPP_COMMUNITY_URL}
                                 target="_blank" rel="noopener noreferrer"
                                 className="srkr-btn-whatsapp-join"
                             >

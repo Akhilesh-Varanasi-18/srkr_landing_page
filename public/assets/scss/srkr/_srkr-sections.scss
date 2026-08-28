@@ -65,7 +65,7 @@
 .srkr-gallery-description small { color: var(--srkr-tertiary); font-size: 10px; font-weight: 700; }
 .srkr-gallery-description strong { color: var(--srkr-white); font-size: 20px; }
 .srkr-gallery-description span { color: var(--srkr-white); font-size: 12px; line-height: 1.5; }
-.srkr-gallery-dots { display: flex; justify-content: center; gap: 8px; margin-top: 18px; }
+.srkr-gallery-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px; }
 .srkr-gallery-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 999px; background: var(--srkr-muted); cursor: pointer; }
 .srkr-gallery-dots button.is-active { width: 24px; background: var(--srkr-primary); }
 
@@ -272,14 +272,12 @@
     }
   }
 
+  // Never hidden — see "Persistent header actions" below for the
+  // breakpoint sizing that keeps these two buttons on one line.
   .srkr-header-actions {
     display: flex;
     align-items: center;
     gap: 12px;
-
-    @media (max-width: 767px) {
-      display: none;
-    }
   }
 
   .srkr-btn-whatsapp {
@@ -3373,6 +3371,64 @@
   .srkr-header .srkr-brand-separator { margin: 0 -1px; }
 }
 
+// ---------------------------------------------------------------
+// Persistent header actions (Join Community + Register)
+// These two are the page's primary calls to action, so they stay in
+// the header at every width instead of collapsing into the hamburger
+// menu. The brand marks and button padding step down at each
+// breakpoint to buy back the horizontal space this needs, keeping the
+// row on a single line down to a 320px viewport.
+// ---------------------------------------------------------------
+.srkr-header .srkr-header-actions {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 1199px) {
+  // Keeps the actions beside the hamburger rather than being pushed to
+  // the middle by the container's space-between.
+  .srkr-header .srkr-header-actions { margin-left: auto; }
+}
+
+@media (max-width: 767px) {
+  .srkr-header .srkr-header-actions { gap: 8px; }
+  .srkr-header .srkr-header-container { gap: 10px; }
+
+  // Icon-only WhatsApp button (the label is hidden at this width, so the
+  // accessible name comes from its aria-label).
+  .srkr-header .srkr-btn-whatsapp { padding: 7px 11px; border-radius: 999px; }
+  .srkr-header .srkr-btn-whatsapp svg { width: 17px; height: 17px; }
+  .srkr-header .srkr-btn-login { padding: 7px 14px; font-size: 12px; border-radius: 999px; }
+}
+
+@media (max-width: 575px) {
+  .srkr-header .srkr-header-container { padding: 0 12px; gap: 8px; }
+  .srkr-header .srkr-brand-logo-torii { width: 96px; height: 34px; }
+  .srkr-header .srkr-brand-logo-college { width: 54px; height: 36px; }
+  .srkr-header .srkr-brand-separator { width: 11px; font-size: 12px; }
+
+  .srkr-header .srkr-header-actions { gap: 6px; }
+  .srkr-header .srkr-btn-whatsapp { padding: 6px 9px; }
+  .srkr-header .srkr-btn-whatsapp svg { width: 16px; height: 16px; }
+  .srkr-header .srkr-btn-login { padding: 6px 12px; font-size: 11.5px; }
+  .srkr-header .srkr-mobile-toggle { width: 38px; height: 38px; }
+}
+
+@media (max-width: 400px) {
+  .srkr-header .srkr-header-container { padding: 0 8px; gap: 6px; }
+  .srkr-header .srkr-brand-logo-torii { width: 82px; height: 30px; }
+  .srkr-header .srkr-brand-logo-college { width: 44px; height: 32px; }
+  .srkr-header .srkr-brand-separator { width: 10px; font-size: 11px; margin: 0 -2px; }
+
+  .srkr-header .srkr-header-actions { gap: 5px; }
+  .srkr-header .srkr-btn-whatsapp { padding: 5px 8px; }
+  .srkr-header .srkr-btn-whatsapp svg { width: 15px; height: 15px; }
+  .srkr-header .srkr-btn-login { padding: 5px 10px; font-size: 11px; }
+  .srkr-header .srkr-mobile-toggle { width: 34px; height: 34px; }
+  .srkr-header .srkr-mobile-toggle span { width: 15px; }
+}
+
 // ============================================
 // STUDENT REGISTRATION POP-UP MODAL
 // ============================================
@@ -3643,6 +3699,23 @@
   color: #EF4444;
   font-weight: 500;
   line-height: 1.2;
+}
+
+// Submit-level failure banner (duplicate registration, server or network error)
+.srkr-reg-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #B91C1C;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+
+  svg { flex: 0 0 auto; margin-top: 1px; }
 }
 
 // Segmented choice control (Gender, Residence)
