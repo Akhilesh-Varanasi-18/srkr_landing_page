@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "exceljs": "^4.4.0",
     "framer-motion": "^13.1.1",
     "mongodb": "^7.6.0",
     "next": "^14.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-slick": "^0.31.0",
+    "recharts": "^3.10.1",
     "sass": "^1.64.2",
     "slick-carousel": "^1.8.1"
   },
