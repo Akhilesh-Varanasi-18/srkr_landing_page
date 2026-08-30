@@ -1,20 +1,31 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 
-const ProgramDetailModal = ({ program, isOpen, onClose }) => {
+const ProgramDetailModal = ({
+    program,
+    isOpen,
+    onClose,
+    // The "Courses We Offer" section opens a specific course straight into its
+    // syllabus (initialView='syllabus'); the "Programs We Offer" section omits
+    // these and lands on the course-selection grid (the default two-step flow).
+    initialView = 'courses',
+    initialCourseIndex = 0,
+}) => {
     // view can be 'courses' (course selection grid) or 'syllabus' (module details)
-    const [view, setView] = useState('courses');
-    const [selectedCourseIndex, setSelectedCourseIndex] = useState(0);
+    const [view, setView] = useState(initialView);
+    const [selectedCourseIndex, setSelectedCourseIndex] = useState(initialCourseIndex);
     const [openModuleIndex, setOpenModuleIndex] = useState(0);
 
-    // When program changes or modal opens, initialize view
+    // On each open, honor the caller's requested entry point rather than always
+    // resetting to the courses grid — that reset was the bug that forced a second
+    // click to reach a course's syllabus.
     useEffect(() => {
-        if (program) {
-            setView('courses');
-            setSelectedCourseIndex(0);
+        if (program && isOpen) {
+            setView(initialView);
+            setSelectedCourseIndex(initialCourseIndex);
             setOpenModuleIndex(0);
         }
-    }, [program, isOpen]);
+    }, [program, isOpen, initialView, initialCourseIndex]);
 
     // Handle ESC key to close modal
     useEffect(() => {

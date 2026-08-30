@@ -14,6 +14,7 @@ const gallerySlides = [
 	['AI_Ready_Engineer.png', 'AI Ready Engineer Program', '3rd Year industry track mastering MERN Stack, Generative AI workflows, Cloud & ServiceNow.'],
 	['Moon_Coder.png', 'Moon Coder', 'Elite platform for learning advanced problem-solving methods. (Exclusive for 2029 batch)'],
 	['Owl_coder.png', 'Owl Coder', 'Elite platform for advanced coders and competitive champions. (Exclusive for 2028 batch)'],
+	['owl_coder_Ai_Integrated_coding_platform.jpeg', 'Owl Coder AI Platform', 'AI-integrated coding platform delivering guided problem sets, live evaluation, and contest-grade practice for our competitive champions.'],
 	['Our_Class_Rooms.jpg', 'Our Classrooms', 'Modern smart classrooms where every student learns hands-on with live mentor guidance.'],
 	['Myna_AI_integrated_communication_platform.jpg', 'Myna AI Platform', 'AI-powered communication coach with 25 LSRW modules building interview and placement readiness.'],
 	['Torii_Connect_Program.jpg', 'Torii Connect', 'Flagship on-campus program introducing students to real tech domains, roles, and career pathways.'],

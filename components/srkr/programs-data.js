@@ -343,7 +343,6 @@ export const programsData = [
                             'HTML5 Semantic Elements, Forms & Input Validations',
                             'CSS3 Box Model, Flexbox & CSS Grid Layouts',
                             'Responsive Web Design: Media Queries & Mobile-First Design',
-                            'Tailwind CSS Fundamentals & Utility-First Styling',
                             'Mini-Project: Responsive Developer Portfolio Landing Page'
                         ]
                     },
@@ -352,47 +351,52 @@ export const programsData = [
                         title: 'JavaScript Mastery & Async Programming',
                         duration: '10 Hours',
                         topics: [
-                            'JavaScript Core: Data Types, Scope, Closures & Hoisting',
-                            'Modern ES6+ Features: Arrow Functions, Destructuring & Modules',
-                            'DOM Manipulation, Event Handling & Local Storage',
-                            'Asynchronous JavaScript: Promises, Async/Await & Fetch API',
-                            'Consuming Third-Party REST APIs & JSON Parsing'
+                            'JavaScript Core: Variables, Data Types, Operators, Control Flow & Loops',
+                            'Functions, Arrow Functions & Array/Object Methods',
+                            'DOM Manipulation, Events, Browser Storage & Debugging',
+                            'Scope, Hoisting & Closures',
+                            'Async JavaScript: Callbacks, Promises, Async/Await & Error Handling',
+                            'Modern ES6+ Features, Modules & JSON',
+                            'Consuming REST APIs with Fetch API, Axios & NPM Basics'
                         ]
                     },
                     {
                         moduleNumber: 'Module 3',
-                        title: 'Frontend Engineering with React.js',
+                        title: 'Frontend with React',
                         duration: '12 Hours',
                         topics: [
-                            'React Architecture: JSX, Virtual DOM & Component Lifecycle',
-                            'React Hooks: useState, useEffect, useRef & Custom Hooks',
-                            'Client-Side Routing with React Router (Dynamic & Protected Routes)',
-                            'State Management: Context API & Zustand Fundamentals',
-                            'Mini-Project: E-Commerce Catalog UI with Cart State'
+                            'React Basics & JSX',
+                            'Components, Props & State',
+                            'React Hooks: useState & useEffect',
+                            'Forms Handling & Client-Side Routing',
+                            'REST API Integration in React',
+                            'Styling Approaches in React'
                         ]
                     },
                     {
                         moduleNumber: 'Module 4',
-                        title: 'Backend Engineering with Node.js & Express',
+                        title: 'Backend with Node & Express',
                         duration: '10 Hours',
                         topics: [
-                            'Node.js Architecture, Event Loop & Core Modules (fs, http, path)',
-                            'Express.js Server Architecture, Routing & Controllers',
-                            'Custom Middleware: Logging, CORS & Error Handling',
-                            'RESTful API Design Best Practices & HTTP Status Codes',
-                            'API Testing & Documentation with Postman'
+                            'Node.js Architecture & Runtime',
+                            'Express.js Framework Fundamentals',
+                            'Routing & Middleware',
+                            'Building REST APIs & CRUD Operations',
+                            'JWT Authentication Basics',
+                            'API Testing with Postman'
                         ]
                     },
                     {
                         moduleNumber: 'Module 5',
-                        title: 'Database Engineering with MongoDB & Mongoose',
+                        title: 'MongoDB & Full MERN Stack',
                         duration: '10 Hours',
                         topics: [
-                            'MongoDB Architecture, Documents & Atlas Cloud Cluster Setup',
-                            'Mongoose ODM: Schemas, Models, Validations & Virtuals',
-                            'CRUD Operations & Complex Query Filters',
-                            'Data Relationships (Embedding vs Referencing) & Population',
-                            'MongoDB Aggregation Pipelines & Database Indexing'
+                            'MongoDB Basics & Documents',
+                            'Mongoose Schemas & Models',
+                            'Database Integration',
+                            'Full MERN Stack Flow',
+                            'Authentication Flow',
+                            'Deployment Basics'
                         ]
                     },
                     {
@@ -403,7 +407,7 @@ export const programsData = [
                             'Password Hashing & Salt Generation with bcrypt',
                             'JSON Web Tokens (JWT): Authentication & Token Verification',
                             'Role-Based Access Control (RBAC): Admin vs User Routes',
-                            'Web Security: Helmet, Rate Limiting, Input Sanitization & CORS'
+                            'Web Security: CORS'
                         ]
                     },
                     {
@@ -424,7 +428,6 @@ export const programsData = [
                         duration: '6 Hours',
                         topics: [
                             'Environment Configurations & Production Secrets (.env)',
-                            'Docker Containerization: Frontend & Backend Dockerfiles',
                             'Cloud Deployment: Frontend on Vercel & Backend on AWS / Render',
                             'Automated CI/CD Workflows with GitHub Actions',
                             'Full-Stack Capstone Project: AI-Powered SaaS Web Application'
