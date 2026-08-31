@@ -19,9 +19,26 @@ const Team = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
+    const [isOpeningPortfolio, setIsOpeningPortfolio] = useState(false);
     const reduceMotion = useReducedMotion();
 
+    // Open a member's portfolio in the same tab behind a short branded fade so the
+    // jump doesn't feel abrupt. Modified clicks (Ctrl/Cmd/middle) keep the browser's
+    // native "open in new tab"; reduced-motion users navigate immediately.
+    const openPortfolio = (e, url) => {
+        if (!url) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+        if (reduceMotion) return; // let the <a href> navigate normally
+        e.preventDefault();
+        setIsOpeningPortfolio(true);
+        window.setTimeout(() => { window.location.href = url; }, 520);
+    };
+
     const activeMember = teamData[currentIndex];
+    // PDFs are treated as downloads by mobile Chrome, and a download fired from our
+    // delayed JS navigation gets blocked ("blocked by Chrome"). So PDFs open natively
+    // in a new tab (a real user gesture); HTML keeps the smooth same-tab transition.
+    const portfolioIsPdf = /\.pdf(\?|#|$)/i.test(activeMember.portfolio || '');
 
     const goToNext = useCallback(() => {
         setDirection(1);
@@ -138,8 +155,9 @@ const Team = () => {
                                             {activeMember.portfolio && (
                                                 <a
                                                     href={activeMember.portfolio}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+                                                    {...(portfolioIsPdf
+                                                        ? { target: '_blank', rel: 'noopener noreferrer' }
+                                                        : { onClick: (e) => openPortfolio(e, activeMember.portfolio) })}
                                                     className="srkr-team-portfolio-btn"
                                                     aria-label={`Open ${activeMember.name}'s digital portfolio`}
                                                     title={`${activeMember.name} — Digital Portfolio`}
@@ -243,6 +261,15 @@ const Team = () => {
                     </div>
                 </div>
             </div>
+
+            {isOpeningPortfolio && (
+                <div className="srkr-portfolio-transition" role="status" aria-live="polite">
+                    <div className="srkr-portfolio-transition-card">
+                        <span className="srkr-portfolio-spinner" aria-hidden="true" />
+                        <span className="srkr-portfolio-transition-text">Opening portfolio…</span>
+                    </div>
+                </div>
+            )}
         </section>
     );
 };

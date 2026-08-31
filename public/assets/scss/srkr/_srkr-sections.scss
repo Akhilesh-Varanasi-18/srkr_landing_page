@@ -2867,6 +2867,54 @@
   }
 }
 
+// Smooth full-screen fade shown while a portfolio opens in the same tab.
+.srkr-portfolio-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: srkrPortfolioFadeIn 0.32s ease forwards;
+}
+
+.srkr-portfolio-transition-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 28px 40px;
+  border-radius: 18px;
+  background: var(--srkr-bg-body);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.30);
+  animation: srkrPortfolioPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.srkr-portfolio-transition-text {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--srkr-heading);
+}
+
+.srkr-portfolio-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--srkr-bg-coral-tint);
+  border-top-color: var(--srkr-primary);
+  animation: srkrPortfolioSpin 0.7s linear infinite;
+}
+
+@keyframes srkrPortfolioFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes srkrPortfolioPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes srkrPortfolioSpin { to { transform: rotate(360deg); } }
+
 .srkr-team-identity-text {
   display: flex;
   flex-direction: column;
