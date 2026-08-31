@@ -219,7 +219,7 @@ const coursesList = [
         category: 'dsa',
         categoryLabel: 'Expert CP',
         programName: 'Owl Coder',
-        programYear: 'Exclusive 2028 Batch',
+        programYear: 'Exclusive 2028 Passouts',
         duration: '8 Weeks',
         modulesCount: '21 Modules',
         accentColor: 'var(--srkr-primary)',
@@ -248,7 +248,7 @@ const coursesList = [
         category: 'dsa',
         categoryLabel: 'DSA Ready',
         programName: 'Moon Coder',
-        programYear: 'Exclusive 2029 Batch',
+        programYear: 'Exclusive 2029 Passouts',
         duration: '8 Weeks',
         modulesCount: '15 Modules',
         accentColor: 'var(--srkr-secondary)',
@@ -464,13 +464,6 @@ const Courses = () => {
                                 {/* Card Bottom Bar */}
                                 <div className="srkr-course-card-footer">
                                     <div className="srkr-course-meta">
-                                        <span className="srkr-course-meta-pill">
-                                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <circle cx="12" cy="12" r="9" />
-                                                <path d="M12 7v5l3 2" />
-                                            </svg>
-                                            {course.duration}
-                                        </span>
                                         <span className="srkr-course-meta-pill">
                                             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M12 2 2 7l10 5 10-5-10-5Z" />

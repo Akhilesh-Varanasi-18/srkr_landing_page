@@ -3,6 +3,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import teamData from './team-data';
 
+// Renders a role string in the uppercase pill while preserving the exact casing
+// of specific brand terms (e.g. "DevOps") that must not be flattened to all-caps.
+const CASE_EXACT_TERMS = ['DevOps'];
+function RoleText({ role }) {
+    const parts = role.split(new RegExp(`(${CASE_EXACT_TERMS.join('|')})`, 'g'));
+    return parts.map((part, i) =>
+        CASE_EXACT_TERMS.includes(part)
+            ? <span key={i} className="srkr-tt-exact">{part}</span>
+            : <React.Fragment key={i}>{part}</React.Fragment>
+    );
+}
+
 const Team = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(1);
@@ -104,23 +116,46 @@ const Team = () => {
                                     <div className="srkr-team-identity">
                                         <div className="srkr-team-identity-text">
                                             <h3 className="srkr-team-member-name">{activeMember.name}</h3>
-                                            <span className="srkr-team-role-pill">{activeMember.role}</span>
+                                            <span className="srkr-team-role-pill"><RoleText role={activeMember.role} /></span>
                                         </div>
 
-                                        {activeMember.linkedin && (
-                                            <a
-                                                href={activeMember.linkedin}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="srkr-team-linkedin-btn"
-                                                aria-label={`Connect with ${activeMember.name} on LinkedIn`}
-                                                title={`${activeMember.name} on LinkedIn`}
-                                            >
-                                                <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true">
-                                                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64a1.5 1.5 0 0 0-1.5 1.5 1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5 1.5 1.5 0 0 0-1.5-1.5Z" />
-                                                </svg>
-                                            </a>
-                                        )}
+                                        <div className="srkr-team-links">
+                                            {activeMember.linkedin && (
+                                                <a
+                                                    href={activeMember.linkedin}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="srkr-team-linkedin-btn"
+                                                    aria-label={`Connect with ${activeMember.name} on LinkedIn`}
+                                                    title={`${activeMember.name} on LinkedIn`}
+                                                >
+                                                    <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true">
+                                                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64a1.5 1.5 0 0 0-1.5 1.5 1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5 1.5 1.5 0 0 0-1.5-1.5Z" />
+                                                    </svg>
+                                                </a>
+                                            )}
+
+                                            {activeMember.portfolio && (
+                                                <a
+                                                    href={activeMember.portfolio}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="srkr-team-portfolio-btn"
+                                                    aria-label={`Open ${activeMember.name}'s digital portfolio`}
+                                                    title={`${activeMember.name} — Digital Portfolio`}
+                                                >
+                                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <circle cx="12" cy="12" r="9" />
+                                                        <path d="M3.6 9h16.8M3.6 15h16.8" />
+                                                        <path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
+                                                    </svg>
+                                                    <span>Portfolio</span>
+                                                    <svg className="srkr-team-portfolio-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <path d="M7 17 17 7M8 7h9v9" />
+                                                    </svg>
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
 
                                     {/* Tagline */}

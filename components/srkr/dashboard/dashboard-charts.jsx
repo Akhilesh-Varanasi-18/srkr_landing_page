@@ -22,6 +22,7 @@ import {
     YEAR_COLORS,
     GENDER_COLORS,
     RESIDENCE_COLORS,
+    LAPTOP_COLORS,
     BRANCH_RAMP,
     shortBranch,
     shortDay,
@@ -218,7 +219,7 @@ export function ResidenceSplit({ data }) {
     const order = ['Hosteler', 'Day Scholar'];
     const rows = order.map((name) => ({ name, value: data.find((d) => d.name === name)?.value || 0 }));
     return (
-        <div className="dash-card dash-card--4">
+        <div className="dash-card dash-card--6">
             <div className="dash-card-head">
                 <h3 className="dash-card-title">Residence</h3>
                 <p className="dash-card-sub">Hostelers vs day scholars</p>
@@ -255,6 +256,49 @@ export function ResidenceSplit({ data }) {
     );
 }
 
+// ── 5b. Laptop availability 100% split bar ──
+export function LaptopSplit({ data }) {
+    const total = data.reduce((s, d) => s + d.value, 0);
+    const order = ['Yes', 'No'];
+    const rows = order.map((name) => ({ name, value: data.find((d) => d.name === name)?.value || 0 }));
+    return (
+        <div className="dash-card dash-card--6">
+            <div className="dash-card-head">
+                <h3 className="dash-card-title">Laptop availability</h3>
+                <p className="dash-card-sub">Students with vs without a laptop</p>
+            </div>
+            <div className="dash-card-body">
+                {total === 0 ? <EmptyChart label="No data yet" /> : (
+                    <>
+                        <div className="dash-splitbar">
+                            {rows.map((r) => r.value > 0 && (
+                                <div
+                                    key={r.name}
+                                    className="dash-splitbar-seg"
+                                    style={{ flexGrow: r.value, background: LAPTOP_COLORS[r.name] }}
+                                    title={`${r.name}: ${r.value}`}
+                                >
+                                    {pct(r.value, total) >= 10 ? `${pct(r.value, total)}%` : ''}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="dash-splitbar-labels">
+                            <div className="dash-splitbar-label">
+                                <strong>{rows[0].value}</strong>
+                                <span><span className="dash-legend-swatch" style={{ background: LAPTOP_COLORS.Yes }} /> Have a laptop</span>
+                            </div>
+                            <div className="dash-splitbar-label dash-splitbar-label--right">
+                                <strong>{rows[1].value}</strong>
+                                <span><span className="dash-legend-swatch" style={{ background: LAPTOP_COLORS.No }} /> No laptop</span>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}
+
 // ── 6. Branch × Year stacked bar ────────────
 export function BranchYearStacked({ branchByYear, byBranch }) {
     const { rows, years } = useMemo(() => {
@@ -273,7 +317,7 @@ export function BranchYearStacked({ branchByYear, byBranch }) {
 
     const height = Math.max(220, rows.length * 38);
     return (
-        <div className="dash-card dash-card--8">
+        <div className="dash-card dash-card--12">
             <div className="dash-card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
                 <div>
                     <h3 className="dash-card-title">Branch × Year mix</h3>

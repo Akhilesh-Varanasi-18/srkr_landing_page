@@ -291,6 +291,7 @@
 }
 
 // Desktop spans
+.dash-card--12 { grid-column: span 12; }
 .dash-card--8 { grid-column: span 8; }
 .dash-card--7 { grid-column: span 7; }
 .dash-card--6 { grid-column: span 6; }

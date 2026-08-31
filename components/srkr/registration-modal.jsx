@@ -1,7 +1,7 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-    BRANCH_OPTIONS,
+    BRANCH_GROUPS,
     PASSOUT_YEAR_PROGRAM_MAP,
     FIELD_LIMITS,
     validateRegistration
@@ -33,6 +33,92 @@ const RESIDENCE_OPTIONS = [
     }
 ];
 
+const LAPTOP_OPTIONS = [
+    {
+        value: 'Yes', label: 'Yes, I have',
+        icon: (<svg {...ico}><rect x="3" y="4" width="18" height="12" rx="1.6" /><path d="M2 20h20" /><path d="M9.5 10l2 2 3.5-3.5" /></svg>)
+    },
+    {
+        value: 'No', label: 'No, I don’t',
+        icon: (<svg {...ico}><rect x="3" y="4" width="18" height="12" rx="1.6" /><path d="M2 20h20" /><path d="M10 8l4 4M14 8l-4 4" /></svg>)
+    }
+];
+
+// Custom, theme-styled branch dropdown. A native <select> can't be styled (its
+// option list is browser-chrome) and picks its own open direction — this renders a
+// branded popover listbox with grouped options instead. Closes on outside-click,
+// Escape, or selection.
+const BranchSelect = ({ groups, value, onChange, error }) => {
+    const [open, setOpen] = useState(false);
+    const wrapRef = useRef(null);
+
+    useEffect(() => {
+        if (!open) return undefined;
+        const onDocClick = (e) => {
+            if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+        };
+        const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+        document.addEventListener('mousedown', onDocClick);
+        document.addEventListener('keydown', onKey);
+        return () => {
+            document.removeEventListener('mousedown', onDocClick);
+            document.removeEventListener('keydown', onKey);
+        };
+    }, [open]);
+
+    return (
+        <div ref={wrapRef} className={`srkr-reg-select ${open ? 'is-open' : ''} ${error ? 'has-error' : ''}`}>
+            <button
+                type="button"
+                className="srkr-reg-select-trigger"
+                onClick={() => setOpen((o) => !o)}
+                aria-haspopup="listbox"
+                aria-expanded={open}
+            >
+                <span className="srkr-reg-select-icon">
+                    <svg {...ico}><path d="M3 21h18M5 21V6l7-3 7 3v15" /><path d="M9 9h.01M9 13h.01M15 9h.01M15 13h.01M10 21v-4h4v4" /></svg>
+                </span>
+                <span className={`srkr-reg-select-value ${value ? '' : 'is-placeholder'}`}>
+                    {value || 'Select your branch...'}
+                </span>
+                <svg className="srkr-reg-select-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </button>
+
+            {open && (
+                <div className="srkr-reg-select-menu" role="listbox" aria-label="Engineering branch">
+                    {groups.map((group) => (
+                        <div className="srkr-reg-select-group" key={group.label}>
+                            <div className="srkr-reg-select-group-label">{group.label}</div>
+                            {group.options.map((opt) => {
+                                const selected = value === opt;
+                                return (
+                                    <button
+                                        type="button"
+                                        key={opt}
+                                        role="option"
+                                        aria-selected={selected}
+                                        className={`srkr-reg-select-option ${selected ? 'is-selected' : ''}`}
+                                        onClick={() => { onChange(opt); setOpen(false); }}
+                                    >
+                                        <span>{opt}</span>
+                                        {selected && (
+                                            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="3 8 6.5 11.5 13 4" />
+                                            </svg>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const RegistrationModal = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState({
         fullName: '',
@@ -42,6 +128,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
         branch: '',
         gender: '',
         residenceType: '',
+        hasLaptop: '',
         passoutYear: '2028',
     });
 
@@ -69,6 +156,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                 branch: '',
                 gender: '',
                 residenceType: '',
+                hasLaptop: '',
                 passoutYear: '2028',
             });
         }
@@ -281,20 +369,13 @@ const RegistrationModal = ({ isOpen, onClose }) => {
 
                             {/* Row 3: Branch */}
                             <div className="srkr-reg-field">
-                                <label htmlFor="branch">Engineering Branch / Department <span className="required">*</span></label>
-                                <div className="srkr-reg-input-wrap">
-                                    <span className="srkr-reg-input-icon">
-                                        <svg {...ico}><path d="M3 21h18M5 21V6l7-3 7 3v15" /><path d="M9 9h.01M9 13h.01M15 9h.01M15 13h.01M10 21v-4h4v4" /></svg>
-                                    </span>
-                                    <select
-                                        id="branch" name="branch"
-                                        value={formData.branch} onChange={handleChange}
-                                        className={errors.branch ? 'has-error' : ''}
-                                    >
-                                        <option value="">Select your branch...</option>
-                                        {BRANCH_OPTIONS.map((b, i) => (<option key={i} value={b}>{b}</option>))}
-                                    </select>
-                                </div>
+                                <label>Engineering Branch / Department <span className="required">*</span></label>
+                                <BranchSelect
+                                    groups={BRANCH_GROUPS}
+                                    value={formData.branch}
+                                    onChange={(v) => selectValue('branch', v)}
+                                    error={errors.branch}
+                                />
                                 {errors.branch && <span className="srkr-reg-error">{errors.branch}</span>}
                             </div>
 
@@ -313,7 +394,17 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            {/* Row 5: Passout Year */}
+                            {/* Row 5: Laptop availability */}
+                            <div className="srkr-reg-field">
+                                <label>
+                                    Do you have a Laptop? <span className="required">*</span>
+                                    {/* <small className="srkr-reg-hint"> (Required for hands-on lab & coding sessions)</small> */}
+                                </label>
+                                {renderSegment('hasLaptop', LAPTOP_OPTIONS)}
+                                {errors.hasLaptop && <span className="srkr-reg-error">{errors.hasLaptop}</span>}
+                            </div>
+
+                            {/* Row 6: Passout Year */}
                             <div className="srkr-reg-field">
                                 <label>
                                     Passout Year <span className="required">*</span>
@@ -333,7 +424,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                             >
                                                 <div className="srkr-reg-year-radio">
                                                     <span className={`srkr-radio-dot ${isSelected ? 'checked' : ''}`} />
-                                                    <strong>Class of {year}</strong>
+                                                    <strong>{year} Passouts</strong>
                                                 </div>
                                                 <span className="srkr-reg-year-mapped" style={{ color: yearInfo.color }}>
                                                     {yearInfo.programName}
@@ -427,6 +518,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                             <div className="srkr-reg-success-row"><span>Branch</span><strong>{formData.branch}</strong></div>
                             <div className="srkr-reg-success-row"><span>Gender</span><strong>{formData.gender}</strong></div>
                             <div className="srkr-reg-success-row"><span>Residence</span><strong>{formData.residenceType}</strong></div>
+                            <div className="srkr-reg-success-row"><span>Has Laptop</span><strong>{formData.hasLaptop}</strong></div>
                             <div className="srkr-reg-success-row"><span>Passout Year</span><strong>{formData.passoutYear}</strong></div>
                             <div className="srkr-reg-success-row"><span>Assigned Program</span><strong>{mappedProgram.programName}</strong></div>
                         </div>

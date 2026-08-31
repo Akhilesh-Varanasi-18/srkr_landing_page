@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import { WHATSAPP_COMMUNITY_URL } from '../../lib/site-config';
+import { WHATSAPP_COMMUNITY_URL, TORIIMINDS_URL, SRKR_COLLEGE_URL } from '../../lib/site-config';
 
 const navItems = [
     { label: 'Who We Are', href: '#who-we-are' },
@@ -66,13 +66,25 @@ const SrkrHeader = ({ onOpenRegister }) => {
             <header className="srkr-header" style={isScrolled ? { boxShadow: 'var(--srkr-shadow-hover)' } : {}}>
                 <div className="srkr-header-container">
                     <div className="srkr-collab-brand" aria-label="ToriiMinds and SRKR Engineering College collaboration">
-                        <a href="/" className="srkr-brand-logo srkr-brand-logo-torii">
+                        <a
+                            href={TORIIMINDS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="srkr-brand-logo srkr-brand-logo-torii"
+                            aria-label="Visit ToriiMinds website"
+                        >
                             <img src="/assets/images/srkr/project-images/logo-white.png" alt="ToriiMinds" />
                         </a>
                         <span className="srkr-brand-separator" aria-hidden="true">X</span>
-                        <div className="srkr-brand-logo srkr-brand-logo-college">
+                        <a
+                            href={SRKR_COLLEGE_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="srkr-brand-logo srkr-brand-logo-college"
+                            aria-label="Visit S.R.K.R. Engineering College website"
+                        >
                             <img src="/assets/images/srkr/project-images/srkr_logo.jpeg" alt="S.R.K.R. Engineering College" />
-                        </div>
+                        </a>
                     </div>
 
                     <ul className="srkr-nav">

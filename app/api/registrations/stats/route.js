@@ -42,6 +42,7 @@ export async function GET(request) {
                         byGender: [{ $group: { _id: '$gender', n: { $sum: 1 } } }],
                         byBranch: [{ $group: { _id: '$branch', n: { $sum: 1 } } }, { $sort: { n: -1 } }],
                         byResidence: [{ $group: { _id: '$residenceType', n: { $sum: 1 } } }],
+                        byLaptop: [{ $group: { _id: '$hasLaptop', n: { $sum: 1 } } }],
                         byProgram: [
                             {
                                 $group: {
@@ -76,6 +77,7 @@ export async function GET(request) {
                                     branch: 1,
                                     gender: 1,
                                     residenceType: 1,
+                                    hasLaptop: 1,
                                     passoutYear: 1,
                                     programName: 1,
                                     createdAt: 1
@@ -119,6 +121,7 @@ export async function GET(request) {
             byGender: clean(facet.byGender).map((r) => ({ name: r._id, value: r.n })),
             byBranch: clean(facet.byBranch).map((r) => ({ name: r._id, value: r.n })),
             byResidence: clean(facet.byResidence).map((r) => ({ name: r._id, value: r.n })),
+            byLaptop: clean(facet.byLaptop).map((r) => ({ name: r._id, value: r.n })),
             byProgram: facet.byProgram
                 .filter((r) => r._id?.name)
                 .map((r) => ({ name: r._id.name, year: r._id.year, label: r._id.label, value: r.n })),
