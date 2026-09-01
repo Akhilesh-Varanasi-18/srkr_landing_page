@@ -20,6 +20,7 @@ const Team = () => {
     const [direction, setDirection] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
     const [isOpeningPortfolio, setIsOpeningPortfolio] = useState(false);
+    const [comingSoonMember, setComingSoonMember] = useState(null);
     const reduceMotion = useReducedMotion();
 
     // Open a member's portfolio in the same tab behind a short branded fade so the
@@ -33,6 +34,20 @@ const Team = () => {
         setIsOpeningPortfolio(true);
         window.setTimeout(() => { window.location.href = url; }, 520);
     };
+
+    // Members whose portfolio isn't ready yet show a gentle "coming soon" toast that
+    // auto-fades, instead of a dead link. Keyed by member id so switching cards clears it.
+    const showComingSoon = (e, member) => {
+        e.preventDefault();
+        setComingSoonMember(member.id);
+    };
+
+    // Auto-dismiss the coming-soon toast after a short beat.
+    useEffect(() => {
+        if (!comingSoonMember) return undefined;
+        const t = window.setTimeout(() => setComingSoonMember(null), 2600);
+        return () => window.clearTimeout(t);
+    }, [comingSoonMember]);
 
     const activeMember = teamData[currentIndex];
     // PDFs are treated as downloads by mobile Chrome, and a download fired from our
@@ -152,15 +167,21 @@ const Team = () => {
                                                 </a>
                                             )}
 
-                                            {activeMember.portfolio && (
+                                            {(activeMember.portfolio || activeMember.portfolioComingSoon) && (
                                                 <a
-                                                    href={activeMember.portfolio}
-                                                    {...(portfolioIsPdf
-                                                        ? { target: '_blank', rel: 'noopener noreferrer' }
-                                                        : { onClick: (e) => openPortfolio(e, activeMember.portfolio) })}
+                                                    href={activeMember.portfolio || '#'}
+                                                    {...(activeMember.portfolioComingSoon
+                                                        ? { onClick: (e) => showComingSoon(e, activeMember) }
+                                                        : portfolioIsPdf
+                                                            ? { target: '_blank', rel: 'noopener noreferrer' }
+                                                            : { onClick: (e) => openPortfolio(e, activeMember.portfolio) })}
                                                     className="srkr-team-portfolio-btn"
-                                                    aria-label={`Open ${activeMember.name}'s digital portfolio`}
-                                                    title={`${activeMember.name} — Digital Portfolio`}
+                                                    aria-label={activeMember.portfolioComingSoon
+                                                        ? `${activeMember.name}'s digital portfolio — coming soon`
+                                                        : `Open ${activeMember.name}'s digital portfolio`}
+                                                    title={activeMember.portfolioComingSoon
+                                                        ? `${activeMember.name} — Portfolio coming soon`
+                                                        : `${activeMember.name} — Digital Portfolio`}
                                                 >
                                                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                         <circle cx="12" cy="12" r="9" />
@@ -174,6 +195,26 @@ const Team = () => {
                                                 </a>
                                             )}
                                         </div>
+
+                                        <AnimatePresence>
+                                            {comingSoonMember === activeMember.id && (
+                                                <motion.div
+                                                    className="srkr-team-comingsoon-toast"
+                                                    role="status"
+                                                    aria-live="polite"
+                                                    initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.96 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.96 }}
+                                                    transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                                                >
+                                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <circle cx="12" cy="12" r="9" />
+                                                        <path d="M12 7v5l3 2" />
+                                                    </svg>
+                                                    <span>Portfolio will be updated soon</span>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
 
                                     {/* Tagline */}

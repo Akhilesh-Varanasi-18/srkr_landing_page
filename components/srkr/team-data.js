@@ -7,7 +7,7 @@ const teamData = [
         tagline: 'AWS Cloud, DevOps & GPU Infrastructure Specialist',
         photo: '/assets/images/srkr/project-images/team/Bobby_Devops_Engineer_and_Team_Manager_uniform.png',
         linkedin: 'https://www.linkedin.com/in/bobbypamarthi/',
-        portfolio: '', // add file to public/portfolios/ then set the path here
+        portfolio: '/portfolios/bobby.html',
         accentColor: 'var(--srkr-primary)',
         accentBg: 'var(--srkr-bg-coral-tint)',
         tags: ['AWS DevOps', 'NVIDIA DGX GPU', 'Claude Architect', 'Cisco CCNA', 'Solutions Architect'],
@@ -85,6 +85,7 @@ const teamData = [
         photo: '/assets/images/srkr/project-images/team/Manikanta_ServiceNow_Developer_uniform.png',
         linkedin: 'https://www.linkedin.com/in/manikanta-srighakollapu/',
         portfolio: '', // add HTML file to public/portfolios/ then set the path here
+        portfolioComingSoon: true, // shows a "will be updated soon" toast on click until a portfolio is added
         accentColor: 'var(--srkr-primary)',
         accentBg: 'var(--srkr-bg-coral-tint)',
         tags: ['ServiceNow CAD', 'Now Platform', 'GlideRecord', 'Flow Designer', 'IntegrationHub'],

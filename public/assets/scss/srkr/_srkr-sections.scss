@@ -2789,10 +2789,50 @@
 
 // --- Identity: name + role on the left, LinkedIn icon button on the right ---
 .srkr-team-identity {
+  position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+
+  // On phones the name + links cluster (LinkedIn + Portfolio pill) can't sit
+  // side-by-side without the pill overflowing the card, so stack them.
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+// Gentle "coming soon" toast shown when a member's portfolio isn't wired yet.
+// Floats just under the identity row so it never reflows the layout, then fades.
+.srkr-team-comingsoon-toast {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--srkr-bg-coral-tint);
+  border: 1px solid rgba(226, 84, 76, 0.28);
+  color: var(--srkr-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  box-shadow: 0 8px 22px -8px rgba(226, 84, 76, 0.45);
+
+  svg { flex: 0 0 auto; }
+
+  @media (max-width: 767px) {
+    left: 0;
+    right: auto;
+    font-size: 11.5px;
+    padding: 7px 12px;
+  }
 }
 
 // Profile links cluster — LinkedIn icon + the highlighted portfolio pill.
