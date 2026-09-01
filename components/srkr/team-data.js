@@ -95,6 +95,82 @@ const teamData = [
             'Expertise in CSA & CAD certification mentoring and enterprise workflow engineering',
             'Passionate technical mentor guiding students into high-growth enterprise platform roles'
         ]
+    },
+    {
+        id: 'abhilash',
+        name: 'Anala Abhilash',
+        role: 'Power BI & Snowflake Developer',
+        tagline: 'Building automated Power BI dashboards & reporting solutions that drive smarter, faster decisions',
+        photo: '/assets/images/srkr/project-images/team/Abhilash_PowerBI_Snowflake_Developer_uniform.png',
+        linkedin: 'https://www.linkedin.com/in/anala-abhilash/',
+        portfolio: '/portfolios/abhilash.html',
+        accentColor: 'var(--srkr-secondary)',
+        accentBg: 'var(--srkr-bg-warm-tint)',
+        tags: ['Power BI', 'Snowflake', 'SQL & DAX', 'Power Platform', 'Data Modeling'],
+        highlights: [
+            'Data Analyst with 3+ years turning complex operational data into actionable dashboards',
+            'Core toolkit spans Power BI, SQL, Snowflake, Excel & the Microsoft Power Platform',
+            'Designs star-schema data models with advanced DAX & Power Query transformations',
+            'Delivered 50+ end-to-end BI solutions processing 300K+ records',
+            'Holds 5 global certifications across Microsoft, Oracle & Snowflake; trained 700+ students'
+        ]
+    },
+    {
+        id: 'azarunnisa',
+        name: 'Mohammad Azarunnisa',
+        role: 'Salesforce & ServiceNow Developer',
+        tagline: 'Enterprise Salesforce CRM enablement & ServiceNow ITSM platform specialist',
+        photo: '/assets/images/srkr/project-images/team/Azarunnisa_Salesforce_ServiceNow_Developer_uniform.png',
+        linkedin: 'https://www.linkedin.com/in/mohammad-azarunnisa/',
+        portfolio: '/portfolios/azarunnisa.html',
+        accentColor: 'var(--srkr-tertiary)',
+        accentBg: 'var(--srkr-bg-warm-offwhite)',
+        tags: ['Salesforce CRM', 'ServiceNow ITSM', 'CSA & CAD', 'Salesforce Admin', 'Flow Configuration'],
+        highlights: [
+            'Salesforce & ServiceNow specialist with hands-on enterprise platform experience',
+            'Holds ServiceNow CSA & CAD plus Salesforce Administrator & AI Associate certifications',
+            'Trained 100+ ServiceNow trainees (95+ certified) and 70+ Salesforce trainees',
+            '4-Star Ranger on Salesforce Trailhead with 246,000+ points',
+            'Claude Certified Architect with 350+ CodeChef problems solved'
+        ]
+    },
+    {
+        id: 'prasanth',
+        name: 'Prasanth Kedarisetti',
+        role: 'Full Stack Developer & Team Lead',
+        tagline: '10+ years building Web, Mobile, AI & AR/VR products and leading engineering teams',
+        photo: '/assets/images/srkr/project-images/team/Prasanth_FullStack_Developer_uniform.png',
+        linkedin: 'https://www.linkedin.com/in/prasanth-kedarisetti/',
+        portfolio: '/portfolios/prasanth.html',
+        accentColor: 'var(--srkr-primary)',
+        accentBg: 'var(--srkr-bg-coral-tint)',
+        tags: ['MERN Stack', 'Unity (C#)', 'AR / VR', 'PHP', 'Project Management'],
+        highlights: [
+            'Project Manager (IT) with 10+ years of software engineering leadership',
+            'Full Stack (MERN), Unity C#, AR/VR & PHP expert — built 16+ enterprise products',
+            'Led 40+ cognitive games, public AR spectacles & Dockerized online compilers',
+            'Delivered nationwide trainings in Full Stack, Unity, AR & VR development',
+            '3× Best Developer of the Year & Unity Certified Associate'
+        ]
+    },
+    {
+        id: 'sampath',
+        name: 'Sampath Rayi',
+        role: 'ServiceNow Developer & Trainer',
+        tagline: 'Training ServiceNow professionals while shipping real-world ITSM & automation projects',
+        photo: '/assets/images/srkr/project-images/team/Sampath_ServiceNow_Developer_uniform.png',
+        linkedin: 'https://www.linkedin.com/in/sampathrayi/',
+        portfolio: '/portfolios/sampath.html',
+        accentColor: 'var(--srkr-secondary)',
+        accentBg: 'var(--srkr-bg-warm-tint)',
+        tags: ['ServiceNow CSA', 'ServiceNow CAD', 'ITSM', 'Java & SQL', 'Power BI'],
+        highlights: [
+            'ServiceNow Trainer & IT graduate with 2+ years in ITSM & automation',
+            'Trained 600+ students in ServiceNow, lifting average assessment scores by 25%',
+            'Built Service Hub campus ticketing portal serving 1,000+ students, cutting response times 40%',
+            'Holds ServiceNow CSA, CAD & Microsoft Office Specialist among 6 certifications',
+            'Skilled in Java, SQL, JavaScript, Power BI & Excel'
+        ]
     }
 ];
 

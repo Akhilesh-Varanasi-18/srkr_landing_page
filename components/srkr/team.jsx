@@ -6,6 +6,34 @@ import teamData from './team-data';
 // Renders a role string in the uppercase pill while preserving the exact casing
 // of specific brand terms (e.g. "DevOps") that must not be flattened to all-caps.
 const CASE_EXACT_TERMS = ['DevOps'];
+
+// Members whose uniform photo hasn't been supplied yet fall back to a branded
+// initials avatar so the card never shows a broken-image icon. Built once per
+// name and cached. Sized to the same stage the real cutout PNGs occupy.
+const PLACEHOLDER_AVATAR_CACHE = {};
+function placeholderAvatar(name) {
+    if (PLACEHOLDER_AVATAR_CACHE[name]) return PLACEHOLDER_AVATAR_CACHE[name];
+    const initials = name
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480">
+        <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f4a99f"/><stop offset="1" stop-color="#e2544c"/>
+        </linearGradient></defs>
+        <rect width="400" height="480" rx="28" fill="url(#pg)" opacity="0.12"/>
+        <circle cx="200" cy="196" r="98" fill="url(#pg)"/>
+        <text x="200" y="196" dy="0.35em" text-anchor="middle" font-family="Poppins, Segoe UI, Arial, sans-serif" font-size="80" font-weight="700" fill="#ffffff">${initials}</text>
+        <text x="200" y="332" text-anchor="middle" font-family="Poppins, Segoe UI, Arial, sans-serif" font-size="18" font-weight="600" letter-spacing="0.5" fill="#e2544c">Photo coming soon</text>
+    </svg>`;
+    const uri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    PLACEHOLDER_AVATAR_CACHE[name] = uri;
+    return uri;
+}
+
 function RoleText({ role }) {
     const parts = role.split(new RegExp(`(${CASE_EXACT_TERMS.join('|')})`, 'g'));
     return parts.map((part, i) =>
@@ -134,10 +162,15 @@ const Team = () => {
                                         exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96, x: direction * 30 }}
                                         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                                     >
-                                        <img 
-                                            src={activeMember.photo} 
-                                            alt={activeMember.name} 
+                                        <img
+                                            src={activeMember.photo}
+                                            alt={activeMember.name}
                                             className="srkr-team-cutout-img"
+                                            onError={(e) => {
+                                                if (e.currentTarget.dataset.fallback) return;
+                                                e.currentTarget.dataset.fallback = '1';
+                                                e.currentTarget.src = placeholderAvatar(activeMember.name);
+                                            }}
                                         />
                                     </motion.div>
                                 </AnimatePresence>
@@ -284,7 +317,15 @@ const Team = () => {
                                             onClick={() => selectMember(idx)}
                                             title={member.name}
                                         >
-                                            <img src={member.photo} alt={member.name} />
+                                            <img
+                                                src={member.photo}
+                                                alt={member.name}
+                                                onError={(e) => {
+                                                    if (e.currentTarget.dataset.fallback) return;
+                                                    e.currentTarget.dataset.fallback = '1';
+                                                    e.currentTarget.src = placeholderAvatar(member.name);
+                                                }}
+                                            />
                                             <span className="srkr-team-avatar-thumb-label">{member.name}</span>
                                         </button>
                                     ))}

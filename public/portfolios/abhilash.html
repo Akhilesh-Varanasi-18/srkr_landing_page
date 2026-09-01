@@ -1,0 +1,2465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anala Abhilash | Data Analyst & Power Platform Developer</title>
+  <style>
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --ground: #000;
+      --s1: #0d0d0d;
+      --s2: #141414;
+      --s3: #1c1c1c;
+      --orange: #f15d23;
+      --orange-hot: #f47a4b;
+      --orange-wash: rgba(241, 93, 35, .08);
+      --orange-line: rgba(241, 93, 35, .35);
+      --orange-glow: rgba(241, 93, 35, .15);
+      --text: #fff;
+      --text-2: rgba(255, 255, 255, .72);
+      --text-3: rgba(255, 255, 255, .48);
+      --rule: rgba(255, 255, 255, .12);
+      --rule-soft: rgba(255, 255, 255, .06);
+      --nav-bg: rgba(0, 0, 0, .88);
+      --r: 18px;
+      --rc: 11px;
+      --ease: cubic-bezier(.4, 0, .2, 1);
+    }
+
+    :root[data-theme="light"] {
+      --ground: #f0f0f0;
+      --s1: #fff;
+      --s2: #f7f7f7;
+      --s3: #ebebeb;
+      --orange: #d44e18;
+      --orange-hot: #f15d23;
+      --orange-wash: rgba(212, 78, 24, .08);
+      --orange-line: rgba(212, 78, 24, .3);
+      --orange-glow: rgba(212, 78, 24, .12);
+      --text: #111;
+      --text-2: rgba(17, 17, 17, .75);
+      --text-3: rgba(17, 17, 17, .5);
+      --rule: rgba(17, 17, 17, .12);
+      --rule-soft: rgba(17, 17, 17, .06);
+      --nav-bg: rgba(255, 255, 255, .9);
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      html {
+        scroll-behavior: auto
+      }
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      line-height: 1.65;
+      background: var(--ground);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      transition: background .3s, color .3s
+    }
+
+    ::selection {
+      background: var(--orange);
+      color: #fff
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    button {
+      font: inherit
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 2px
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--rule)
+    }
+
+    .nav-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px
+    }
+
+    .nav-brand {
+      font-family: "Outfit", sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text)
+    }
+
+    .nav-brand span {
+      color: var(--orange)
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 26px;
+      list-style: none
+    }
+
+    .nav-links a {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      transition: color .16s
+    }
+
+    .nav-links a:hover {
+      color: var(--orange)
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .theme-toggle {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid var(--rule);
+      border-radius: var(--rc);
+      color: var(--text-3);
+      cursor: pointer;
+      transition: border-color .16s, color .16s, background .16s
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--orange-line);
+      color: var(--orange);
+      background: var(--orange-wash)
+    }
+
+    .theme-toggle svg {
+      width: 15px;
+      height: 15px
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--rule);
+      border-radius: var(--rc);
+      color: var(--text-2);
+      cursor: pointer;
+      padding: 6px 9px;
+      line-height: 1;
+      font-size: 14px;
+      transition: border-color .16s, color .16s
+    }
+
+    .nav-toggle:hover {
+      border-color: var(--orange-line);
+      color: var(--orange)
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 48px;
+      left: 0;
+      right: 0;
+      background: var(--nav-bg);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--rule);
+      padding: 16px 20px 20px;
+      z-index: 99;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .mobile-menu.open {
+      display: flex
+    }
+
+    .mobile-menu a {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      transition: color .16s
+    }
+
+    .mobile-menu a:hover {
+      color: var(--orange)
+    }
+
+    .mobile-menu a:last-child {
+      border-bottom: none
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 24px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .panel {
+      background: var(--s1);
+      border: 1px solid var(--rule);
+      border-radius: var(--r);
+      overflow: hidden;
+      transition: background .3s, border-color .3s
+    }
+
+    .panel-head {
+      padding: 14px 24px 13px;
+      border-bottom: 1px solid var(--rule-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .panel-body {
+      padding: 20px 24px 24px
+    }
+
+    .section-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--orange)
+    }
+
+    .panel-count {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      color: var(--text-3);
+      text-transform: uppercase;
+      font-variant-numeric: tabular-nums
+    }
+
+    /* masthead */
+    .masthead {
+      background: var(--s1);
+      border: 2px solid var(--orange);
+      border-radius: var(--r);
+      padding: 36px 36px 32px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .masthead:before {
+      content: "";
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, var(--orange-glow) 0%, transparent 65%);
+      pointer-events: none
+    }
+
+    .masthead-top {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 28px;
+      position: relative
+    }
+
+    .masthead-avatar {
+      width: 96px;
+      height: 96px;
+      flex-shrink: 0;
+      border: 2px solid var(--orange-line);
+      border-radius: var(--r);
+      background: var(--s3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: var(--text-3);
+      overflow: hidden
+    }
+
+    .masthead-avatar svg {
+      width: 42px;
+      height: 42px
+    }
+
+    .avatar-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block
+    }
+
+    .masthead-id h1 {
+      font-family: "Outfit", sans-serif;
+      font-size: 36px;
+      font-weight: 200;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 8px;
+      text-wrap: balance
+    }
+
+    .name-last {
+      color: var(--orange)
+    }
+
+    .masthead-id .role {
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 10px
+    }
+
+    .masthead-id .tagline {
+      font-size: 12.5px;
+      color: var(--text-3);
+      line-height: 1.75;
+      max-width: 60ch
+    }
+
+    .masthead-rule {
+      height: 1px;
+      background: var(--rule-soft);
+      margin-bottom: 24px
+    }
+
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--s2);
+      border: 1px solid var(--rule);
+      border-radius: var(--rc);
+      transition: border-color .16s, background .16s, transform .16s var(--ease);
+      cursor: pointer
+    }
+
+    .social-link:hover {
+      border-color: var(--orange-line);
+      background: var(--orange-wash);
+      transform: translateY(-2px)
+    }
+
+    .social-link--static {
+      cursor: default
+    }
+
+    .social-link--static:hover {
+      transform: none
+    }
+
+    .social-link--cta {
+      border-color: var(--orange-line);
+      background: var(--orange-wash)
+    }
+
+    .social-link--cta:hover {
+      background: var(--orange);
+      border-color: var(--orange)
+    }
+
+    .social-link--cta:hover .social-label,
+    .social-link--cta:hover .social-handle {
+      color: #fff
+    }
+
+    .social-icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      background: var(--s3);
+      border: 1px solid var(--rule);
+      border-radius: var(--rc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange);
+      transition: background .16s, border-color .16s
+    }
+
+    .social-icon svg {
+      width: 16px;
+      height: 16px
+    }
+
+    .social-link:hover .social-icon {
+      background: var(--orange-wash);
+      border-color: var(--orange-line)
+    }
+
+    .social-link--cta:hover .social-icon {
+      background: #ffffff33;
+      border-color: transparent;
+      color: #fff
+    }
+
+    .social-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0
+    }
+
+    .social-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      transition: color .16s
+    }
+
+    .social-handle {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color .16s
+    }
+
+    .social-link:hover .social-label {
+      color: var(--orange)
+    }
+
+    .social-link:hover .social-handle {
+      color: var(--text)
+    }
+
+    /* summary */
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--rule-soft)
+    }
+
+    .summary-stat {
+      padding: 20px;
+      text-align: center;
+      border-right: 1px solid var(--rule-soft);
+      transition: background .18s
+    }
+
+    .summary-stat:last-child {
+      border-right: none
+    }
+
+    .summary-stat:hover {
+      background: var(--s2)
+    }
+
+    .stat-value {
+      font-family: "Outfit", sans-serif;
+      font-size: 30px;
+      font-weight: 200;
+      color: var(--orange);
+      letter-spacing: .04em;
+      line-height: 1;
+      margin-bottom: 6px;
+      font-variant-numeric: tabular-nums
+    }
+
+    .stat-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--text-3)
+    }
+
+    .summary-body {
+      margin: 22px 24px 0;
+      padding: 24px 28px;
+      border-left: 3px solid var(--orange);
+      background: var(--s2);
+      border-radius: var(--rc);
+      position: relative;
+      overflow: hidden
+    }
+
+    .summary-quote-icon {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      color: var(--orange);
+      opacity: .12;
+      pointer-events: none
+    }
+
+    .summary-quote-icon svg {
+      width: 28px;
+      height: 28px
+    }
+
+    .summary-text {
+      font-size: 13.5px;
+      line-height: 1.9;
+      color: var(--text-2);
+      position: relative
+    }
+
+    .summary-text em {
+      color: var(--text-3);
+      font-style: normal
+    }
+
+    /* structured skills grid */
+    .skills-grid-wrapper {
+      padding: 20px 24px 24px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      border-top: 1px solid var(--rule-soft)
+    }
+
+    .skill-card {
+      background: var(--s2);
+      border: 1px solid var(--rule);
+      border-radius: var(--rc);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color .18s, transform .18s, box-shadow .18s
+    }
+
+    .skill-card:hover {
+      border-color: var(--orange-line);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .15)
+    }
+
+    .skill-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .skill-card-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: var(--orange-wash);
+      border: 1px solid var(--orange-line);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .skill-card-icon svg {
+      width: 13px;
+      height: 13px
+    }
+
+    .skill-card-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text)
+    }
+
+    .skill-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 7px
+    }
+
+    .skill-item-tag {
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-2);
+      background: var(--s3);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      transition: color .16s, border-color .16s, background .16s;
+      line-height: 1.4
+    }
+
+    .skill-item-tag:hover {
+      color: var(--orange);
+      border-color: var(--orange-line);
+      background: var(--orange-wash)
+    }
+
+    @media (max-width:720px) {
+      .skills-grid-wrapper {
+        grid-template-columns: 1fr;
+        padding: 16px
+      }
+    }
+
+    .skill-category-title {
+      min-width: auto
+    }
+
+    .strength-tag:hover {
+      background: var(--orange);
+      color: #fff
+    }
+
+    /* experience timeline */
+    .exp-list {
+      display: flex;
+      flex-direction: column
+    }
+
+    .exp-item {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 0 18px
+    }
+
+    .exp-stem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 5px
+    }
+
+    .exp-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px var(--orange-wash)
+    }
+
+    .exp-line {
+      width: 1px;
+      flex: 1;
+      min-height: 24px;
+      background: var(--rule);
+      margin-top: 7px
+    }
+
+    .exp-item:last-child .exp-line {
+      display: none
+    }
+
+    .exp-content {
+      padding-bottom: 30px
+    }
+
+    .exp-item:last-child .exp-content {
+      padding-bottom: 4px
+    }
+
+    .exp-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+      margin-bottom: 12px
+    }
+
+    .exp-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: .02em;
+      line-height: 1.3
+    }
+
+    .exp-company {
+      font-size: 12px;
+      color: var(--orange);
+      font-weight: 500;
+      margin-top: 3px
+    }
+
+    .exp-period {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--text-3);
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding-top: 3px
+    }
+
+    .exp-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 14px
+    }
+
+    .exp-bullets li {
+      font-size: 12.5px;
+      color: var(--text-2);
+      padding-left: 16px;
+      position: relative;
+      line-height: 1.65
+    }
+
+    .exp-bullets li:before {
+      content: "-";
+      position: absolute;
+      left: 0;
+      color: var(--orange);
+      font-size: 13px;
+      font-weight: 600;
+      top: 0
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px
+    }
+
+    .tag {
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--rc);
+      cursor: default;
+      white-space: nowrap;
+      transition: border-color .14s, color .14s, background .14s
+    }
+
+    .tag:hover {
+      border-color: var(--orange-line);
+      color: var(--orange);
+      background: var(--orange-wash)
+    }
+
+    /* projects rail */
+    .proj-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px
+    }
+
+    .proj-card {
+      background: var(--s2);
+      border: 1px solid var(--rule);
+      border-radius: var(--r);
+      overflow: hidden;
+      transition: border-color .18s, transform .18s var(--ease), box-shadow .18s
+    }
+
+    .proj-card:hover {
+      border-color: var(--orange-line);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .3)
+    }
+
+    .proj-media {
+      aspect-ratio: 16/10;
+      background: var(--s3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--rule)
+    }
+
+    .proj-media-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-3)
+    }
+
+    .proj-media-inner svg {
+      width: 32px;
+      height: 32px
+    }
+
+    .proj-media-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase
+    }
+
+    .proj-card-body {
+      padding: 18px 20px 20px
+    }
+
+    .proj-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px
+    }
+
+    .proj-card-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: .01em;
+      line-height: 1.35
+    }
+
+    .proj-card-link {
+      color: var(--text-3);
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: color .16s, transform .16s
+    }
+
+    .proj-card-link svg {
+      width: 15px;
+      height: 15px
+    }
+
+    .proj-card:hover .proj-card-link {
+      color: var(--orange);
+      transform: translate(2px, -2px)
+    }
+
+    .proj-card-desc {
+      font-size: 12.5px;
+      color: var(--text-2);
+      line-height: 1.7;
+      margin-bottom: 14px
+    }
+
+    .proj-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px
+    }
+
+    .proj-tag-more {
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--orange);
+      border: 1px solid var(--orange-line);
+      background: var(--orange-wash);
+      border-radius: var(--rc)
+    }
+
+    /* project image slider */
+    .proj-slider {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden
+    }
+
+    .proj-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity .6s ease-in-out;
+      z-index: 0
+    }
+
+    .proj-slide.active {
+      opacity: 1;
+      z-index: 1
+    }
+
+    .proj-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      transition: transform .25s ease
+    }
+
+    .proj-card:hover .proj-slide.active img {
+      transform: scale(1.04)
+    }
+
+    .proj-img-dots {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      display: flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      padding: 4px 9px;
+      border-radius: 20px;
+      z-index: 10
+    }
+
+    .proj-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.35);
+      transition: background .2s, transform .2s;
+      padding: 0
+    }
+
+    .proj-dot:hover {
+      transform: scale(1.25);
+      background: rgba(255, 255, 255, 0.7)
+    }
+
+    .proj-dot.active {
+      background: var(--orange);
+      transform: scale(1.2)
+    }
+
+
+    .cert-empty-state {
+      text-align: center;
+      padding: 46px 20px;
+      background: var(--s2);
+      border: 1px dashed var(--rule);
+      border-radius: var(--rc);
+      margin-top: 6px
+    }
+
+    .empty-icon {
+      font-size: 28px;
+      margin-bottom: 8px
+    }
+
+    .empty-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px
+    }
+
+    .empty-desc {
+      font-size: 11.5px;
+      color: var(--text-3);
+      max-width: 44ch;
+      margin: 0 auto;
+      line-height: 1.5
+    }
+
+    /* certifications */
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px
+    }
+
+    .cert-card {
+      all: unset;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      background: var(--s2);
+      border: 1px solid var(--rule);
+      border-radius: var(--r);
+      overflow: hidden;
+      transition: border-color .2s, transform .2s var(--ease), box-shadow .2s
+    }
+
+    .cert-card:hover,
+    .cert-card:focus-visible {
+      border-color: var(--orange-line);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .45)
+    }
+
+    .cert-media {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: var(--s2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--rule);
+      overflow: hidden;
+      padding: 0
+    }
+
+    .cert-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform .25s ease;
+      image-rendering: -webkit-optimize-contrast
+    }
+
+    #badgesGrid .cert-media img {
+      object-fit: contain;
+      padding: 12px
+    }
+
+    .cert-card:hover .cert-media img {
+      transform: scale(1.05)
+    }
+
+    .cert-media-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-3)
+    }
+
+    .cert-media-inner svg {
+      width: 28px;
+      height: 28px
+    }
+
+    .cert-media-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    .cert-card-body {
+      padding: 14px 16px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between
+    }
+
+    .cert-issuer {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 5px
+    }
+
+    .cert-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      transition: color .16s
+    }
+
+    .cert-card:hover .cert-name,
+    .cert-card:focus-visible .cert-name {
+      color: var(--orange)
+    }
+
+    /* certificate popup modal */
+    .cert-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease
+    }
+
+    .cert-modal.open {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .cert-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px)
+    }
+
+    .cert-modal-panel {
+      position: relative;
+      background: var(--s1);
+      border: 1px solid var(--rule);
+      border-radius: var(--r);
+      max-width: min(94vw, 1050px);
+      width: 100%;
+      max-height: 92vh;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .85), 0 0 0 1px rgba(255, 255, 255, .06);
+      transform: scale(.95);
+      transition: transform .22s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 2
+    }
+
+    .cert-modal.open .cert-modal-panel {
+      transform: scale(1)
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .cert-modal,
+      .cert-modal-panel {
+        transition: none
+      }
+    }
+
+    .cert-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--rule-soft)
+    }
+
+    .cert-modal-caption {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+      flex: 1
+    }
+
+    .cert-modal-caption span {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 3px
+    }
+
+    .cert-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .cert-modal-view-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      color: var(--orange);
+      background: var(--orange-wash);
+      border: 1px solid var(--orange-line);
+      border-radius: var(--rc);
+      text-decoration: none;
+      transition: background .16s, border-color .16s
+    }
+
+    .cert-modal-view-btn:hover {
+      background: rgba(241, 93, 35, .18);
+      border-color: var(--orange)
+    }
+
+    .cert-modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--rc);
+      border: 1px solid var(--rule);
+      background: var(--s2);
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      line-height: 1;
+      transition: border-color .16s, color .16s, background .16s
+    }
+
+    .cert-modal-close:hover {
+      border-color: var(--orange-line);
+      color: var(--orange);
+      background: var(--s3)
+    }
+
+    .cert-modal-media {
+      flex: 1;
+      min-height: 220px;
+      max-height: 75vh;
+      background: rgba(0, 0, 0, .6);
+      border: 1px solid var(--rule);
+      border-radius: var(--rc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      padding: 12px
+    }
+
+    .cert-modal-media img {
+      max-width: 100%;
+      max-height: 72vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: 4px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .6);
+      image-rendering: -webkit-optimize-contrast
+    }
+
+    /* achievements */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px
+    }
+
+    .achievement-card {
+      background: var(--s2);
+      border: 1px solid var(--rule);
+      border-radius: var(--rc);
+      padding: 16px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: border-color .18s, transform .18s, box-shadow .18s
+    }
+
+    .achievement-card:hover {
+      border-color: var(--orange-line);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .2)
+    }
+
+    .achievement-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--orange-wash);
+      border: 1px solid var(--orange-line);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .achievement-icon svg {
+      width: 14px;
+      height: 14px
+    }
+
+    .achievement-text {
+      font-size: 12.5px;
+      color: var(--text-2);
+      line-height: 1.65
+    }
+
+    .achievement-text strong {
+      color: var(--text);
+      font-weight: 600
+    }
+
+    @media (max-width:680px) {
+      .achievements-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+
+
+    /* footer / contact */
+    .footer {
+      background: var(--s1);
+      border: 2px solid var(--orange);
+      border-radius: var(--r);
+      padding: 28px 24px;
+      text-align: center
+    }
+
+    .footer-name {
+      font-family: "Outfit", sans-serif;
+      font-size: 20px;
+      font-weight: 200;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 4px
+    }
+
+    .footer-name span {
+      color: var(--orange)
+    }
+
+    .footer-role {
+      font-size: 10px;
+      color: var(--text-3);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-bottom: 20px
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 24px;
+      margin-bottom: 20px
+    }
+
+    .footer-links a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-3);
+      transition: color .16s
+    }
+
+    .footer-links a svg {
+      width: 13px;
+      height: 13px
+    }
+
+    .footer-links a:hover {
+      color: var(--orange)
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      color: var(--text-3);
+      opacity: .6;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule-soft)
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border-radius: var(--rc);
+      cursor: pointer;
+      transition: all .18s var(--ease);
+      white-space: nowrap
+    }
+
+    @media (max-width:780px) {
+      .nav-links {
+        display: none
+      }
+
+      .nav-toggle {
+        display: block
+      }
+
+      .page {
+        padding: 16px 16px 56px
+      }
+
+      .masthead {
+        padding: 28px 24px
+      }
+
+      .masthead-top {
+        gap: 20px
+      }
+
+      .masthead-id h1 {
+        font-size: 28px
+      }
+
+      .social-grid,
+      .summary-stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .summary-stat:nth-child(2) {
+        border-right: none
+      }
+
+      .summary-stat:nth-child(1),
+      .summary-stat:nth-child(2) {
+        border-bottom: 1px solid var(--rule-soft)
+      }
+
+      .certs-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .panel-head,
+      .panel-body {
+        padding-left: 20px;
+        padding-right: 20px
+      }
+    }
+
+    @media (max-width:560px) {
+      .page {
+        padding: 12px 12px 48px;
+        gap: 10px
+      }
+
+      .masthead {
+        padding: 22px 18px
+      }
+
+      .masthead-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px
+      }
+
+      .masthead-id h1 {
+        font-size: 24px
+      }
+
+      .social-grid {
+        grid-template-columns: 1fr
+      }
+
+      .summary-stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .summary-body {
+        margin: 16px 14px 0;
+        padding: 16px
+      }
+
+      .summary-strengths {
+        padding: 14px 14px 18px
+      }
+
+      .certs-grid {
+        grid-template-columns: 1fr
+      }
+
+      .exp-header {
+        flex-direction: column;
+        gap: 4px
+      }
+
+
+
+      .panel-head,
+      .panel-body {
+        padding-left: 14px;
+        padding-right: 14px
+      }
+
+      .proj-grid {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand">A<span>.</span>Abhilash</a>
+      <ul class="nav-links">
+        <li><a href="#summary">Summary</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#certifications">Certifications</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#achievements">Achievements</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle theme"></button>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#summary">Summary</a>
+      <a href="#experience">Experience</a>
+      <a href="#certifications">Certifications</a>
+      <a href="#projects">Projects</a>
+      <a href="#achievements">Achievements</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <section class="masthead" id="hero">
+      <div class="masthead-top">
+        <div class="masthead-avatar">
+          <img class="avatar-photo" src="https://i.ibb.co/Tx8PK9pD/Chat-GPT-Image-Aug-31-2026-09-46-14-PM.png"
+            alt="Anala Abhilash profile photo">
+        </div>
+        <div class="masthead-id">
+          <h1><span class="name-first">Anala</span> <span class="name-last">Abhilash</span></h1>
+          <p class="role">Data Analyst | Power Platform Developer</p>
+          <p class="tagline">Building automated Power BI dashboards and reporting solutions that drive smarter, faster
+            decisions.</p>
+        </div>
+      </div>
+      <div class="masthead-rule"></div>
+      <div class="social-grid">
+        <a href="https://www.linkedin.com/in/anala-abhilash" class="social-link" aria-label="LinkedIn" target="_blank"
+          rel="noopener noreferrer">
+          <span class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+              <rect x="2" y="9" width="4" height="12"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg></span>
+          <span class="social-info"><span class="social-label">LinkedIn</span><span
+              class="social-handle">in/anala-abhilash</span></span>
+        </a>
+        <a href="https://github.com/analaabhilashabhi-prog" class="social-link" aria-label="GitHub" target="_blank"
+          rel="noopener noreferrer">
+          <span class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+              </path>
+            </svg></span>
+          <span class="social-info"><span class="social-label">GitHub</span><span
+              class="social-handle">analaabhilashabhi-prog</span></span>
+        </a>
+        <a href="mailto:analaabhilashabhi@gmail.com" class="social-link" aria-label="Email">
+          <span class="social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </svg></span>
+          <span class="social-info"><span class="social-label">Email</span><span
+              class="social-handle">analaabhilashabhi@gmail.com</span></span>
+        </a>
+        <a href="tel:+917816077731" class="social-link" aria-label="Phone">
+          <span class="social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.8 19.79 19.79 0 0 1 1.61 3.2 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l1.96-1.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z">
+              </path>
+            </svg></span>
+          <span class="social-info"><span class="social-label">Phone</span><span class="social-handle">+91 78160
+              77731</span></span>
+        </a>
+        <div class="social-link social-link--static">
+          <span class="social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg></span>
+          <span class="social-info"><span class="social-label">Location</span><span class="social-handle">Kakinada,
+              India</span></span>
+        </div>
+        <button type="button" class="social-link social-link--cta" id="exportPdfBtn" aria-label="Export Portfolio PDF"
+          onclick="exportPortfolioPDF()">
+          <span class="social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg></span>
+          <span class="social-info"><span class="social-label">Portfolio</span><span class="social-handle">Export
+              PDF</span></span>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel" id="summary">
+      <div class="panel-head"><span class="section-label">Professional Summary</span></div>
+      <div class="summary-stats">
+        <div class="summary-stat">
+          <div class="stat-value">3+</div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+        <div class="summary-stat">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Global Certifications</div>
+        </div>
+        <div class="summary-stat">
+          <div class="stat-value">50+</div>
+          <div class="stat-label">BI Solutions Delivered</div>
+        </div>
+        <div class="summary-stat">
+          <div class="stat-value">300K+</div>
+          <div class="stat-label">Records Processed</div>
+        </div>
+      </div>
+      <div class="summary-body">
+        <div class="summary-quote-icon"><svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z">
+            </path>
+            <path
+              d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z">
+            </path>
+          </svg></div>
+        <p class="summary-text">Data Analyst with 3+ years turning complex operational data into actionable dashboards
+          and scalable automation solutions. Core toolkit spans Power BI, SQL, Excel, Snowflake, and the Microsoft Power
+          Platform. Experienced in designing star-schema data models, writing advanced DAX & Power Query
+          transformations, and architecting automated workflows and reporting pipelines. Proven track record delivering
+          end-to-end BI solutions, training 700+ students in modern data analytics, and holding 5 global certifications
+          across Microsoft, Oracle, and Snowflake.</p>
+      </div>
+      <div class="skills-grid-wrapper" id="skillsContainer"></div>
+    </section>
+
+    <section class="panel" id="experience">
+      <div class="panel-head"><span class="section-label">Professional Experience</span></div>
+      <div class="panel-body">
+        <div class="exp-list" id="expList"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="certifications">
+      <div class="panel-head"><span class="section-label">Global Certifications</span><span class="panel-count"
+          id="certCount">5 Earned</span></div>
+      <div class="panel-body">
+        <div class="certs-grid" id="certsGrid"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="badges">
+      <div class="panel-head"><span class="section-label">Verified Badges</span><span class="panel-count"
+          id="badgeCount">5 Earned</span></div>
+      <div class="panel-body">
+        <div class="certs-grid" id="badgesGrid"></div>
+        <div class="cert-empty-state" id="badgesEmpty" style="display:none">
+          <div class="empty-icon">&#x1F3C5;</div>
+          <div class="empty-title">Badges Ready To Display</div>
+          <div class="empty-desc">Verified digital skill badges and exam achievements will appear here.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="extra-certifications">
+      <div class="panel-head"><span class="section-label">Extra Certifications</span><span class="panel-count"
+          id="extraCertCount">6 Earned</span></div>
+      <div class="panel-body">
+        <div class="certs-grid" id="extraCertsGrid"></div>
+        <div class="cert-empty-state" id="extraCertsEmpty" style="display:none">
+          <div class="empty-icon">&#x1F4DC;</div>
+          <div class="empty-title">Additional Certifications</div>
+          <div class="empty-desc">Course completions, workshops, and institutional achievements will appear here.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="projects">
+      <div class="panel-head"><span class="section-label">Key Projects</span><span class="panel-count"
+          id="projCount"></span></div>
+      <div class="panel-body">
+        <div class="proj-grid" id="projGrid"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="achievements">
+      <div class="panel-head"><span class="section-label">Key Achievements</span></div>
+      <div class="panel-body">
+        <div class="achievements-grid" id="achievementsGrid"></div>
+      </div>
+    </section>
+
+
+
+    <footer class="footer" id="contact">
+      <div class="footer-name">Anala <span>Abhilash</span></div>
+      <div class="footer-role">Data Analyst | Power Platform Developer</div>
+      <div class="footer-links">
+        <a href="mailto:analaabhilashabhi@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </svg>analaabhilashabhi@gmail.com</a>
+        <a href="tel:+917816077731"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.8 19.79 19.79 0 0 1 1.61 3.2 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l1.96-1.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z">
+            </path>
+          </svg>+91 78160 77731</a>
+        <a href="https://www.linkedin.com/in/anala-abhilash" target="_blank" rel="noopener noreferrer"><svg
+            viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+            <rect x="2" y="9" width="4" height="12"></rect>
+            <circle cx="4" cy="4" r="2"></circle>
+          </svg>LinkedIn</a>
+      </div>
+      <div class="footer-copy" id="footerCopy"></div>
+    </footer>
+
+  </div>
+
+  <div class="cert-modal" id="certModal" aria-hidden="true">
+    <div class="cert-modal-backdrop" data-cert-modal-close></div>
+    <div class="cert-modal-panel" role="dialog" aria-modal="true" aria-label="Certificate preview">
+      <div class="cert-modal-head">
+        <div class="cert-modal-caption" id="certModalCaption"></div>
+        <div class="cert-modal-actions">
+          <a id="certModalViewOriginal" href="#" target="_blank" rel="noopener noreferrer" class="cert-modal-view-btn"
+            title="Open full resolution in new tab">
+            <span>Open Full Size</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+          <button type="button" class="cert-modal-close" data-cert-modal-close aria-label="Close">&#x2715;</button>
+        </div>
+      </div>
+      <div class="cert-modal-media" id="certModalMedia"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var stored = null;
+      try { stored = localStorage.getItem('portfolio-theme'); } catch (e) { }
+      if (stored === 'light') root.setAttribute('data-theme', 'light');
+
+      var sunIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>';
+      var moonIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+
+      var toggle = document.getElementById('themeToggle');
+      function paintToggle() {
+        var isLight = root.getAttribute('data-theme') === 'light';
+        toggle.innerHTML = isLight ? moonIcon : sunIcon;
+        toggle.title = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+      }
+      paintToggle();
+      toggle.addEventListener('click', function () {
+        var isLight = root.getAttribute('data-theme') === 'light';
+        if (isLight) { root.removeAttribute('data-theme'); } else { root.setAttribute('data-theme', 'light'); }
+        try { localStorage.setItem('portfolio-theme', isLight ? 'dark' : 'light'); } catch (e) { }
+        paintToggle();
+      });
+
+      var navToggle = document.getElementById('navToggle');
+      var mobileMenu = document.getElementById('mobileMenu');
+      navToggle.addEventListener('click', function () {
+        var open = mobileMenu.classList.toggle('open');
+        navToggle.textContent = open ? '✕' : '☰';
+      });
+      mobileMenu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          mobileMenu.classList.remove('open');
+          navToggle.textContent = '☰';
+        });
+      });
+
+      var skills = [
+        {
+          label: 'Platforms & Tools',
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+          items: ['Power BI', 'Excel', 'SQL', 'Power Platform', 'Power Automate', 'Power Apps', "API's", 'Snowflake']
+        },
+        {
+          label: 'Query Languages',
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
+          items: ['SQL', 'M Language', 'DAX', 'Macros', 'VBA']
+        },
+        {
+          label: 'AI & Automation Skills',
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+          items: ['AI Automations', 'AI-Driven Analytics', 'Prompt Engineering', 'Claude Code', 'Antigravity', 'Vibe Coding', 'AI Tools', 'LLM Workflows', 'Automated Reporting']
+        },
+        {
+          label: 'Soft Skills & Domain',
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+          items: ['Training & Mentoring', 'Communication', 'Team Collaboration', 'Technical Troubleshooting', 'Data Modelling', 'Dashboard Design', 'Data Cleaning']
+        }
+      ];
+
+      var skillsContainer = document.getElementById('skillsContainer');
+      if (skillsContainer) {
+        skillsContainer.innerHTML = '';
+        skills.forEach(function (group) {
+          var card = document.createElement('div');
+          card.className = 'skill-card';
+          var tags = group.items.map(function (item) {
+            return '<span class="skill-item-tag">' + item + '</span>';
+          }).join('');
+          card.innerHTML =
+            '<div class="skill-card-head">' +
+            '<div class="skill-card-icon">' + group.icon + '</div>' +
+            '<div class="skill-card-title">' + group.label + '</div>' +
+            '</div>' +
+            '<div class="skill-card-tags">' + tags + '</div>';
+          skillsContainer.appendChild(card);
+        });
+      }
+
+      var experience = [
+        {
+          title: 'Data Analyst & Power Platform Developer & Trainer', company: 'Torii Minds', period: 'Jun 2026 - Present',
+          bullets: [
+            'Solely owned end-to-end raw data pipelines, ingesting, parsing, and cleaning multi-source operational data to build reliable, sanitized datasets for analytics.',
+            'Designed enterprise-grade Power BI dashboards using advanced DAX and Star-Schema data modelling, automating reporting workflows and cutting turnaround time by 65%.',
+            'Architected Power Automate solutions with Microsoft 365 connectors, automating large-scale email communication and status notifications dispatched to thousands of recipients simultaneously.',
+            'Built intelligent automation workflows within Microsoft Power Platform, integrating AI-driven components to reduce manual operational effort by up to 75%.',
+            'Conducted an intensive 1-week hands-on Business Intelligence training program for MCA and MBA students, guiding technical projects and providing course certifications.',
+            'Engineered robust Power Query M-scripts and DAX metrics, establishing high data integrity and raising process accuracy by up to 70% across departments.',
+            'Queried and modelled large-scale data in Snowflake, structuring curated data marts to feed real-time, cross-functional Power BI reporting.'
+          ],
+          tech: ['Power BI', 'DAX', 'Power Platform', 'Power Query', 'Power Automate', 'Snowflake']
+        },
+        {
+          title: 'Data Analyst Trainer', company: 'Technical Hub', period: '2023 - 2026',
+          bullets: [
+            'Served as the lead data analyst managing institutional data architecture, overseeing the full ETL lifecycle from raw student/operational records to production reporting models.',
+            'Developed interactive Power BI dashboards using Power Query for ETL transformations and DAX, speeding up institutional reporting turnaround by up to 70%.',
+            'Led monthly leadership review meetings with campus HODs and management, presenting comprehensive monthly performance dashboards and actionable institutional metrics.',
+            'Built automated Power Platform email notification systems and validation triggers, sending automated report digests and updates to thousands of enrolled students.',
+            'Spearheaded campus-wide technical workshops, webinars, and masterclasses in Power BI, SQL, and Excel for students, faculty, and institutional partners.',
+            'Conducted hands-on mentoring for 700+ students across Project Space and I-Ship programs in Power BI, SQL, and Power Platform with a 92% project completion rate.',
+            'Spearheaded full-lifecycle institutional analytics solutions, elevating data processing accuracy by 30% to 50% across departments.',
+            'Warehoused and queried structured data in Snowflake and SQL Server, establishing the core data architecture behind institutional reporting dashboards.'
+          ],
+          tech: ['Power BI', 'DAX', 'Power Query', 'SQL', 'Excel', 'Power Platform', 'Snowflake']
+        }
+      ];
+      var expList = document.getElementById('expList');
+      experience.forEach(function (job, idx) {
+        var item = document.createElement('div');
+        item.className = 'exp-item';
+        item.innerHTML =
+          '<div class="exp-stem"><div class="exp-dot"></div><div class="exp-line"></div></div>' +
+          '<div class="exp-content">' +
+          '<div class="exp-header"><div><div class="exp-title">' + job.title + '</div><div class="exp-company">' + job.company + '</div></div><div class="exp-period">' + job.period + '</div></div>' +
+          '<ul class="exp-bullets">' + job.bullets.map(function (b) { return '<li>' + b + '</li>'; }).join('') + '</ul>' +
+          '<div class="tags">' + job.tech.map(function (t) { return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' +
+          '</div>';
+        expList.appendChild(item);
+      });
+
+      var projects = [
+        {
+          name: 'Loop Task Management System',
+          description: 'Architected an enterprise grade, multi tenant task and workforce management portal with a 4 tier RBAC system across 13 controllers and 12 route groups. Built a Stale While Revalidate caching engine processing 300,000+ biometric attendance logs, plus automated Excel JS / PDF Kit reporting pipelines with tamper proof daily work logs.',
+          image: 'https://i.ibb.co/SYsY3Yk/Screenshot-2026-08-31-194313.png',
+          link: 'https://loop.toriiminds.com/login',
+          tech: ['Claude Code', 'Antigravity', 'RBAC', 'Caching Engine']
+        },
+        {
+          name: 'Claude Technical Hub',
+          description: 'Architected a full stack enterprise platform for an official Anthropic Claude Partner spanning 9,400+ lines of code, serving 900+ certified students and 160+ shipped AI projects. Built a high concurrency registration engine with MongoDB compound indexing and Microsoft Graph API (OAuth 2.0) email automation, plus a zero dependency client side analytics engine aggregating data across 8 dimensions in under 100ms.',
+          image: 'https://i.ibb.co/kgwH6Sz4/Screenshot-2026-08-31-194050.png',
+          link: 'https://claude.technicalhub.io',
+          tech: ['Claude Code', 'Claude Cowork', 'Antigravity', 'MongoDB']
+        },
+        {
+          name: 'Technical Hub - 10-Year Analytics Dashboard',
+          description: "A comprehensive analytics dashboard analyzing a decade of Technical Hub's organizational journey across massive datasets. Synthesizes key metrics including revenue trends, operational expenses, global certifications, student growth, and institutional performance with a clean, intuitive multi-tab navigation interface.",
+          image: 'https://i.ibb.co/YTbWhgFV/Screenshot-2026-08-31-220435.png',
+          link: 'https://i.ibb.co/YTbWhgFV/Screenshot-2026-08-31-220435.png',
+          tech: ['Power BI', 'DAX', 'Power Query', 'Data Modeling']
+        },
+        {
+          name: 'Path Engine',
+          description: 'AI-powered student assessment platform evaluating skills through an 8-layer testing workflow with camera-based proctoring, fullscreen enforcement, and anti-cheating safeguards. Dynamically diagnoses skill gaps and synthesizes personalized, goal-driven learning roadmaps to guide students systematically toward target outcomes.',
+          image: 'https://i.ibb.co/tPpYn2mn/Screenshot-2026-08-31-215841.png',
+          link: 'https://path-engine.vercel.app/',
+          tech: ['AI Assessments', 'Adaptive Roadmaps', 'Proctoring Engine', 'Anti-Cheating']
+        },
+        {
+          name: 'Placement Analytics Dashboard',
+          description: 'Built an interactive Power BI dashboard analyzing student placement data to track placement rates, salary trends, academic performance, and student demographics. Used DAX measures and interactive visualizations to identify placement patterns and key factors influencing placement outcomes.',
+          image: 'https://i.ibb.co/0jJRQjwZ/PLACEMENT.png',
+          link: 'https://i.ibb.co/0jJRQjwZ/PLACEMENT.png',
+          tech: ['Power BI', 'DAX', 'Power Query', 'Data Modeling']
+        },
+        {
+          name: "McDonald's Nutrition Analysis Dashboard",
+          description: "Built an interactive Power BI dashboard analyzing McDonald's menu and nutritional data to compare calories, fats, proteins, sugars, carbohydrates, and other key nutrients. Used DAX measures and interactive visualizations to identify nutritional patterns and high/low nutrient food items.",
+          image: 'https://i.ibb.co/CpVkMY4x/MC-1.png',
+          images: ['https://i.ibb.co/CpVkMY4x/MC-1.png', 'https://i.ibb.co/mC7n0Vk8/MC-2.png'],
+          link: 'https://i.ibb.co/CpVkMY4x/MC-1.png',
+          tech: ['Power BI', 'Power Query', 'DAX', 'Data Modeling']
+        }
+      ];
+      var imagePlaceholderIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg>';
+      var linkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg>';
+      var MAX_VISIBLE_TAGS = 4;
+      var projGrid = document.getElementById('projGrid');
+      projects.forEach(function (p, pIdx) {
+        var card = document.createElement('div');
+        card.className = 'proj-card';
+        var visibleTags = p.tech.slice(0, MAX_VISIBLE_TAGS);
+        var extraCount = p.tech.length - visibleTags.length;
+        var tagsHtml = visibleTags.map(function (t) { return '<span class="tag">' + t + '</span>'; }).join('');
+        if (extraCount > 0) tagsHtml += '<span class="proj-tag-more">+' + extraCount + '</span>';
+
+        var imgList = p.images && p.images.length > 0 ? p.images : (p.image ? [p.image] : []);
+        var mediaHtml = '';
+
+        if (imgList.length > 1) {
+          var slidesHtml = imgList.map(function (imgUrl, i) {
+            return '<div class="proj-slide' + (i === 0 ? ' active' : '') + '" data-slide-idx="' + i + '"><img src="' + imgUrl + '" alt="' + p.name + ' - view ' + (i + 1) + '" loading="lazy"></div>';
+          }).join('');
+
+          var dotsHtml = imgList.map(function (_, i) {
+            return '<button type="button" class="proj-dot' + (i === 0 ? ' active' : '') + '" data-target-idx="' + i + '" aria-label="Slide ' + (i + 1) + '"></button>';
+          }).join('');
+
+          mediaHtml = '<div class="proj-slider">' + slidesHtml + '<div class="proj-img-dots">' + dotsHtml + '</div></div>';
+        } else if (imgList.length === 1) {
+          mediaHtml = '<img src="' + imgList[0] + '" alt="' + p.name + ' preview" style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block">';
+        } else {
+          mediaHtml = '<div class="proj-media-inner">' + imagePlaceholderIcon + '<span class="proj-media-label">Preview coming soon</span></div>';
+        }
+
+        card.innerHTML =
+          '<div class="proj-media">' + mediaHtml + '</div>' +
+          '<div class="proj-card-body">' +
+          '<div class="proj-card-head"><span class="proj-card-name">' + p.name + '</span><a class="proj-card-link" href="' + p.link + '" target="_blank" rel="noopener noreferrer" aria-label="View ' + p.name + '">' + linkIcon + '</a></div>' +
+          '<div class="proj-card-desc">' + p.description + '</div>' +
+          '<div class="proj-card-tags">' + tagsHtml + '</div>' +
+          '</div>';
+
+        // Setup auto-scroll carousel if multiple images
+        if (imgList.length > 1) {
+          var currentIdx = 0;
+          var totalSlides = imgList.length;
+          var slides = card.querySelectorAll('.proj-slide');
+          var dots = card.querySelectorAll('.proj-dot');
+          var autoTimer = null;
+
+          function goToSlide(n) {
+            currentIdx = (n + totalSlides) % totalSlides;
+            slides.forEach(function (s, idx) {
+              if (idx === currentIdx) s.classList.add('active');
+              else s.classList.remove('active');
+            });
+            dots.forEach(function (d, idx) {
+              if (idx === currentIdx) d.classList.add('active');
+              else d.classList.remove('active');
+            });
+          }
+
+          function startTimer() {
+            if (autoTimer) clearInterval(autoTimer);
+            autoTimer = setInterval(function () {
+              goToSlide(currentIdx + 1);
+            }, 3200);
+          }
+
+          function stopTimer() {
+            if (autoTimer) clearInterval(autoTimer);
+            autoTimer = null;
+          }
+
+          dots.forEach(function (dot) {
+            dot.addEventListener('click', function (e) {
+              e.stopPropagation();
+              var target = parseInt(this.getAttribute('data-target-idx'), 10);
+              goToSlide(target);
+              startTimer();
+            });
+          });
+
+          card.addEventListener('mouseenter', stopTimer);
+          card.addEventListener('mouseleave', startTimer);
+
+          // Start auto scroll
+          startTimer();
+        }
+
+        projGrid.appendChild(card);
+      });
+      document.getElementById('projCount').textContent = projects.length + ' Projects';
+
+      var certifications = [
+        { name: 'Microsoft Office Specialist: Excel 2019 Associate', issuer: 'Microsoft', image: 'https://i.ibb.co/YTjtP8xM/Excel-2019-Associate.png', link: '#' },
+        { name: 'PL-900: Microsoft Power Platform Fundamentals', issuer: 'Microsoft', image: 'https://i.ibb.co/vxbrTrWr/Power-Platform-Fundamentals.png', link: '#' },
+        { name: 'SnowPro Core Certification', issuer: 'Snowflake', image: 'https://i.ibb.co/RT9z84vd/snowpro-certification.png', link: '#' },
+        { name: 'Oracle Analytics Cloud 2025 Certified Professional', issuer: 'Oracle', image: 'https://i.ibb.co/rY9wBm4/OAC-2025-Professional.png', link: '#' },
+        { name: 'Oracle Certified Foundations Associate, Database', issuer: 'Oracle', image: 'https://i.ibb.co/KxHH2pkv/Oracle-Foundations-Database.png', link: '#' }
+      ];
+
+      var badges = [
+        {
+          name: 'Microsoft Office Specialist: Excel Associate (Office 2019)',
+          issuer: 'Microsoft',
+          image: 'https://images.credly.com/images/9d2bcbe6-519f-4ed0-ad34-aca077421568/linkedin_thumb_MOS_Excel.png',
+          link: 'https://www.credly.com/badges/73294cc6-cd9f-496e-96e4-994bc650390d/public_url'
+        },
+        {
+          name: 'Microsoft Certified: Power Platform Fundamentals (PL-900)',
+          issuer: 'Microsoft',
+          image: 'https://images.credly.com/images/2a6251f2-737b-4bf6-9190-d77570cc76fc/linkedin_thumb_CERT-Fundamentals-Power-Platform.png',
+          link: 'https://www.credly.com/badges/c0771c78-460a-4718-87fe-9305ac56b9c1/public_url'
+        },
+        {
+          name: 'SnowPro Core Certification Badge',
+          issuer: 'Snowflake',
+          image: 'https://i.ibb.co/DP6ZcC7S/snowpro-badge.png',
+          link: 'https://i.ibb.co/DP6ZcC7S/snowpro-badge.png'
+        },
+        {
+          name: 'Oracle Analytics Cloud 2025 Certified Professional Badge',
+          issuer: 'Oracle',
+          image: 'https://i.ibb.co/5hzMrt88/OAC-2025-Professional-Badge.png',
+          link: 'https://i.ibb.co/5hzMrt88/OAC-2025-Professional-Badge.png'
+        },
+        {
+          name: 'Oracle Certified Foundations Associate, Database Badge',
+          issuer: 'Oracle',
+          image: 'https://i.ibb.co/npSqV5V/Oracle-Foundations-Database-Badge.png',
+          link: 'https://i.ibb.co/npSqV5V/Oracle-Foundations-Database-Badge.png'
+        }
+      ];
+
+      var extraCertifications = [
+        {
+          name: 'Learning Microsoft 365 Copilot for Work (2025)',
+          issuer: 'LinkedIn Learning',
+          image: 'https://i.ibb.co/jv3dN2R9/Certificate-Of-Completion-Learning-Microsoft-365-Copilot-for-Work-2025.png',
+          link: 'https://i.ibb.co/jv3dN2R9/Certificate-Of-Completion-Learning-Microsoft-365-Copilot-for-Work-2025.png'
+        },
+        {
+          name: 'Excel with Copilot: AI-Driven Data Analysis',
+          issuer: 'LinkedIn Learning',
+          image: 'https://i.ibb.co/chkMJ48k/Certificate-Of-Completion-Excel-with-Copilot-AIDriven-Data-Analysis.png',
+          link: 'https://i.ibb.co/chkMJ48k/Certificate-Of-Completion-Excel-with-Copilot-AIDriven-Data-Analysis.png'
+        },
+        {
+          name: 'Microsoft Copilot: The Art of Prompt Writing',
+          issuer: 'LinkedIn Learning',
+          image: 'https://i.ibb.co/QvSQN1dR/Certificate-Of-Completion-Microsoft-Copilot-The-Art-of-Prompt-Writing.png',
+          link: 'https://i.ibb.co/QvSQN1dR/Certificate-Of-Completion-Microsoft-Copilot-The-Art-of-Prompt-Writing.png'
+        },
+        {
+          name: 'Copilot in PowerPoint: From Prompt to Presentation',
+          issuer: 'LinkedIn Learning',
+          image: 'https://i.ibb.co/35qShpTk/Certificate-Of-Completion-Copilot-in-Power-Point-From-Prompt-to-Presentation-2024.png',
+          link: 'https://i.ibb.co/35qShpTk/Certificate-Of-Completion-Copilot-in-Power-Point-From-Prompt-to-Presentation-2024.png'
+        },
+        {
+          name: 'Microsoft 365 Copilot: Helpful Tips for Marketers',
+          issuer: 'LinkedIn Learning',
+          image: 'https://i.ibb.co/xtWkPk5N/Certificate-Of-Completion-Microsoft-365-Copilot-Helpful-Tips-for-Marketers.png',
+          link: 'https://i.ibb.co/xtWkPk5N/Certificate-Of-Completion-Microsoft-365-Copilot-Helpful-Tips-for-Marketers.png'
+        },
+        {
+          name: "The Communicator's Guide to AI Tools and Mindsets",
+          issuer: 'LinkedIn Learning',
+          image: 'https://i.ibb.co/p69b0W4S/Certificate-Of-Completion-The-Communicators-Guide-to-AI-Tools-and-Mindsets-for-Modern-PR-and-Media.png',
+          link: 'https://i.ibb.co/p69b0W4S/Certificate-Of-Completion-The-Communicators-Guide-to-AI-Tools-and-Mindsets-for-Modern-PR-and-Media.png'
+        }
+      ];
+
+      var certModal = document.getElementById('certModal');
+      var certModalMedia = document.getElementById('certModalMedia');
+      var certModalCaption = document.getElementById('certModalCaption');
+      var certModalViewOriginal = document.getElementById('certModalViewOriginal');
+
+      function openCertModal(c) {
+        if (!certModal) return;
+        certModalMedia.innerHTML = c.image
+          ? '<img src="' + c.image + '" alt="' + c.name + '" loading="eager">'
+          : '<div class="cert-modal-media-inner">' + imagePlaceholderIcon + '<span class="cert-media-label">Preview coming soon</span></div>';
+
+        certModalCaption.innerHTML = '<span>' + c.issuer + '</span>' + c.name;
+
+        if (certModalViewOriginal) {
+          var targetUrl = c.link && c.link !== '#' ? c.link : c.image;
+          if (targetUrl) {
+            certModalViewOriginal.href = targetUrl;
+            certModalViewOriginal.style.display = 'inline-flex';
+            var isCredly = targetUrl.indexOf('credly.com') !== -1;
+            certModalViewOriginal.querySelector('span').textContent = isCredly ? 'Verify on Credly' : 'Open Full Size';
+          } else {
+            certModalViewOriginal.style.display = 'none';
+          }
+        }
+        certModal.classList.add('open');
+        certModal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeCertModal() {
+        if (certModal) {
+          certModal.classList.remove('open');
+          certModal.setAttribute('aria-hidden', 'true');
+        }
+      }
+
+      if (certModal) {
+        certModal.querySelectorAll('[data-cert-modal-close]').forEach(function (el) {
+          el.addEventListener('click', closeCertModal);
+        });
+      }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeCertModal();
+      });
+
+      function renderCertGrid(containerId, emptyId, items, labelType) {
+        var grid = document.getElementById(containerId);
+        var emptyEl = document.getElementById(emptyId);
+        if (!grid) return;
+        grid.innerHTML = '';
+        if (!items || items.length === 0) {
+          if (emptyEl) emptyEl.style.display = 'block';
+          grid.style.display = 'none';
+          return;
+        }
+        if (emptyEl) emptyEl.style.display = 'none';
+        grid.style.display = 'grid';
+        items.forEach(function (c) {
+          var card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'cert-card';
+          card.setAttribute('aria-label', 'View ' + labelType + ': ' + c.name);
+          var mediaHtml = c.image
+            ? '<img src="' + c.image + '" alt="' + c.name + ' preview" loading="lazy">'
+            : '<div class="cert-media-inner">' + imagePlaceholderIcon + '<span class="cert-media-label">Preview coming soon</span></div>';
+          card.innerHTML =
+            '<div class="cert-media">' + mediaHtml + '</div>' +
+            '<div class="cert-card-body">' +
+            '<div class="cert-issuer">' + c.issuer + '</div>' +
+            '<div class="cert-name">' + c.name + '</div>' +
+            '</div>';
+          card.addEventListener('click', function () { openCertModal(c); });
+          grid.appendChild(card);
+        });
+      }
+
+      // Render all certification sections
+      renderCertGrid('certsGrid', null, certifications, 'Certificate');
+      renderCertGrid('badgesGrid', 'badgesEmpty', badges, 'Badge');
+      renderCertGrid('extraCertsGrid', 'extraCertsEmpty', extraCertifications, 'Certificate');
+
+      var certCountEl = document.getElementById('certCount');
+      if (certCountEl) certCountEl.textContent = certifications.length + ' Earned';
+      var badgeCountEl = document.getElementById('badgeCount');
+      if (badgeCountEl) badgeCountEl.textContent = badges.length + ' Earned';
+      var extraCertCountEl = document.getElementById('extraCertCount');
+      if (extraCertCountEl) extraCertCountEl.textContent = extraCertifications.length + ' Earned';
+
+      var achievements = [
+        {
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+          text: 'Successfully trained 700+ students in completing analytics and automation projects using Power BI.'
+        },
+        {
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+          text: 'Trained students for Snowflake, Power BI, and Excel global certification exams, achieving an outstanding 98% pass rate.'
+        },
+        {
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>',
+          text: 'Produced advanced dashboards and workflows that improved reporting and operational efficiency by 50 to 70%.'
+        },
+        {
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>',
+          text: 'Completed 50+ end to end Business Intelligence projects, including dashboards, automation flows, and reporting solutions.'
+        },
+        {
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
+          text: 'Achieved 95%+ data accuracy in Power BI solutions used for academic and operational decision making.'
+        }
+      ];
+
+      var achievementsGrid = document.getElementById('achievementsGrid');
+      if (achievementsGrid) {
+        achievements.forEach(function (a) {
+          var card = document.createElement('div');
+          card.className = 'achievement-card';
+          card.innerHTML =
+            '<div class="achievement-icon">' + a.icon + '</div>' +
+            '<div class="achievement-text">' + a.text + '</div>';
+          achievementsGrid.appendChild(card);
+        });
+      }
+
+
+
+      document.getElementById('footerCopy').textContent = '© ' + new Date().getFullYear() + ' Anala Abhilash';
+    })();
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    async function exportPortfolioPDF() {
+      var btn = document.getElementById('exportPdfBtn');
+      var handleEl = btn.querySelector('.social-handle');
+      var origLabel = handleEl.textContent;
+      handleEl.textContent = 'Loading...';
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.6';
+
+      try {
+        /* ---- check libs loaded ---- */
+        if (typeof html2canvas === 'undefined') throw new Error('html2canvas library failed to load');
+        if (!window.jspdf) throw new Error('jsPDF library failed to load');
+
+        var jsPDF = window.jspdf.jsPDF;
+        var pdf = new jsPDF('p', 'mm', 'a4');
+        var pageW = 210, pageH = 297, margin = 10;
+        var contentW = pageW - margin * 2;
+
+        /* ---- force light theme for white-bg PDF ---- */
+        var wasLight = document.documentElement.getAttribute('data-theme') === 'light';
+        if (!wasLight) document.documentElement.setAttribute('data-theme', 'light');
+        await sleep(350);
+
+        /* ---- pre-convert all external images to base64 ---- */
+        handleEl.textContent = 'Loading images...';
+        await convertAllImagesToBase64();
+        await sleep(200);
+
+        /* ---- capture helpers ---- */
+        async function captureEl(el) {
+          return html2canvas(el, {
+            scale: 3,
+            useCORS: false,
+            allowTaint: false,
+            backgroundColor: '#ffffff',
+            logging: false
+          });
+        }
+
+        function addPage(canvas, first) {
+          if (!first) pdf.addPage();
+          var imgData = canvas.toDataURL('image/jpeg', 0.95);
+          var ratio = canvas.width / canvas.height;
+          /* fit to page: fill width, scale down if too tall */
+          var imgW = contentW;
+          var imgH = imgW / ratio;
+          if (imgH > pageH - margin * 2) {
+            imgH = pageH - margin * 2;
+            imgW = imgH * ratio;
+          }
+          /* center on page */
+          var x = (pageW - imgW) / 2;
+          var y = (pageH - imgH) / 2;
+          pdf.addImage(imgData, 'JPEG', x, y, imgW, imgH);
+        }
+
+        async function captureCloned(els) {
+          var w = document.createElement('div');
+          w.style.cssText = 'position:absolute;left:-9999px;top:0;width:820px;background:#fff;padding:20px;';
+          document.body.appendChild(w);
+          els.forEach(function (el) {
+            var c = el.cloneNode(true);
+            c.style.marginBottom = '16px';
+            w.appendChild(c);
+          });
+          await sleep(250);
+          var cv = await captureEl(w);
+          document.body.removeChild(w);
+          return cv;
+        }
+
+        async function captureProjectPair(cards, title) {
+          var w = document.createElement('div');
+          w.style.cssText = 'position:absolute;left:-9999px;top:0;width:820px;background:#fff;padding:20px;';
+          var h = document.createElement('div');
+          h.style.cssText = 'font-family:Inter,sans-serif;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#d44e18;padding:14px 20px;border-bottom:1px solid rgba(17,17,17,.12);';
+          h.textContent = title;
+          w.appendChild(h);
+          var g = document.createElement('div');
+          g.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:20px;';
+          cards.forEach(function (card) {
+            var c = card.cloneNode(true);
+            c.style.width = '100%';
+            g.appendChild(c);
+          });
+          w.appendChild(g);
+          document.body.appendChild(w);
+          await sleep(300);
+          var cv = await captureEl(w);
+          document.body.removeChild(w);
+          return cv;
+        }
+
+
+        /* ---- generate pages ---- */
+        // Page 1: Hero
+        handleEl.textContent = 'Page 1/10...';
+        addPage(await captureEl(document.getElementById('hero')), true);
+
+        // Page 2: Summary + Skills
+        handleEl.textContent = 'Page 2/10...';
+        addPage(await captureEl(document.getElementById('summary')), false);
+
+        // Page 3: Experience
+        handleEl.textContent = 'Page 3/10...';
+        addPage(await captureEl(document.getElementById('experience')), false);
+
+        // Page 4: Global Certifications
+        handleEl.textContent = 'Page 4/10...';
+        addPage(await captureEl(document.getElementById('certifications')), false);
+
+        // Page 5: Badges
+        handleEl.textContent = 'Page 5/10...';
+        addPage(await captureEl(document.getElementById('badges')), false);
+
+        // Page 6: Extra Certifications
+        handleEl.textContent = 'Page 6/10...';
+        addPage(await captureEl(document.getElementById('extra-certifications')), false);
+
+        // Pages 7-9: Projects (2 per page)
+        var projCards = Array.from(document.querySelectorAll('#projGrid .proj-card'));
+        var pn = 7;
+        for (var i = 0; i < projCards.length; i += 2) {
+          handleEl.textContent = 'Page ' + pn + '/10...';
+          var pair = projCards.slice(i, i + 2);
+          var label = 'Key Projects (' + (i + 1) + '\u2013' + Math.min(i + 2, projCards.length) + ' of ' + projCards.length + ')';
+          addPage(await captureProjectPair(pair, label), false);
+          pn++;
+        }
+
+        // Last Page: Achievements + Contact
+        handleEl.textContent = 'Page ' + pn + '/' + pn + '...';
+        addPage(await captureCloned([
+          document.getElementById('achievements'),
+          document.getElementById('contact')
+        ]), false);
+
+        /* ---- restore theme ---- */
+        if (!wasLight) document.documentElement.removeAttribute('data-theme');
+
+        /* ---- restore original image srcs ---- */
+        restoreAllImages();
+
+        /* ---- save ---- */
+        handleEl.textContent = 'Saving...';
+        pdf.save('Anala-Abhilash-Data-Analyst-Trainer.pdf');
+
+      } catch (err) {
+        console.error('PDF export error:', err);
+        alert('PDF export failed: ' + err.message);
+        if (!wasLight) document.documentElement.removeAttribute('data-theme');
+        restoreAllImages();
+      } finally {
+        handleEl.textContent = origLabel;
+        btn.style.pointerEvents = '';
+        btn.style.opacity = '';
+      }
+    }
+
+    function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+    /* Convert every <img> with an external src to a base64 data-URL
+       so html2canvas can render them without CORS issues. */
+    async function convertAllImagesToBase64() {
+      var imgs = document.querySelectorAll('img[src]');
+      var promises = [];
+      imgs.forEach(function (img) {
+        var src = img.getAttribute('src');
+        if (!src || src.startsWith('data:')) return;
+        promises.push(
+          toBase64(src).then(function (b64) {
+            img.setAttribute('data-orig-src', src);
+            img.src = b64;
+          }).catch(function () {
+            /* image couldn't be converted – leave as-is, html2canvas will skip it */
+          })
+        );
+      });
+      await Promise.all(promises);
+    }
+
+    function restoreAllImages() {
+      document.querySelectorAll('img[data-orig-src]').forEach(function (img) {
+        img.src = img.getAttribute('data-orig-src');
+        img.removeAttribute('data-orig-src');
+      });
+    }
+
+    function toBase64(url) {
+      return new Promise(function (resolve, reject) {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function () {
+          try {
+            var c = document.createElement('canvas');
+            c.width = img.naturalWidth;
+            c.height = img.naturalHeight;
+            c.getContext('2d').drawImage(img, 0, 0);
+            resolve(c.toDataURL('image/png'));
+          } catch (e) { reject(e); }
+        };
+        img.onerror = function () { reject(new Error('img load fail')); };
+        img.src = url + (url.indexOf('?') === -1 ? '?' : '&') + '_t=' + Date.now();
+      });
+    }
+  </script>
+
+</body>
+
+</html>
