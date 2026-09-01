@@ -513,13 +513,11 @@ export const programsData = [
                         title: 'AI API Integration & AI Chatbot',
                         duration: '10 Hours',
                         topics: [
-                            'Generative AI & LLM integration for mobile apps',
                             'Connecting OpenAI & Google Gemini APIs using http/dio',
                             'Streaming AI responses for real-time token output',
                             'AI Chatbot UI: Message bubbles, typing indicators, chat history',
                             'State management for chat sessions with Provider',
-                            'Voice AI: Speech-to-Text & Text-to-Speech integration',
-                            'Securing API keys & managing rate limits in production'
+                            'Voice AI: Speech-to-Text & Text-to-Speech integration'
                         ]
                     },
                     {
