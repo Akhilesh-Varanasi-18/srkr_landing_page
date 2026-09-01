@@ -23,6 +23,7 @@ import {
     GENDER_COLORS,
     RESIDENCE_COLORS,
     LAPTOP_COLORS,
+    CRT_FEE_COLORS,
     BRANCH_RAMP,
     shortBranch,
     shortDay,
@@ -290,6 +291,49 @@ export function LaptopSplit({ data }) {
                             <div className="dash-splitbar-label dash-splitbar-label--right">
                                 <strong>{rows[1].value}</strong>
                                 <span><span className="dash-legend-swatch" style={{ background: LAPTOP_COLORS.No }} /> No laptop</span>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ── 5c. CRT training fee 100% split bar ──
+export function CrtFeeSplit({ data }) {
+    const total = data.reduce((s, d) => s + d.value, 0);
+    const order = ['Yes', 'No'];
+    const rows = order.map((name) => ({ name, value: data.find((d) => d.name === name)?.value || 0 }));
+    return (
+        <div className="dash-card dash-card--6">
+            <div className="dash-card-head">
+                <h3 className="dash-card-title">CRT training fee</h3>
+                <p className="dash-card-sub">Students who have paid vs not yet</p>
+            </div>
+            <div className="dash-card-body">
+                {total === 0 ? <EmptyChart label="No data yet" /> : (
+                    <>
+                        <div className="dash-splitbar">
+                            {rows.map((r) => r.value > 0 && (
+                                <div
+                                    key={r.name}
+                                    className="dash-splitbar-seg"
+                                    style={{ flexGrow: r.value, background: CRT_FEE_COLORS[r.name] }}
+                                    title={`${r.name}: ${r.value}`}
+                                >
+                                    {pct(r.value, total) >= 10 ? `${pct(r.value, total)}%` : ''}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="dash-splitbar-labels">
+                            <div className="dash-splitbar-label">
+                                <strong>{rows[0].value}</strong>
+                                <span><span className="dash-legend-swatch" style={{ background: CRT_FEE_COLORS.Yes }} /> Fee paid</span>
+                            </div>
+                            <div className="dash-splitbar-label dash-splitbar-label--right">
+                                <strong>{rows[1].value}</strong>
+                                <span><span className="dash-legend-swatch" style={{ background: CRT_FEE_COLORS.No }} /> Not yet</span>
                             </div>
                         </div>
                     </>

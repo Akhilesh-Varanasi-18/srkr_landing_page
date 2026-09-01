@@ -44,6 +44,17 @@ const LAPTOP_OPTIONS = [
     }
 ];
 
+const CRT_FEE_OPTIONS = [
+    {
+        value: 'Yes', label: 'Yes, paid',
+        icon: (<svg {...ico}><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>)
+    },
+    {
+        value: 'No', label: 'Not yet',
+        icon: (<svg {...ico}><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>)
+    }
+];
+
 // Custom, theme-styled branch dropdown. A native <select> can't be styled (its
 // option list is browser-chrome) and picks its own open direction — this renders a
 // branded popover listbox with grouped options instead. Closes on outside-click,
@@ -129,6 +140,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
         gender: '',
         residenceType: '',
         hasLaptop: '',
+        paidCrtFee: '',
         passoutYear: '2028',
     });
 
@@ -394,14 +406,23 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            {/* Row 5: Laptop availability */}
-                            <div className="srkr-reg-field">
-                                <label>
-                                    Do you have a Laptop? <span className="required">*</span>
-                                    {/* <small className="srkr-reg-hint"> (Required for hands-on lab & coding sessions)</small> */}
-                                </label>
-                                {renderSegment('hasLaptop', LAPTOP_OPTIONS)}
-                                {errors.hasLaptop && <span className="srkr-reg-error">{errors.hasLaptop}</span>}
+                            {/* Row 5: Laptop availability & CRT training fee */}
+                            <div className="srkr-reg-row-2">
+                                <div className="srkr-reg-field">
+                                    <label>
+                                        Do you have a Laptop? <span className="required">*</span>
+                                    </label>
+                                    {renderSegment('hasLaptop', LAPTOP_OPTIONS)}
+                                    {errors.hasLaptop && <span className="srkr-reg-error">{errors.hasLaptop}</span>}
+                                </div>
+
+                                <div className="srkr-reg-field">
+                                    <label>
+                                        Paid the CRT Training Fee? <span className="required">*</span>
+                                    </label>
+                                    {renderSegment('paidCrtFee', CRT_FEE_OPTIONS)}
+                                    {errors.paidCrtFee && <span className="srkr-reg-error">{errors.paidCrtFee}</span>}
+                                </div>
                             </div>
 
                             {/* Row 6: Passout Year */}
@@ -519,6 +540,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                             <div className="srkr-reg-success-row"><span>Gender</span><strong>{formData.gender}</strong></div>
                             <div className="srkr-reg-success-row"><span>Residence</span><strong>{formData.residenceType}</strong></div>
                             <div className="srkr-reg-success-row"><span>Has Laptop</span><strong>{formData.hasLaptop}</strong></div>
+                            <div className="srkr-reg-success-row"><span>CRT Fee Paid</span><strong>{formData.paidCrtFee}</strong></div>
                             <div className="srkr-reg-success-row"><span>Passout Year</span><strong>{formData.passoutYear}</strong></div>
                             <div className="srkr-reg-success-row"><span>Assigned Program</span><strong>{mappedProgram.programName}</strong></div>
                         </div>

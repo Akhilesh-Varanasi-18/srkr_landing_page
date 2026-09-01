@@ -44,6 +44,11 @@ export const LAPTOP_COLORS = {
     No: BRAND.muted
 };
 
+export const CRT_FEE_COLORS = {
+    Yes: BRAND.primary,
+    No: BRAND.muted
+};
+
 // A ranked sequential coral→amber→slate ramp for the branch bar chart. 12 stops —
 // one per possible SRKR branch (8 CSE/IT + 4 others) so none share a colour.
 export const BRANCH_RAMP = ['#E2544C', '#E7614A', '#EC6F40', '#F0853C', '#F2A63B', '#EEB44E', '#EAC266', '#E4CE82', '#D9D19E', '#C7CDB4', '#B2C3C9', '#94A3B8'];
