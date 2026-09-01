@@ -49,6 +49,21 @@ const Team = () => {
         return () => window.clearTimeout(t);
     }, [comingSoonMember]);
 
+    // When a portfolio opens we navigate away with the overlay showing. The browser's
+    // back-forward cache can freeze this page in that state and restore it on "Back"
+    // (pageshow fires with persisted=true) — leaving the overlay stuck until a reload.
+    // Clearing it on pageshow (and when the tab becomes visible again) unsticks it.
+    useEffect(() => {
+        const clearOverlay = () => setIsOpeningPortfolio(false);
+        const onVisible = () => { if (document.visibilityState === 'visible') clearOverlay(); };
+        window.addEventListener('pageshow', clearOverlay);
+        document.addEventListener('visibilitychange', onVisible);
+        return () => {
+            window.removeEventListener('pageshow', clearOverlay);
+            document.removeEventListener('visibilitychange', onVisible);
+        };
+    }, []);
+
     const activeMember = teamData[currentIndex];
     // PDFs are treated as downloads by mobile Chrome, and a download fired from our
     // delayed JS navigation gets blocked ("blocked by Chrome"). So PDFs open natively
