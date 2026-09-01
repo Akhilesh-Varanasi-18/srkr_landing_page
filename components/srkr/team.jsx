@@ -175,6 +175,30 @@ const Team = () => {
                                     </motion.div>
                                 </AnimatePresence>
                             </div>
+
+                            {/* Prev / counter / next — floats on the image's top-right
+                                corner across all breakpoints (desktop, tablet & mobile). */}
+                            <div className="srkr-team-nav-arrows">
+                                <button
+                                    type="button"
+                                    className="srkr-team-arrow-btn"
+                                    onClick={goToPrev}
+                                    aria-label="Previous trainer"
+                                >
+                                    ‹
+                                </button>
+                                <span className="srkr-team-counter">
+                                    0{currentIndex + 1} <small>/ 0{teamData.length}</small>
+                                </span>
+                                <button
+                                    type="button"
+                                    className="srkr-team-arrow-btn"
+                                    onClick={goToNext}
+                                    aria-label="Next trainer"
+                                >
+                                    ›
+                                </button>
+                            </div>
                         </div>
 
                         {/* RIGHT COLUMN: Trainer Profile, Highlights & Skill Points */}
@@ -329,29 +353,6 @@ const Team = () => {
                                             <span className="srkr-team-avatar-thumb-label">{member.name}</span>
                                         </button>
                                     ))}
-                                </div>
-
-                                {/* Arrow Navigation Buttons */}
-                                <div className="srkr-team-nav-arrows">
-                                    <button 
-                                        type="button" 
-                                        className="srkr-team-arrow-btn"
-                                        onClick={goToPrev}
-                                        aria-label="Previous trainer"
-                                    >
-                                        ‹
-                                    </button>
-                                    <span className="srkr-team-counter">
-                                        0{currentIndex + 1} <small>/ 0{teamData.length}</small>
-                                    </span>
-                                    <button 
-                                        type="button" 
-                                        className="srkr-team-arrow-btn"
-                                        onClick={goToNext}
-                                        aria-label="Next trainer"
-                                    >
-                                        ›
-                                    </button>
                                 </div>
                             </div>
                         </div>

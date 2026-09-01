@@ -3228,37 +3228,42 @@
   }
 }
 
+// Prev / counter / next control — floats on the top-right corner of the member
+// image as a compact glass pill across ALL breakpoints (desktop, tablet, mobile).
+// It lives inside .srkr-team-left-visual (position: relative), so it anchors to
+// the image whether the card is two-column (desktop) or stacked (mobile/tablet).
 .srkr-team-nav-arrows {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 6;
   display: flex;
   align-items: center;
-  gap: 6px;
+  width: auto;
+  gap: 2px;
+  padding: 4px 7px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
 
-  // Stacked (mobile/tablet) layout: float the prev / counter / next control onto
-  // the top-right corner of the member image as a compact glass pill.
-  @media (max-width: 860px) {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 6;
-    width: auto;
-    gap: 2px;
-    padding: 4px 7px;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: 999px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  @media (max-width: 767px) {
+    top: 10px;
+    right: 10px;
   }
 }
 
 .srkr-team-arrow-btn {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  border: 1.5px solid var(--srkr-border);
-  background: var(--srkr-bg-body);
+  border: none;
+  background: transparent;
+  box-shadow: none;
   color: var(--srkr-heading);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -3270,35 +3275,19 @@
   &:hover {
     background: var(--srkr-primary);
     color: var(--srkr-white);
-    border-color: var(--srkr-primary);
     box-shadow: var(--srkr-shadow-coral-glow);
-  }
-
-  // Compact, borderless inside the top-right glass pill on stacked layouts.
-  @media (max-width: 860px) {
-    width: 26px;
-    height: 26px;
-    font-size: 15px;
-    border: none;
-    background: transparent;
-    box-shadow: none;
   }
 }
 
 .srkr-team-counter {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--srkr-primary);
-  padding: 0 4px;
+  padding: 0 2px;
 
   small {
     color: var(--srkr-muted);
     font-weight: 500;
-  }
-
-  @media (max-width: 860px) {
-    font-size: 11px;
-    padding: 0 2px;
   }
 }
 
