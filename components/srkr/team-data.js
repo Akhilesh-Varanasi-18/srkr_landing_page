@@ -20,6 +20,25 @@ const teamData = [
         ]
     },
     {
+        id: 'prasanth',
+        name: 'Prasanth Kedarisetti',
+        role: 'Team Manager · Full Stack & AR/VR Specialist',
+        tagline: '10+ years building Web, Mobile, AI & AR/VR products and leading engineering teams',
+        photo: '/assets/images/srkr/project-images/team/Prasanth_FullStack_Developer_uniform.png',
+        linkedin: 'https://www.linkedin.com/in/prasanth-kedarisetti/',
+        portfolio: '/portfolios/prasanth.html',
+        accentColor: 'var(--srkr-tertiary)',
+        accentBg: 'var(--srkr-bg-warm-offwhite)',
+        tags: ['MERN Stack', 'Unity (C#)', 'AR / VR', 'PHP', 'Project Management'],
+        highlights: [
+            'Project Manager (IT) with 10+ years of software engineering leadership',
+            'Full Stack (MERN), Unity C#, AR/VR & PHP expert — built 16+ enterprise products',
+            'Led 40+ cognitive games, public AR spectacles & Dockerized online compilers',
+            'Delivered nationwide trainings in Full Stack, Unity, AR & VR development',
+            '3× Best Developer of the Year & Unity Certified Associate'
+        ]
+    },
+    {
         id: 'akhilesh',
         name: 'Akhilesh Varanasi',
         role: 'Full Stack & AI Architect',
@@ -132,25 +151,6 @@ const teamData = [
             'Trained 100+ ServiceNow trainees (95+ certified) and 70+ Salesforce trainees',
             '4-Star Ranger on Salesforce Trailhead with 246,000+ points',
             'Claude Certified Architect with 350+ CodeChef problems solved'
-        ]
-    },
-    {
-        id: 'prasanth',
-        name: 'Prasanth Kedarisetti',
-        role: 'Full Stack Developer & Team Lead',
-        tagline: '10+ years building Web, Mobile, AI & AR/VR products and leading engineering teams',
-        photo: '/assets/images/srkr/project-images/team/Prasanth_FullStack_Developer_uniform.png',
-        linkedin: 'https://www.linkedin.com/in/prasanth-kedarisetti/',
-        portfolio: '/portfolios/prasanth.html',
-        accentColor: 'var(--srkr-primary)',
-        accentBg: 'var(--srkr-bg-coral-tint)',
-        tags: ['MERN Stack', 'Unity (C#)', 'AR / VR', 'PHP', 'Project Management'],
-        highlights: [
-            'Project Manager (IT) with 10+ years of software engineering leadership',
-            'Full Stack (MERN), Unity C#, AR/VR & PHP expert — built 16+ enterprise products',
-            'Led 40+ cognitive games, public AR spectacles & Dockerized online compilers',
-            'Delivered nationwide trainings in Full Stack, Unity, AR & VR development',
-            '3× Best Developer of the Year & Unity Certified Associate'
         ]
     },
     {
