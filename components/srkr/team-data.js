@@ -19,6 +19,10 @@ const teamData = [
             'AWS Certified Cloud Practitioner & AWS Certified Solutions Architect'
         ]
     },
+    // Prasanth (Team Manager) card temporarily hidden — not needed for now.
+    // Kept commented so it can be restored later by uncommenting this block.
+    // (His photo, portfolio and links remain in place, so re-enabling needs no other change.)
+    /*
     {
         id: 'prasanth',
         name: 'Prasanth Kedarisetti',
@@ -38,6 +42,7 @@ const teamData = [
             '3× Best Developer of the Year & Unity Certified Associate'
         ]
     },
+    */
     {
         id: 'akhilesh',
         name: 'Akhilesh Varanasi',
