@@ -234,6 +234,34 @@ const ProgramDetailModal = ({
                                 )}
                             </div>
 
+                            {/* Featured "Practice Arena" — highlighted skill-building track,
+                                shown above the modules as the headline of this course track. */}
+                            {currentCourse.skillBuilding && (
+                                <div className="srkr-skillbuild-card">
+                                    <div className="srkr-skillbuild-glow" aria-hidden="true" />
+                                    <div className="srkr-skillbuild-head">
+                                        <span className="srkr-skillbuild-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z" />
+                                                <path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
+                                            </svg>
+                                        </span>
+                                        <div className="srkr-skillbuild-heading">
+                                            <span className="srkr-skillbuild-badge">Ongoing Practice</span>
+                                            <h4 className="srkr-skillbuild-title">{currentCourse.skillBuilding.title}</h4>
+                                        </div>
+                                    </div>
+                                    <div className="srkr-skillbuild-items">
+                                        {currentCourse.skillBuilding.items.map((item, i) => (
+                                            <span key={i} className="srkr-skillbuild-chip">
+                                                <span className="srkr-skillbuild-chip-tick">✓</span>
+                                                {item}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Module-by-Module Accordion */}
                             <div className="srkr-syllabus-container">
                                 <div className="srkr-syllabus-header">
@@ -295,34 +323,6 @@ const ProgramDetailModal = ({
                                     })}
                                 </div>
                             </div>
-
-                            {/* Featured "Practice Arena" — highlighted skill-building track,
-                                pulled out of the module accordion into its own standout card. */}
-                            {currentCourse.skillBuilding && (
-                                <div className="srkr-skillbuild-card">
-                                    <div className="srkr-skillbuild-glow" aria-hidden="true" />
-                                    <div className="srkr-skillbuild-head">
-                                        <span className="srkr-skillbuild-icon" aria-hidden="true">
-                                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z" />
-                                                <path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
-                                            </svg>
-                                        </span>
-                                        <div className="srkr-skillbuild-heading">
-                                            <span className="srkr-skillbuild-badge">Ongoing Practice</span>
-                                            <h4 className="srkr-skillbuild-title">{currentCourse.skillBuilding.title}</h4>
-                                        </div>
-                                    </div>
-                                    <div className="srkr-skillbuild-items">
-                                        {currentCourse.skillBuilding.items.map((item, i) => (
-                                            <span key={i} className="srkr-skillbuild-chip">
-                                                <span className="srkr-skillbuild-chip-tick">✓</span>
-                                                {item}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     )}
                 </div>

@@ -274,6 +274,7 @@ export const programsData = [
                 skillBuilding: {
                     title: 'Problem Solving & Skill Building',
                     items: [
+                        'Monthly Coding Contest',
                         'OwlCoder Platform Access',
                         'LeetCode Problem Solving',
                         'LeetCode Contest Participation',
@@ -373,6 +374,7 @@ export const programsData = [
                 skillBuilding: {
                     title: 'Problem Solving & Skill Building',
                     items: [
+                        'Monthly Coding Contest',
                         'OwlCoder Platform Access',
                         'LeetCode Basic-Level Problem Solving',
                         'CodeChef Problem Solving',
