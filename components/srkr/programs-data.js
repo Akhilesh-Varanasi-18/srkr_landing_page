@@ -108,6 +108,205 @@ export const programsData = [
         themeColor: 'var(--srkr-secondary)',
         accentBg: 'var(--srkr-bg-warm-tint)',
         courses: [
+            /* ==================================================================
+               ARCHIVED — previous SkillUp 'DSA' & 'Problem Solving' syllabus.
+               Preserved for rollback. If the new syllabus is not a good fit,
+               revert by replacing the two live skillup courses below with these
+               two archived course objects (and remove this comment wrapper).
+               ================================================================== */
+            /*
+            {
+                id: 'skillup-dsa',
+                title: 'Data Structures & Algorithms (DSA)',
+                code: 'SKL-201',
+                duration: '80 Hours (11 Core Modules)',
+                level: '',
+                prerequisites: 'C / C++ or Java Fundamentals',
+                overview: 'Comprehensive core DSA curriculum covering Big-O analysis, linear structures, trees, heaps, graphs, greedy methods, and foundational dynamic programming.',
+                outcomes: [
+                    'Analyze time and space complexity with Big-O notation',
+                    'Implement Linked Lists, Stacks, Queues, Trees, and Graphs from scratch',
+                    'Solve standard problems using Two Pointers, Sliding Window, and Hashing',
+                    'Master Tree traversals, BST operations, BFS/DFS Graph traversals',
+                    'Apply Greedy strategies, Recursion, and 1D Dynamic Programming',
+                    'Crack product company technical online assessments (OA)'
+                ],
+                modules: [
+                    {
+                        moduleNumber: 'Module 1',
+                        title: 'Complexity Analysis & Asymptotic Basics',
+                        duration: '6 Hours',
+                        topics: [
+                            'Big-O, Big-Theta & Big-Omega Notations',
+                            'Analyzing Linear & Nested Loop Complexities',
+                            'Auxiliary Space vs Space Complexity Analysis'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 2',
+                        title: 'Arrays & Matrix Foundations',
+                        duration: '8 Hours',
+                        topics: [
+                            '1D Arrays & Memory Layout',
+                            '2D Arrays & Matrix Traversals',
+                            'Prefix Sum Arrays & Subarray Sum Problems'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 3',
+                        title: 'Sorting & Searching Algorithms',
+                        duration: '8 Hours',
+                        topics: [
+                            'Linear Search & Binary Search Fundamentals',
+                            'Bubble Sort, Selection Sort & Insertion Sort',
+                            'Merge Sort & Quick Sort Algorithmic Foundations'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 4',
+                        title: 'Strings & Hashing Techniques',
+                        duration: '8 Hours',
+                        topics: [
+                            'String Manipulation, Substrings & Palindrome Checking',
+                            'HashMap & HashSet Architecture',
+                            'Frequency Counting & Target Pair Lookup Problems'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 5',
+                        title: 'Linked Lists (Singly, Doubly & Circular)',
+                        duration: '8 Hours',
+                        topics: [
+                            'Singly Linked List: Insertion, Deletion & Traversal',
+                            'Doubly & Circular Linked List Operations',
+                            'Floyd\'s Cycle Detection & In-Place List Reversal'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 6',
+                        title: 'Stacks & Queues',
+                        duration: '6 Hours',
+                        topics: [
+                            'Stack Implementation & Balanced Parentheses Problem',
+                            'Queue & Circular Queue Implementation',
+                            'Deque & Introduction to Monotonic Stack Concepts'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 7',
+                        title: 'Two Pointers & Sliding Window',
+                        duration: '6 Hours',
+                        topics: [
+                            'Two Pointers Technique (Opposite Ends & Same Direction)',
+                            'Fixed-Size vs Variable-Size Sliding Window',
+                            'Maximum Subarray & Substring Problem Solving'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 8',
+                        title: 'Recursion & Basic Backtracking',
+                        duration: '8 Hours',
+                        topics: [
+                            'Recursion State Trees & Call Stack Principles',
+                            'Subsets & Permutations Generation',
+                            'Introduction to Grid & Board Backtracking'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 9',
+                        title: 'Trees & Binary Search Trees (BST)',
+                        duration: '8 Hours',
+                        topics: [
+                            'Binary Tree Traversals (In-order, Pre-order, Post-order, Level-order)',
+                            'Binary Search Trees: Search, Insert & Delete Operations',
+                            'Tree Height, Diameter & Lowest Common Ancestor (LCA)'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 10',
+                        title: 'Heaps & Graphs Fundamentals',
+                        duration: '8 Hours',
+                        topics: [
+                            'Min-Heap & Max-Heap Basics & Priority Queues',
+                            'Graph Representations (Adjacency Matrix & List)',
+                            'Breadth-First Search (BFS) & Depth-First Search (DFS)'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 11',
+                        title: 'Greedy Strategy & DP (Intro)',
+                        duration: '6 Hours',
+                        topics: [
+                            'Greedy Choice Property & Classic Activity Selection',
+                            'Memoization (Top-Down) vs Tabulation (Bottom-Up)',
+                            '1D Dynamic Programming: Climbing Stairs & 0/1 Knapsack Intro'
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'skillup-problem-solving',
+                title: 'Applied Problem Solving & Contest Training',
+                code: 'SKL-202',
+                duration: '50 Hours (4 Modules)',
+                level: '',
+                prerequisites: 'Core DSA Knowledge',
+                overview: 'Targeted problem-solving bootcamp focused on pattern recognition, edge-case analysis, and speed on online coding platforms.',
+                outcomes: [
+                    'Recognize algorithmic patterns within 2 minutes of reading problem statements',
+                    'Avoid Time Limit Exceeded (TLE) & Memory Limit Exceeded (MLE) traps',
+                    'Implement space-optimized solutions in competitive contests',
+                    'Compete in weekly coding contests with top percentile rankings'
+                ],
+                modules: [
+                    {
+                        moduleNumber: 'Module 1',
+                        title: 'Arrays, Strings, Math & Hashing Patterns',
+                        duration: '15 Hours',
+                        topics: [
+                            'Array Math & Frequency Counting with HashMaps',
+                            'String Manipulations & Anagram Checking',
+                            'Number Theory: GCD, Prime Sieve & Divisibility',
+                            'Prefix Sum & Difference Array Optimizations'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 2',
+                        title: 'Two Pointers & Sliding Window Mastery',
+                        duration: '12 Hours',
+                        topics: [
+                            'Two Pointers (Opposite Ends & Fast-Slow)',
+                            'Fixed-Size vs Variable-Size Sliding Window',
+                            'Subarray Sum Problems & Target Sum Optimization',
+                            'Merge Intervals & Meeting Rooms Pattern'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 3',
+                        title: 'Binary Search, Sorting & Bitwise Tricks',
+                        duration: '10 Hours',
+                        topics: [
+                            'Binary Search on Rotated & Infinite Arrays',
+                            'Binary Search on Answer Space (Predicate Functions)',
+                            'Custom Sorting & Comparator Logic',
+                            'Bitmasking & Bitwise Operations for Quick Subsets'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 4',
+                        title: 'Recursion, Backtracking & Contest Mock OAs',
+                        duration: '13 Hours',
+                        topics: [
+                            'Subset & Permutation Generation',
+                            'Matrix Path Finding & Board Backtracking',
+                            'Timed 90-Minute Mock Online Assessments',
+                            'Editorial Walkthroughs & Benchmark Analysis'
+                        ]
+                    }
+                ]
+            }
+            */
+
             {
                 id: 'skillup-dsa',
                 title: 'Data Structures & Algorithms (DSA)',
