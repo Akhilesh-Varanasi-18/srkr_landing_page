@@ -20,7 +20,6 @@ export const programsData = [
                 id: 'bamboo-c',
                 title: 'C Programming & Logic Building',
                 code: 'BMB-101',
-                duration: '60 Hours',
                 level: 'Beginner to Intermediate',
                 prerequisites: 'None — Designed for B.Tech 1st Year Students',
                 overview: 'Master foundational computer science concepts, memory layout, pointer arithmetic, structures, and file-driven modular C programs.',
@@ -35,7 +34,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 1',
                         title: 'Fundamentals & Problem Solving',
-                        duration: '10 Hours',
                         topics: [
                             'Introduction to Programming, Compilers & IDEs (Writing & Running C Programs)',
                             'Structure of a C Program, main() Function, Comments & Syntax',
@@ -48,7 +46,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 2',
                         title: 'Control Structures & Looping',
-                        duration: '12 Hours',
                         topics: [
                             'Decision-Making: if, if-else, nested if, else-if ladder & switch-case',
                             'Looping Constructs: for, while & do-while loops',
@@ -60,7 +57,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 3',
                         title: 'Functions & Recursion',
-                        duration: '12 Hours',
                         topics: [
                             'Function Declarations, Definitions, Function Calls & Return Types',
                             'Parameter Passing: Call by Value vs Call by Reference',
@@ -74,7 +70,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 4',
                         title: 'Arrays, Strings & Pointers',
-                        duration: '14 Hours',
                         topics: [
                             '1D & 2D Arrays: Declaration, Initialization & Matrix Traversals',
                             'Passing Arrays to Functions & Array Algorithms',
@@ -87,7 +82,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 5',
                         title: 'Structures, File Handling & Mini Project',
-                        duration: '12 Hours',
                         topics: [
                             'Structures: Declaration, Nested Structures & Arrays of Structures',
                             'Unions: Concept & Key Differences from Structures',
@@ -118,191 +112,277 @@ export const programsData = [
                 id: 'skillup-dsa',
                 title: 'Data Structures & Algorithms (DSA)',
                 code: 'SKL-201',
-                duration: '80 Hours (11 Core Modules)',
                 level: '',
                 prerequisites: 'C / C++ or Java Fundamentals',
-                overview: 'Comprehensive core DSA curriculum covering Big-O analysis, linear structures, trees, heaps, graphs, greedy methods, and foundational dynamic programming.',
+                overview: 'Comprehensive core DSA curriculum spanning math foundations, complexity analysis, arrays & strings, recursion & backtracking, sorting, hashing, sets, two pointers, sliding window, stacks, queues, linked lists, and binary trees.',
                 outcomes: [
                     'Analyze time and space complexity with Big-O notation',
-                    'Implement Linked Lists, Stacks, Queues, Trees, and Graphs from scratch',
-                    'Solve standard problems using Two Pointers, Sliding Window, and Hashing',
-                    'Master Tree traversals, BST operations, BFS/DFS Graph traversals',
-                    'Apply Greedy strategies, Recursion, and 1D Dynamic Programming',
-                    'Crack product company technical online assessments (OA)'
+                    'Apply number theory, modular arithmetic & the Sieve of Eratosthenes',
+                    'Solve array & string problems using hashing, sets, two pointers and sliding window',
+                    'Implement stacks, queues, and linked lists from scratch',
+                    'Master recursion, backtracking and core sorting algorithms',
+                    'Traverse and solve problems on binary trees'
                 ],
                 modules: [
                     {
                         moduleNumber: 'Module 1',
-                        title: 'Complexity Analysis & Asymptotic Basics',
-                        duration: '6 Hours',
+                        title: 'Mathematics for DSA',
                         topics: [
-                            'Big-O, Big-Theta & Big-Omega Notations',
-                            'Analyzing Linear & Nested Loop Complexities',
-                            'Auxiliary Space vs Space Complexity Analysis'
+                            'Mathematical Foundations',
+                            'Number Theory Basics',
+                            'Modular Arithmetic',
+                            'Prime Numbers & Sieve of Eratosthenes',
+                            'GCD & LCM'
                         ]
                     },
                     {
                         moduleNumber: 'Module 2',
-                        title: 'Arrays & Matrix Foundations',
-                        duration: '8 Hours',
+                        title: 'Complexity Analysis',
                         topics: [
-                            '1D Arrays & Memory Layout',
-                            '2D Arrays & Matrix Traversals',
-                            'Prefix Sum Arrays & Subarray Sum Problems'
+                            'Time Complexity',
+                            'Space Complexity',
+                            'Big-O Notation',
+                            'Complexity Analysis of Solutions'
                         ]
                     },
                     {
                         moduleNumber: 'Module 3',
-                        title: 'Sorting & Searching Algorithms',
-                        duration: '8 Hours',
+                        title: 'Dynamic Arrays',
                         topics: [
-                            'Linear Search & Binary Search Fundamentals',
-                            'Bubble Sort, Selection Sort & Insertion Sort',
-                            'Merge Sort & Quick Sort Algorithmic Foundations'
+                            'Dynamic Array Concepts',
+                            'Dynamic Array Operations'
                         ]
                     },
                     {
                         moduleNumber: 'Module 4',
-                        title: 'Strings & Hashing Techniques',
-                        duration: '8 Hours',
+                        title: 'Arrays & Strings',
                         topics: [
-                            'String Manipulation, Substrings & Palindrome Checking',
-                            'HashMap & HashSet Architecture',
-                            'Frequency Counting & Target Pair Lookup Problems'
+                            'Array-Based Problem Solving',
+                            'String-Based Problem Solving',
+                            'Character Frequency Problems'
                         ]
                     },
                     {
                         moduleNumber: 'Module 5',
-                        title: 'Linked Lists (Singly, Doubly & Circular)',
-                        duration: '8 Hours',
+                        title: 'Recursion & Backtracking',
                         topics: [
-                            'Singly Linked List: Insertion, Deletion & Traversal',
-                            'Doubly & Circular Linked List Operations',
-                            'Floyd\'s Cycle Detection & In-Place List Reversal'
+                            'Recursion Fundamentals',
+                            'Recursive Problem Solving',
+                            'Recursion with Arrays & Strings',
+                            'Backtracking Fundamentals',
+                            'Backtracking Problem Solving'
                         ]
                     },
                     {
                         moduleNumber: 'Module 6',
-                        title: 'Stacks & Queues',
-                        duration: '6 Hours',
+                        title: 'Sorting Techniques',
                         topics: [
-                            'Stack Implementation & Balanced Parentheses Problem',
-                            'Queue & Circular Queue Implementation',
-                            'Deque & Introduction to Monotonic Stack Concepts'
+                            'Merge Sort',
+                            'Quick Sort',
+                            'Counting Sort',
+                            'Custom Sorting & Comparators'
                         ]
                     },
                     {
                         moduleNumber: 'Module 7',
-                        title: 'Two Pointers & Sliding Window',
-                        duration: '6 Hours',
+                        title: 'Hash Tables & Hash Maps',
                         topics: [
-                            'Two Pointers Technique (Opposite Ends & Same Direction)',
-                            'Fixed-Size vs Variable-Size Sliding Window',
-                            'Maximum Subarray & Substring Problem Solving'
+                            'Hashing Fundamentals',
+                            'Hash Tables',
+                            'Hash Maps',
+                            'Key-Value Operations',
+                            'Hash-Based Problem Solving'
                         ]
                     },
                     {
                         moduleNumber: 'Module 8',
-                        title: 'Recursion & Basic Backtracking',
-                        duration: '8 Hours',
+                        title: 'Sets',
                         topics: [
-                            'Recursion State Trees & Call Stack Principles',
-                            'Subsets & Permutations Generation',
-                            'Introduction to Grid & Board Backtracking'
+                            'Set Fundamentals',
+                            'Set Operations',
+                            'Ordered & Unordered Sets',
+                            'Set-Based Problem Solving'
                         ]
                     },
                     {
                         moduleNumber: 'Module 9',
-                        title: 'Trees & Binary Search Trees (BST)',
-                        duration: '8 Hours',
+                        title: 'Two Pointer Algorithm',
                         topics: [
-                            'Binary Tree Traversals (In-order, Pre-order, Post-order, Level-order)',
-                            'Binary Search Trees: Search, Insert & Delete Operations',
-                            'Tree Height, Diameter & Lowest Common Ancestor (LCA)'
+                            'Two Pointer Technique',
+                            'Opposite Direction Pointers',
+                            'Same Direction Pointers',
+                            'Two Pointer Problem Solving'
                         ]
                     },
                     {
                         moduleNumber: 'Module 10',
-                        title: 'Heaps & Graphs Fundamentals',
-                        duration: '8 Hours',
+                        title: 'Sliding Window',
                         topics: [
-                            'Min-Heap & Max-Heap Basics & Priority Queues',
-                            'Graph Representations (Adjacency Matrix & List)',
-                            'Breadth-First Search (BFS) & Depth-First Search (DFS)'
+                            'Fixed-Size Window',
+                            'Variable-Size Window',
+                            'Sliding Window Problem Solving'
                         ]
                     },
                     {
                         moduleNumber: 'Module 11',
-                        title: 'Greedy Strategy & DP (Intro)',
-                        duration: '6 Hours',
+                        title: 'Stacks',
                         topics: [
-                            'Greedy Choice Property & Classic Activity Selection',
-                            'Memoization (Top-Down) vs Tabulation (Bottom-Up)',
-                            '1D Dynamic Programming: Climbing Stairs & 0/1 Knapsack Intro'
+                            'Stack Fundamentals',
+                            'Stack Operations',
+                            'Valid Parentheses',
+                            'Expression Evaluation',
+                            'Calculation-Based Problems',
+                            'Stack-Based Problem Solving'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 12',
+                        title: 'Queues',
+                        topics: [
+                            'Queue Fundamentals',
+                            'Queue Operations',
+                            'Circular Queue',
+                            'Queue-Based Problem Solving'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 13',
+                        title: 'Linked List',
+                        topics: [
+                            'Linked List Fundamentals',
+                            'Singly Linked List',
+                            'Linked List Operations',
+                            'Insertion & Deletion',
+                            'Linked List Traversal',
+                            'Linked List Problem Solving'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 14',
+                        title: 'Binary Trees',
+                        topics: [
+                            'Binary Tree Fundamentals',
+                            'Tree Terminology',
+                            'Tree Representation',
+                            'Tree Traversals',
+                            'Preorder, Inorder & Postorder',
+                            'Level Order Traversal',
+                            'Binary Tree Problem Solving'
                         ]
                     }
-                ]
+                ],
+                skillBuilding: {
+                    title: 'Problem Solving & Skill Building',
+                    items: [
+                        'OwlCoder Platform Access',
+                        'LeetCode Problem Solving',
+                        'LeetCode Contest Participation',
+                        'CodeChef Problem Solving',
+                        'CodeChef Contest Participation',
+                        'Post-Contest Problem Solving (Upsolving)',
+                        'HackerRank Problem Solving Practice',
+                        'Topic-Wise Problem Solving',
+                        'Mixed Concept Problem Solving'
+                    ]
+                }
             },
             {
                 id: 'skillup-problem-solving',
-                title: 'Applied Problem Solving & Contest Training',
+                title: 'Programming & Problem-Solving Foundation',
                 code: 'SKL-202',
-                duration: '50 Hours (4 Modules)',
                 level: '',
-                prerequisites: 'Core DSA Knowledge',
-                overview: 'Targeted problem-solving bootcamp focused on pattern recognition, edge-case analysis, and speed on online coding platforms.',
+                prerequisites: 'Beginner Friendly — Basic Programming Syntax',
+                overview: 'Beginner-friendly foundation building programming fundamentals and core problem-solving skills across math, arrays, searching, sorting, strings, and counting.',
                 outcomes: [
-                    'Recognize algorithmic patterns within 2 minutes of reading problem statements',
-                    'Avoid Time Limit Exceeded (TLE) & Memory Limit Exceeded (MLE) traps',
-                    'Implement space-optimized solutions in competitive contests',
-                    'Compete in weekly coding contests with top percentile rankings'
+                    'Write clean programs using variables, operators, conditionals, loops & functions',
+                    'Solve number, digit, prime, GCD & LCM based math problems',
+                    'Manipulate 1D & 2D arrays and apply basic array mathematics',
+                    'Apply linear and binary search to problem solving',
+                    'Implement selection, bubble & insertion sort',
+                    'Solve string, palindrome, anagram, frequency & counting problems'
                 ],
                 modules: [
                     {
                         moduleNumber: 'Module 1',
-                        title: 'Arrays, Strings, Math & Hashing Patterns',
-                        duration: '15 Hours',
+                        title: 'Programming Fundamentals',
                         topics: [
-                            'Array Math & Frequency Counting with HashMaps',
-                            'String Manipulations & Anagram Checking',
-                            'Number Theory: GCD, Prime Sieve & Divisibility',
-                            'Prefix Sum & Difference Array Optimizations'
+                            'Variables & Data Types',
+                            'Operators',
+                            'Conditional Statements',
+                            'Loops',
+                            'Functions',
+                            'Input & Output'
                         ]
                     },
                     {
                         moduleNumber: 'Module 2',
-                        title: 'Two Pointers & Sliding Window Mastery',
-                        duration: '12 Hours',
+                        title: 'Mathematics for Problem Solving',
                         topics: [
-                            'Two Pointers (Opposite Ends & Fast-Slow)',
-                            'Fixed-Size vs Variable-Size Sliding Window',
-                            'Subarray Sum Problems & Target Sum Optimization',
-                            'Merge Intervals & Meeting Rooms Pattern'
+                            'Number System',
+                            'Number & Digit Problems',
+                            'Prime Numbers',
+                            'Factors, GCD & LCM'
                         ]
                     },
                     {
                         moduleNumber: 'Module 3',
-                        title: 'Binary Search, Sorting & Bitwise Tricks',
-                        duration: '10 Hours',
+                        title: 'Arrays for Problem Solving',
                         topics: [
-                            'Binary Search on Rotated & Infinite Arrays',
-                            'Binary Search on Answer Space (Predicate Functions)',
-                            'Custom Sorting & Comparator Logic',
-                            'Bitmasking & Bitwise Operations for Quick Subsets'
+                            'Array Basics & Traversal',
+                            'Array Manipulation',
+                            '2D Arrays',
+                            'Basic Mathematics with Arrays'
                         ]
                     },
                     {
                         moduleNumber: 'Module 4',
-                        title: 'Recursion, Backtracking & Contest Mock OAs',
-                        duration: '13 Hours',
+                        title: 'Searching',
                         topics: [
-                            'Subset & Permutation Generation',
-                            'Matrix Path Finding & Board Backtracking',
-                            'Timed 90-Minute Mock Online Assessments',
-                            'Editorial Walkthroughs & Benchmark Analysis'
+                            'Linear Search',
+                            'Binary Search',
+                            'Search-Based Problems'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 5',
+                        title: 'Basic Sorting',
+                        topics: [
+                            'Selection Sort',
+                            'Bubble Sort',
+                            'Insertion Sort'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 6',
+                        title: 'Strings for Problem Solving',
+                        topics: [
+                            'String Basics & Traversal',
+                            'Character Operations',
+                            'Palindrome & Anagram Problems'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 7',
+                        title: 'Frequency & Counting',
+                        topics: [
+                            'Frequency Counting',
+                            'Counting-Based Problems'
                         ]
                     }
-                ]
+                ],
+                skillBuilding: {
+                    title: 'Problem Solving & Skill Building',
+                    items: [
+                        'OwlCoder Platform Access',
+                        'LeetCode Basic-Level Problem Solving',
+                        'CodeChef Problem Solving',
+                        'CodeChef Contest Participation',
+                        'Post-Contest Problem Solving (Upsolving)',
+                        'HackerRank Programming Badge Completion',
+                        'HackerRank Problem Solving Badge Completion',
+                        'Topic-Wise Coding Practice'
+                    ]
+                }
             }
         ]
     },
@@ -322,7 +402,6 @@ export const programsData = [
                 id: 'aiready-fullstack',
                 title: 'Full Stack Development + AI Integration',
                 code: 'AIR-301',
-                duration: '70 Hours',
                 level: 'Beginner to Advanced',
                 prerequisites: 'Basic Programming Fundamentals',
                 overview: 'Master HTML5, CSS3, JavaScript, React.js, Node.js, Express, MongoDB, Generative AI API integrations, and cloud deployment.',
@@ -338,7 +417,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 1',
                         title: 'Web Fundamentals: HTML5 & Modern CSS',
-                        duration: '8 Hours',
                         topics: [
                             'HTML5 Semantic Elements, Forms & Input Validations',
                             'CSS3 Box Model, Flexbox & CSS Grid Layouts',
@@ -349,7 +427,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 2',
                         title: 'JavaScript Mastery & Async Programming',
-                        duration: '10 Hours',
                         topics: [
                             'JavaScript Core: Variables, Data Types, Operators, Control Flow & Loops',
                             'Functions, Arrow Functions & Array/Object Methods',
@@ -363,7 +440,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 3',
                         title: 'Frontend with React',
-                        duration: '12 Hours',
                         topics: [
                             'React Basics & JSX',
                             'Components, Props & State',
@@ -376,7 +452,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 4',
                         title: 'Backend with Node & Express',
-                        duration: '10 Hours',
                         topics: [
                             'Node.js Architecture & Runtime',
                             'Express.js Framework Fundamentals',
@@ -389,7 +464,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 5',
                         title: 'MongoDB & Full MERN Stack',
-                        duration: '10 Hours',
                         topics: [
                             'MongoDB Basics & Documents',
                             'Mongoose Schemas & Models',
@@ -402,7 +476,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 6',
                         title: 'Authentication, Authorization & Security',
-                        duration: '6 Hours',
                         topics: [
                             'Password Hashing & Salt Generation with bcrypt',
                             'JSON Web Tokens (JWT): Authentication & Token Verification',
@@ -413,7 +486,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 7',
                         title: 'AI API Integration & Generative AI Features',
-                        duration: '8 Hours',
                         topics: [
                             'Generative AI APIs: Google Gemini, OpenAI & Anthropic Claude',
                             'Connecting Backend APIs to LLMs using SDKs & Axios',
@@ -425,7 +497,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 8',
                         title: 'Cloud Deployment, DevOps & Production Capstone',
-                        duration: '6 Hours',
                         topics: [
                             'Environment Configurations & Production Secrets (.env)',
                             'Cloud Deployment: Frontend on Vercel & Backend on AWS / Render',
@@ -439,7 +510,6 @@ export const programsData = [
                 id: 'aiready-flutter',
                 title: 'Google Flutter + AI Integration',
                 code: 'AIR-302',
-                duration: '60 Hours',
                 level: 'Beginner to Advanced',
                 prerequisites: 'Basic Programming Fundamentals',
                 overview: 'Build cross-platform mobile apps from Dart basics to Firebase backends, AI Chatbots, and Play Store / App Store publishing.',
@@ -455,7 +525,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 1',
                         title: 'Introduction to Dart Programming',
-                        duration: '6 Hours',
                         topics: [
                             'Basics of Dart: Variables, Data Types, Operators & Keywords',
                             'Control Flow: if / else if / else, switch-case statements',
@@ -467,7 +536,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 2',
                         title: 'Object-Oriented Programming in Dart',
-                        duration: '6 Hours',
                         topics: [
                             'Classes, objects, constructors & named parameters',
                             'Inheritance, encapsulation, polymorphism & abstract classes',
@@ -478,7 +546,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 3',
                         title: 'Introduction to the Flutter Framework',
-                        duration: '6 Hours',
                         topics: [
                             'Flutter SDK installation, CLI setup & emulator config',
                             'Flutter project creation & folder structure walkthrough',
@@ -489,7 +556,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 4',
                         title: 'Material Design, Navigation & State Management',
-                        duration: '8 Hours',
                         topics: [
                             'Material Design: Scaffold, AppBar, Bottom Navigation Bar',
                             'UI Components: Buttons, Forms, Input Fields, Dialogs, Bottom Sheets',
@@ -500,7 +566,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 5',
                         title: 'REST API Integration & Firebase Services',
-                        duration: '8 Hours',
                         topics: [
                             'HTTP package, REST API calls & JSON model serialization',
                             'Error handling, network timeouts & async loading states',
@@ -511,7 +576,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 6',
                         title: 'AI API Integration & AI Chatbot',
-                        duration: '10 Hours',
                         topics: [
                             'Connecting OpenAI & Google Gemini APIs using http/dio',
                             'Streaming AI responses for real-time token output',
@@ -523,7 +587,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 7',
                         title: 'App Deployment & Publishing',
-                        duration: '8 Hours',
                         topics: [
                             'Generating signed Android APK & Android App Bundle (AAB)',
                             'Keystore generation & release build configuration',
@@ -535,7 +598,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 8',
                         title: 'Claude AI Training & Prompt Mastery',
-                        duration: '8 Hours',
                         topics: [
                             'Introduction to Claude & Anthropic API models',
                             'Setting up API keys, authentication & claude.ai interface',
@@ -552,7 +614,6 @@ export const programsData = [
                 id: 'aiready-cloud-devops',
                 title: 'AWS Cloud and Devops + AI Integration',
                 code: 'AIR-303',
-                duration: '134 Hours',
                 level: 'Intermediate to Advanced',
                 prerequisites: 'Basic Computer Networking & Operating System Fundamentals',
                 overview: 'Master AWS cloud architecture, Linux, Docker, Kubernetes, Terraform CI/CD, and Amazon Bedrock GenAI with capstone project.',
@@ -568,7 +629,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 1',
                         title: 'Networking Essentials',
-                        duration: '10 Hours',
                         topics: [
                             'OSI 7-Layer & TCP/IP Network Models, Ports & Protocols',
                             'IPv4 / IPv6 Addressing, Subnetting & CIDR Notation',
@@ -580,7 +640,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 2',
                         title: 'Linux Fundamentals & Shell Scripting',
-                        duration: '16 Hours',
                         topics: [
                             'Linux Architecture & Major Distributions (Amazon Linux, Ubuntu)',
                             'Filesystem Hierarchy, Users, Groups & Sudo Permissions',
@@ -593,7 +652,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 3',
                         title: 'AWS Cloud Core Services',
-                        duration: '36 Hours',
                         topics: [
                             'AWS Global Infrastructure: Regions, Availability Zones & Edge Locations',
                             'Identity & Access Management (IAM): Users, Roles, Policies & MFA',
@@ -608,7 +666,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 4',
                         title: 'DevOps',
-                        duration: '40 Hours',
                         topics: [
                             'DevOps Culture, Branching Strategies & Git / GitHub Workflows',
                             'Automated CI/CD Pipelines with Jenkins, AWS CodePipeline & CodeBuild',
@@ -636,7 +693,6 @@ export const programsData = [
                     {
                         moduleNumber: 'Module 5',
                         title: 'Capstone Project & AWS Certification Prep',
-                        duration: '14 Hours',
                         topics: [
                             'Capstone Project: 3-Tier App with Full CI/CD, EKS & Bedrock AI Integration',
                             'Live Project Demonstration, Architecture Review & Defense',
@@ -651,7 +707,6 @@ export const programsData = [
                 id: 'aiready-servicenow',
                 title: 'ServiceNow Platform Engineering',
                 code: 'AIR-304',
-                duration: '80 Hours',
                 level: 'Intermediate to Advanced',
                 prerequisites: 'JavaScript Fundamentals & Relational Data Basics',
                 overview: 'Master ServiceNow administration, GlideRecord scripting, Flow Designer, IntegrationHub, Now Assist AI, and CSA / CAD certification prep.',
@@ -837,7 +892,6 @@ export const programsData = [
                 id: 'owl-adv-dsa',
                 title: 'Advanced Competitive Programming & DSA Mastery',
                 code: 'OWL-401',
-                duration: '8 Weeks',
                 level: '',
                 prerequisites: 'Strong DSA & Coding Foundations',
                 overview: 'Intensive 21-module advanced roadmap covering complexity analysis, advanced data structures, Graph algorithms, DP patterns, Segment Trees, and competitive number theory.',
@@ -1075,7 +1129,6 @@ export const programsData = [
                 id: 'moon-dsa-mastery',
                 title: 'Core Problem Solving & DSA Readiness',
                 code: 'MOON-501',
-                duration: '8 Weeks',
                 level: '',
                 prerequisites: 'Beginner Friendly — Designed for BTech Coursework Pace',
                 overview: 'Sequential 15-module coverage from programming fundamentals through Arrays, Strings, Hashing, Linked Lists, Stacks, Queues, Two Pointers, and Backtracking.',

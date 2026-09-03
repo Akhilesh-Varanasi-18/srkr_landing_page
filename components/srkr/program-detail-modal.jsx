@@ -157,7 +157,6 @@ const ProgramDetailModal = ({
                                         <p className="srkr-ccard-overview">{course.overview}</p>
 
                                         <div className="srkr-ccard-meta-row">
-                                            <span className="srkr-meta-pill">⏱ {course.duration}</span>
                                             <span className="srkr-meta-pill">📚 {course.modules.length} Modules</span>
                                         </div>
 
@@ -205,7 +204,7 @@ const ProgramDetailModal = ({
                                         <h3>{currentCourse.title}</h3>
                                     </div>
                                     <div className="srkr-cinfo-badges">
-                                        <span className="srkr-cinfo-duration">⏱ {currentCourse.duration}</span>
+                                        <span className="srkr-cinfo-duration">📚 {currentCourse.modules.length} Modules</span>
                                         {currentCourse.level && (
                                             <span className="srkr-cinfo-level">🎯 {currentCourse.level}</span>
                                         )}
@@ -266,7 +265,10 @@ const ProgramDetailModal = ({
                                                         </span>
                                                     </div>
                                                     <div className="srkr-module-meta-right">
-                                                        <span className="srkr-module-hours">{module.duration}</span>
+                                                        {/* Show only non-time labels (e.g. Core / CSA Track); hours & weeks are hidden. */}
+                                                        {module.duration && !/\d+\s*(hours?|weeks?)/i.test(module.duration) && (
+                                                            <span className="srkr-module-hours">{module.duration}</span>
+                                                        )}
                                                         <span className="srkr-accordion-arrow">
                                                             {isExpanded ? '▲' : '▼'}
                                                         </span>
@@ -293,6 +295,34 @@ const ProgramDetailModal = ({
                                     })}
                                 </div>
                             </div>
+
+                            {/* Featured "Practice Arena" — highlighted skill-building track,
+                                pulled out of the module accordion into its own standout card. */}
+                            {currentCourse.skillBuilding && (
+                                <div className="srkr-skillbuild-card">
+                                    <div className="srkr-skillbuild-glow" aria-hidden="true" />
+                                    <div className="srkr-skillbuild-head">
+                                        <span className="srkr-skillbuild-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z" />
+                                                <path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
+                                            </svg>
+                                        </span>
+                                        <div className="srkr-skillbuild-heading">
+                                            <span className="srkr-skillbuild-badge">Ongoing Practice</span>
+                                            <h4 className="srkr-skillbuild-title">{currentCourse.skillBuilding.title}</h4>
+                                        </div>
+                                    </div>
+                                    <div className="srkr-skillbuild-items">
+                                        {currentCourse.skillBuilding.items.map((item, i) => (
+                                            <span key={i} className="srkr-skillbuild-chip">
+                                                <span className="srkr-skillbuild-chip-tick">✓</span>
+                                                {item}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
