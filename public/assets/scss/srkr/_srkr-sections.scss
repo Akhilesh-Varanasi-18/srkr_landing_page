@@ -1937,6 +1937,7 @@
   position: relative;
   overflow: hidden;
   margin-top: 20px;
+  margin-bottom: 28px;
   padding: 22px 24px;
   border-radius: 16px;
   background: linear-gradient(135deg, var(--srkr-bg-coral-tint) 0%, var(--srkr-bg-warm-tint) 100%);
@@ -1946,6 +1947,7 @@
   @media (max-width: 575px) {
     padding: 18px 16px;
     border-radius: 14px;
+    margin-bottom: 22px;
   }
 }
 
