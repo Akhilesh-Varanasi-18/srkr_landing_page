@@ -12,6 +12,7 @@ import {
     ResidenceSplit,
     LaptopSplit,
     CrtFeeSplit,
+    LaptopByProgram,
     BranchYearStacked
 } from '../../components/srkr/dashboard/dashboard-charts';
 import { RANGES, formatDateTime } from '../../components/srkr/dashboard/dashboard-theme';
@@ -202,6 +203,7 @@ export default function DashboardPage() {
                             <ResidenceSplit data={data.byResidence} />
                             <LaptopSplit data={data.byLaptop || []} />
                             <CrtFeeSplit data={data.byCrtFee || []} />
+                            <LaptopByProgram data={data.laptopByProgram || []} />
                             <BranchYearStacked branchByYear={data.branchByYear} byBranch={data.byBranch} />
                         </div>
 

@@ -343,6 +343,50 @@ export function CrtFeeSplit({ data }) {
     );
 }
 
+// ── 5d. Laptop Yes/No by program (grouped bars) ──
+export function LaptopByProgram({ data }) {
+    const rows = data || [];
+    const total = rows.reduce((s, d) => s + (d.Yes || 0) + (d.No || 0), 0);
+    return (
+        <div className="dash-card dash-card--6">
+            <div className="dash-card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+                <div>
+                    <h3 className="dash-card-title">Laptop by program</h3>
+                    <p className="dash-card-sub">Students with vs without a laptop, per program</p>
+                </div>
+                <div className="dash-legend" style={{ marginTop: 0 }}>
+                    <div className="dash-legend-item">
+                        <span className="dash-legend-swatch" style={{ background: LAPTOP_COLORS.Yes }} />
+                        <span>Has laptop</span>
+                    </div>
+                    <div className="dash-legend-item">
+                        <span className="dash-legend-swatch" style={{ background: LAPTOP_COLORS.No }} />
+                        <span>No laptop</span>
+                    </div>
+                </div>
+            </div>
+            <div className="dash-card-body">
+                {total === 0 ? <EmptyChart label="No data yet" /> : (
+                    <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={rows} margin={{ top: 20, right: 8, left: 0, bottom: 0 }} barGap={6} barCategoryGap="26%">
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="short" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                            <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={34} tick={{ fontSize: 12 }} />
+                            <Tooltip cursor={{ fill: 'rgba(226,84,76,0.06)' }} content={<ChartTooltip labelFormatter={(l) => rows.find((r) => r.short === l)?.program || l} />} />
+                            <Bar dataKey="Yes" name="Has laptop" fill={LAPTOP_COLORS.Yes} radius={[6, 6, 0, 0]} maxBarSize={48}>
+                                <LabelList dataKey="Yes" position="top" style={{ fontSize: 11, fontWeight: 700, fill: BRAND.ink }} />
+                            </Bar>
+                            <Bar dataKey="No" name="No laptop" fill={LAPTOP_COLORS.No} radius={[6, 6, 0, 0]} maxBarSize={48}>
+                                <LabelList dataKey="No" position="top" style={{ fontSize: 11, fontWeight: 700, fill: BRAND.ink }} />
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
+            </div>
+        </div>
+    );
+}
+
 // ── 6. Branch × Year stacked bar ────────────
 export function BranchYearStacked({ branchByYear, byBranch }) {
     const { rows, years } = useMemo(() => {

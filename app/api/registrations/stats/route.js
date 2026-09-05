@@ -44,6 +44,9 @@ export async function GET(request) {
                         byResidence: [{ $group: { _id: '$residenceType', n: { $sum: 1 } } }],
                         byLaptop: [{ $group: { _id: '$hasLaptop', n: { $sum: 1 } } }],
                         byCrtFee: [{ $group: { _id: '$paidCrtFee', n: { $sum: 1 } } }],
+                        laptopByProgram: [
+                            { $group: { _id: { program: '$programName', laptop: '$hasLaptop' }, n: { $sum: 1 } } }
+                        ],
                         byProgram: [
                             {
                                 $group: {
@@ -115,6 +118,23 @@ export async function GET(request) {
 
         const clean = (rows) => rows.filter((r) => r._id != null);
 
+        // Reshape laptop×program into one row per program: { program, short, Yes, No }
+        // for the grouped-bar chart, ordered foundation → core → industry.
+        const PROGRAM_ORDER = ['Bamboo Coder', 'SkillUp Coder', 'AI Ready Engineers'];
+        const PROGRAM_SHORT = { 'Bamboo Coder': 'Bamboo', 'SkillUp Coder': 'SkillUp', 'AI Ready Engineers': 'AI Ready' };
+        const lbpMap = new Map();
+        facet.laptopByProgram.forEach((r) => {
+            const prog = r._id?.program;
+            const lap = r._id?.laptop;
+            if (!prog) return;
+            if (!lbpMap.has(prog)) lbpMap.set(prog, { program: prog, short: PROGRAM_SHORT[prog] || prog, Yes: 0, No: 0 });
+            if (lap === 'Yes' || lap === 'No') lbpMap.get(prog)[lap] += r.n;
+        });
+        const laptopByProgram = [
+            ...PROGRAM_ORDER.filter((p) => lbpMap.has(p)).map((p) => lbpMap.get(p)),
+            ...[...lbpMap.keys()].filter((p) => !PROGRAM_ORDER.includes(p)).map((p) => lbpMap.get(p))
+        ];
+
         return NextResponse.json({
             success: true,
             range: range.key,
@@ -128,6 +148,7 @@ export async function GET(request) {
             byProgram: facet.byProgram
                 .filter((r) => r._id?.name)
                 .map((r) => ({ name: r._id.name, year: r._id.year, label: r._id.label, value: r.n })),
+            laptopByProgram,
             branchByYear: facet.branchByYear
                 .filter((r) => r._id?.branch)
                 .map((r) => ({ branch: r._id.branch, year: r._id.year, value: r.n })),
