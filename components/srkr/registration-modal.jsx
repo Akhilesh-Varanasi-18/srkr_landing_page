@@ -169,6 +169,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                 gender: '',
                 residenceType: '',
                 hasLaptop: '',
+                paidCrtFee: '',
                 passoutYear: '2030',
             });
         }
@@ -418,7 +419,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
 
                                 <div className="srkr-reg-field">
                                     <label>
-                                        Have you enrolled to CRT? <span className="required">*</span>
+                                        Have you enrolled for CRT? <span className="required">*</span>
                                     </label>
                                     {renderSegment('paidCrtFee', CRT_FEE_OPTIONS)}
                                     {errors.paidCrtFee && <span className="srkr-reg-error">{errors.paidCrtFee}</span>}
