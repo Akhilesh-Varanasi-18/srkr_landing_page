@@ -21,11 +21,9 @@ export async function GET(request) {
 
     const range = resolveRange(request.nextUrl.searchParams.get('range'));
 
-    // 3rd-year (2028 / "AI Ready Engineers") students are hidden from the dashboard
-    // for now — they aren't part of the current registration drive. Excluding them
-    // here keeps every chart AND the KPI tiles consistent. Remove HIDDEN_PASSOUT_YEARS
-    // (or empty it) to show 3rd years again.
-    const HIDDEN_PASSOUT_YEARS = ['2028'];
+    // Passout years to hide from the dashboard (charts + KPIs). Empty = show all.
+    // (3rd years / 2028 are registering again, so nothing is hidden currently.)
+    const HIDDEN_PASSOUT_YEARS = [];
     const excludeHidden = { passoutYear: { $nin: HIDDEN_PASSOUT_YEARS } };
     const match = { ...rangeMatch(range), ...excludeHidden };
     const now = new Date();
