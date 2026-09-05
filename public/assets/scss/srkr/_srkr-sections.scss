@@ -4223,7 +4223,9 @@
 // Year Radio Cards
 .srkr-reg-year-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  // Two year options (2030 & 2029) while 3rd-year (2028) is disabled. Use repeat(3, 1fr)
+  // again if the 2028 option is restored.
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 
   @media (max-width: 575px) {

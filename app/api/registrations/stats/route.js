@@ -20,7 +20,14 @@ export async function GET(request) {
     }
 
     const range = resolveRange(request.nextUrl.searchParams.get('range'));
-    const match = rangeMatch(range);
+
+    // 3rd-year (2028 / "AI Ready Engineers") students are hidden from the dashboard
+    // for now — they aren't part of the current registration drive. Excluding them
+    // here keeps every chart AND the KPI tiles consistent. Remove HIDDEN_PASSOUT_YEARS
+    // (or empty it) to show 3rd years again.
+    const HIDDEN_PASSOUT_YEARS = ['2028'];
+    const excludeHidden = { passoutYear: { $nin: HIDDEN_PASSOUT_YEARS } };
+    const match = { ...rangeMatch(range), ...excludeHidden };
     const now = new Date();
 
     let collection;
@@ -99,9 +106,9 @@ export async function GET(request) {
         const todayStart = startOfISTDay(now);
         const weekStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
         const [allTotal, todayCount, weekCount] = await Promise.all([
-            collection.countDocuments({}),
-            collection.countDocuments({ createdAt: { $gte: todayStart } }),
-            collection.countDocuments({ createdAt: { $gte: weekStart } })
+            collection.countDocuments({ ...excludeHidden }),
+            collection.countDocuments({ createdAt: { $gte: todayStart }, ...excludeHidden }),
+            collection.countDocuments({ createdAt: { $gte: weekStart }, ...excludeHidden })
         ]);
 
         const total = facet.total[0]?.n || 0;

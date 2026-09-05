@@ -141,7 +141,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
         residenceType: '',
         hasLaptop: '',
         paidCrtFee: '',
-        passoutYear: '2028',
+        passoutYear: '2030',
     });
 
     const [errors, setErrors] = useState({});
@@ -176,7 +176,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
 
     if (!isOpen) return null;
 
-    const mappedProgram = PASSOUT_YEAR_PROGRAM_MAP[formData.passoutYear] || PASSOUT_YEAR_PROGRAM_MAP['2028'];
+    const mappedProgram = PASSOUT_YEAR_PROGRAM_MAP[formData.passoutYear] || PASSOUT_YEAR_PROGRAM_MAP['2030'];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -406,24 +406,27 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            {/* Row 5: Laptop availability & CRT training fee */}
-                            <div className="srkr-reg-row-2">
-                                <div className="srkr-reg-field">
-                                    <label>
-                                        Do you have a Laptop? <span className="required">*</span>
-                                    </label>
-                                    {renderSegment('hasLaptop', LAPTOP_OPTIONS)}
-                                    {errors.hasLaptop && <span className="srkr-reg-error">{errors.hasLaptop}</span>}
-                                </div>
-
-                                <div className="srkr-reg-field">
-                                    <label>
-                                        Paid the CRT Training Fee? <span className="required">*</span>
-                                    </label>
-                                    {renderSegment('paidCrtFee', CRT_FEE_OPTIONS)}
-                                    {errors.paidCrtFee && <span className="srkr-reg-error">{errors.paidCrtFee}</span>}
-                                </div>
+                            {/* Row 5: Laptop availability.
+                                NOTE: The "Paid the CRT Training Fee?" question is commented out
+                                below — it applies only to 3rd years (2028 passouts), who are not
+                                registering right now, so laptop is shown full-width. To re-enable
+                                CRT fee, wrap both fields back in a <div className="srkr-reg-row-2">. */}
+                            <div className="srkr-reg-field">
+                                <label>
+                                    Do you have a Laptop? <span className="required">*</span>
+                                </label>
+                                {renderSegment('hasLaptop', LAPTOP_OPTIONS)}
+                                {errors.hasLaptop && <span className="srkr-reg-error">{errors.hasLaptop}</span>}
                             </div>
+                            {/* CRT Training Fee — 3rd-year only; disabled while 3rd years can't register.
+                            <div className="srkr-reg-field">
+                                <label>
+                                    Paid the CRT Training Fee? <span className="required">*</span>
+                                </label>
+                                {renderSegment('paidCrtFee', CRT_FEE_OPTIONS)}
+                                {errors.paidCrtFee && <span className="srkr-reg-error">{errors.paidCrtFee}</span>}
+                            </div>
+                            */}
 
                             {/* Row 6: Passout Year */}
                             <div className="srkr-reg-field">
@@ -432,7 +435,9 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                     <small className="srkr-reg-hint"> (Automatically maps your designated curriculum)</small>
                                 </label>
                                 <div className="srkr-reg-year-grid">
-                                    {['2030', '2029', '2028'].map((year) => {
+                                    {/* '2028' (3rd year) removed — 3rd years are not registering currently.
+                                        Add '2028' back to this array to re-enable the 3rd-year option. */}
+                                    {['2030', '2029'].map((year) => {
                                         const isSelected = formData.passoutYear === year;
                                         const yearInfo = PASSOUT_YEAR_PROGRAM_MAP[year];
                                         return (
@@ -540,7 +545,9 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                             <div className="srkr-reg-success-row"><span>Gender</span><strong>{formData.gender}</strong></div>
                             <div className="srkr-reg-success-row"><span>Residence</span><strong>{formData.residenceType}</strong></div>
                             <div className="srkr-reg-success-row"><span>Has Laptop</span><strong>{formData.hasLaptop}</strong></div>
+                            {/* CRT Fee row hidden — 3rd-year only field is currently disabled.
                             <div className="srkr-reg-success-row"><span>CRT Fee Paid</span><strong>{formData.paidCrtFee}</strong></div>
+                            */}
                             <div className="srkr-reg-success-row"><span>Passout Year</span><strong>{formData.passoutYear}</strong></div>
                             <div className="srkr-reg-success-row"><span>Assigned Program</span><strong>{mappedProgram.programName}</strong></div>
                         </div>
