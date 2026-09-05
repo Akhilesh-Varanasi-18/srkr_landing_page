@@ -169,7 +169,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                 gender: '',
                 residenceType: '',
                 hasLaptop: '',
-                passoutYear: '2028',
+                passoutYear: '2030',
             });
         }
     }, [isOpen]);
