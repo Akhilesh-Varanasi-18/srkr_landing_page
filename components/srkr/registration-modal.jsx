@@ -46,7 +46,7 @@ const LAPTOP_OPTIONS = [
 
 const CRT_FEE_OPTIONS = [
     {
-        value: 'Yes', label: 'Yes, paid',
+        value: 'Yes', label: 'Yes, enrolled',
         icon: (<svg {...ico}><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>)
     },
     {
@@ -418,7 +418,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
 
                                 <div className="srkr-reg-field">
                                     <label>
-                                        Paid the CRT Training Fee? <span className="required">*</span>
+                                        Have you enrolled to CRT? <span className="required">*</span>
                                     </label>
                                     {renderSegment('paidCrtFee', CRT_FEE_OPTIONS)}
                                     {errors.paidCrtFee && <span className="srkr-reg-error">{errors.paidCrtFee}</span>}
@@ -540,7 +540,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                             <div className="srkr-reg-success-row"><span>Gender</span><strong>{formData.gender}</strong></div>
                             <div className="srkr-reg-success-row"><span>Residence</span><strong>{formData.residenceType}</strong></div>
                             <div className="srkr-reg-success-row"><span>Has Laptop</span><strong>{formData.hasLaptop}</strong></div>
-                            <div className="srkr-reg-success-row"><span>CRT Fee Paid</span><strong>{formData.paidCrtFee}</strong></div>
+                            <div className="srkr-reg-success-row"><span>Enrolled to CRT</span><strong>{formData.paidCrtFee}</strong></div>
                             <div className="srkr-reg-success-row"><span>Passout Year</span><strong>{formData.passoutYear}</strong></div>
                             <div className="srkr-reg-success-row"><span>Assigned Program</span><strong>{mappedProgram.programName}</strong></div>
                         </div>
