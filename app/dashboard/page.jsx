@@ -11,7 +11,7 @@ import {
     BranchBar,
     ResidenceSplit,
     LaptopSplit,
-    CrtFeeSplit,
+    // CrtFeeSplit, // CRT fee chart hidden — 3rd-year-only field, currently disabled
     LaptopByProgram,
     BranchYearStacked
 } from '../../components/srkr/dashboard/dashboard-charts';
@@ -202,7 +202,8 @@ export default function DashboardPage() {
                             <ProgramDonut data={data.byProgram} />
                             <ResidenceSplit data={data.byResidence} />
                             <LaptopSplit data={data.byLaptop || []} />
-                            <CrtFeeSplit data={data.byCrtFee || []} />
+                            {/* CRT fee chart hidden — 3rd-year-only field, currently disabled.
+                            <CrtFeeSplit data={data.byCrtFee || []} /> */}
                             <LaptopByProgram data={data.laptopByProgram || []} />
                             <BranchYearStacked branchByYear={data.branchByYear} byBranch={data.byBranch} />
                         </div>
