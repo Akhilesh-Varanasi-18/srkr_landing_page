@@ -124,6 +124,15 @@ const Programs = () => {
                                             className="srkr-program-banner-img"
                                         />
                                         <span className="srkr-program-year-pill">{program.year}</span>
+                                        {program.registrationsClosed && (
+                                            <span className="srkr-program-closed-badge">
+                                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                    <rect x="4" y="10" width="16" height="10" rx="2" />
+                                                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                                                </svg>
+                                                Registrations Closed
+                                            </span>
+                                        )}
                                     </div>
 
                                     {/* Card Content Body */}

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     BRANCH_GROUPS,
     PASSOUT_YEAR_PROGRAM_MAP,
+    CLOSED_PASSOUT_YEARS,
     FIELD_LIMITS,
     validateRegistration
 } from '../../lib/registration-schema';
@@ -149,6 +150,8 @@ const RegistrationModal = ({ isOpen, onClose }) => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [regId, setRegId] = useState('');
     const [submitError, setSubmitError] = useState('');
+    // Which closed batch (passout year) the user just tried to pick, for the notice.
+    const [closedNotice, setClosedNotice] = useState('');
 
     // Reset transient state when the modal closes. The submitted values are
     // cleared too, so reopening starts a fresh registration rather than showing
@@ -160,6 +163,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
             setIsSubmitting(false);
             setSubmitError('');
             setRegId('');
+            setClosedNotice('');
             setFormData({
                 fullName: '',
                 rollNumber: '',
@@ -434,27 +438,46 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 </label>
                                 <div className="srkr-reg-year-grid">
                                     {['2030', '2029', '2028'].map((year) => {
-                                        const isSelected = formData.passoutYear === year;
+                                        const isClosed = CLOSED_PASSOUT_YEARS.includes(year);
+                                        const isSelected = !isClosed && formData.passoutYear === year;
                                         const yearInfo = PASSOUT_YEAR_PROGRAM_MAP[year];
                                         return (
                                             <button
                                                 key={year}
                                                 type="button"
-                                                className={`srkr-reg-year-card ${isSelected ? 'active' : ''}`}
+                                                className={`srkr-reg-year-card ${isSelected ? 'active' : ''} ${isClosed ? 'is-closed' : ''}`}
                                                 style={isSelected ? { '--year-accent': yearInfo.color } : undefined}
-                                                onClick={() => selectValue('passoutYear', year)}
+                                                aria-disabled={isClosed}
+                                                onClick={() => {
+                                                    if (isClosed) { setClosedNotice(year); return; }
+                                                    setClosedNotice('');
+                                                    selectValue('passoutYear', year);
+                                                }}
                                             >
+                                                {isClosed && <span className="srkr-reg-year-closed-tag">Closed</span>}
                                                 <div className="srkr-reg-year-radio">
                                                     <span className={`srkr-radio-dot ${isSelected ? 'checked' : ''}`} />
                                                     <strong>{year} Passouts</strong>
                                                 </div>
-                                                <span className="srkr-reg-year-mapped" style={{ color: yearInfo.color }}>
+                                                <span className="srkr-reg-year-mapped" style={{ color: isClosed ? undefined : yearInfo.color }}>
                                                     {yearInfo.programName}
                                                 </span>
                                             </button>
                                         );
                                     })}
                                 </div>
+                                {closedNotice && PASSOUT_YEAR_PROGRAM_MAP[closedNotice] && (
+                                    <div className="srkr-reg-closed-notice" role="status" aria-live="polite">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                            <rect x="4" y="10" width="16" height="10" rx="2" />
+                                            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                                        </svg>
+                                        <span>
+                                            Registrations for <strong>{PASSOUT_YEAR_PROGRAM_MAP[closedNotice].programName}</strong>
+                                            {' '}({PASSOUT_YEAR_PROGRAM_MAP[closedNotice].yearLabel}) are now closed.
+                                        </span>
+                                    </div>
+                                )}
                                 {errors.passoutYear && <span className="srkr-reg-error">{errors.passoutYear}</span>}
                             </div>
 

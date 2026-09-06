@@ -107,6 +107,7 @@ export const programsData = [
         badge: 'Core Engineering Track',
         themeColor: 'var(--srkr-secondary)',
         accentBg: 'var(--srkr-bg-warm-tint)',
+        registrationsClosed: true, // 2nd-year (2029) registrations closed — shows a badge on the card
         courses: [
             /* ==================================================================
                ARCHIVED — previous SkillUp 'DSA' & 'Problem Solving' syllabus.

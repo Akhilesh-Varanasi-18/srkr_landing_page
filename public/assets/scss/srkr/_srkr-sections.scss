@@ -887,6 +887,37 @@
     }
   }
 
+  // "Registrations Closed" badge — top-left of the banner, so a browser knows the
+  // batch is closed before opening the form. Distinct from the year pill (top-right).
+  .srkr-program-closed-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #fff;
+    background: linear-gradient(135deg, #b91c1c, #dc2626);
+    box-shadow: 0 4px 12px rgba(185, 28, 28, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    svg { flex-shrink: 0; }
+
+    @media (max-width: 767px) {
+      top: 8px;
+      left: 8px;
+      font-size: 9.5px;
+      padding: 3px 9px;
+    }
+  }
+
   .srkr-program-card-body {
     padding: 18px 20px 20px;
     display: flex;
@@ -4233,6 +4264,7 @@
 }
 
 .srkr-reg-year-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -4302,6 +4334,65 @@
     background: var(--srkr-bg-coral-tint);
     box-shadow: 0 4px 14px rgba(226, 84, 76, 0.14);
   }
+
+  // Closed batch — visible but not selectable.
+  &.is-closed {
+    cursor: not-allowed;
+    opacity: 0.65;
+
+    strong,
+    .srkr-reg-year-mapped { color: var(--srkr-muted); }
+
+    &:hover {
+      border-color: var(--srkr-border);
+      background: var(--srkr-bg-section);
+      transform: none;
+    }
+  }
+}
+
+.srkr-reg-year-closed-tag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--srkr-muted);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+// Notice shown when a user taps a closed batch in the year grid.
+.srkr-reg-closed-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: var(--srkr-bg-coral-tint);
+  border: 1px solid rgba(226, 84, 76, 0.3);
+  color: var(--srkr-primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  animation: srkrClosedNoticeIn 0.25s ease;
+
+  svg { flex-shrink: 0; }
+  strong { font-weight: 800; }
+
+  @media (max-width: 575px) {
+    font-size: 11.5px;
+    padding: 8px 11px;
+  }
+}
+
+@keyframes srkrClosedNoticeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 // Program Preview Box
