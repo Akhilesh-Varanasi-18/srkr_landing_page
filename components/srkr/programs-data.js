@@ -594,7 +594,7 @@ export const programsData = [
         name: 'AI Ready Program',
         year: '3rd Year',
         banner: '/assets/images/srkr/project-images/Torii_Program_banners/AI_ready_eng.png',
-        tagline: '',
+        tagline: 'Industry-Ready Technologies & AI Engineering',
         description: 'Comprehensive industry preparation featuring Full Stack Development, Flutter, Cloud, ServiceNow, and modern AI skills.',
         badge: 'Career & Industry Track',
         themeColor: 'var(--srkr-tertiary)',
