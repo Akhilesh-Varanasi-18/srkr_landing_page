@@ -300,7 +300,7 @@ export function LaptopSplit({ data }) {
     );
 }
 
-// ── 5c. CRT training fee 100% split bar ──
+// ── 5c. CRT enrollment 100% split bar ──
 export function CrtFeeSplit({ data }) {
     const total = data.reduce((s, d) => s + d.value, 0);
     const order = ['Yes', 'No'];
@@ -308,8 +308,8 @@ export function CrtFeeSplit({ data }) {
     return (
         <div className="dash-card dash-card--6">
             <div className="dash-card-head">
-                <h3 className="dash-card-title">CRT training fee</h3>
-                <p className="dash-card-sub">Students who have paid vs not yet</p>
+                <h3 className="dash-card-title">Enrolled for CRT</h3>
+                <p className="dash-card-sub">Students who have enrolled vs not yet</p>
             </div>
             <div className="dash-card-body">
                 {total === 0 ? <EmptyChart label="No data yet" /> : (
@@ -329,7 +329,7 @@ export function CrtFeeSplit({ data }) {
                         <div className="dash-splitbar-labels">
                             <div className="dash-splitbar-label">
                                 <strong>{rows[0].value}</strong>
-                                <span><span className="dash-legend-swatch" style={{ background: CRT_FEE_COLORS.Yes }} /> Fee paid</span>
+                                <span><span className="dash-legend-swatch" style={{ background: CRT_FEE_COLORS.Yes }} /> Enrolled</span>
                             </div>
                             <div className="dash-splitbar-label dash-splitbar-label--right">
                                 <strong>{rows[1].value}</strong>
