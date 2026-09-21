@@ -45,6 +45,8 @@ export default function RecentTable({ rows }) {
                             <th>Branch</th>
                             <th>Year</th>
                             <th>Program</th>
+                            <th>EAPCET</th>
+                            <th>JEE</th>
                             <th>Gender</th>
                             <th>Residence</th>
                             <th>Registered</th>
@@ -53,7 +55,7 @@ export default function RecentTable({ rows }) {
                     <tbody>
                         {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan={9} className="dash-table-empty">
+                                <td colSpan={11} className="dash-table-empty">
                                     {rows.length === 0 ? 'No registrations yet.' : 'No matches for your search.'}
                                 </td>
                             </tr>
@@ -65,6 +67,8 @@ export default function RecentTable({ rows }) {
                                 <td title={r.branch}>{shortBranch(r.branch)}</td>
                                 <td>{r.passoutYear}</td>
                                 <td>{r.programName}</td>
+                                <td>{r.eapcetRank || '—'}</td>
+                                <td>{r.jeeRank || '—'}</td>
                                 <td><span className={`dash-pill ${r.gender === 'Female' ? 'dash-pill--f' : 'dash-pill--m'}`}>{r.gender}</span></td>
                                 <td>{r.residenceType}</td>
                                 <td>{formatDateTime(r.createdAt)}</td>

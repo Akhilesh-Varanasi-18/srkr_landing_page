@@ -32,3 +32,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# student data exports — contain names/mobiles/emails; never push these to a
+# shared repo. Analytics/registration workbooks live locally only.
+*.xlsx
+/attempted_details_round1/

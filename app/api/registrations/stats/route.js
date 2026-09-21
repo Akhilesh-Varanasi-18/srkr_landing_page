@@ -48,7 +48,31 @@ export async function GET(request) {
                         byBranch: [{ $group: { _id: '$branch', n: { $sum: 1 } } }, { $sort: { n: -1 } }],
                         byResidence: [{ $group: { _id: '$residenceType', n: { $sum: 1 } } }],
                         byLaptop: [{ $group: { _id: '$hasLaptop', n: { $sum: 1 } } }],
-                        byCrtFee: [{ $group: { _id: '$paidCrtFee', n: { $sum: 1 } } }],
+                        // CRT enrolment split retired — replaced by admission-basis below.
+                        // byCrtFee: [{ $group: { _id: '$paidCrtFee', n: { $sum: 1 } } }],
+                        // Admission basis (1st-year intake): "Rank-based" if either
+                        // entrance rank was provided, else "Management". Only counts
+                        // records that captured the field, so historical rows are excluded.
+                        byAdmission: [
+                            { $match: { eapcetRank: { $exists: true } } },
+                            {
+                                $group: {
+                                    _id: {
+                                        $cond: [
+                                            {
+                                                $and: [
+                                                    { $eq: [{ $ifNull: ['$eapcetRank', ''] }, ''] },
+                                                    { $eq: [{ $ifNull: ['$jeeRank', ''] }, ''] }
+                                                ]
+                                            },
+                                            'Management',
+                                            'Rank-based'
+                                        ]
+                                    },
+                                    n: { $sum: 1 }
+                                }
+                            }
+                        ],
                         laptopByProgram: [
                             { $group: { _id: { program: '$programName', laptop: '$hasLaptop' }, n: { $sum: 1 } } }
                         ],
@@ -87,8 +111,9 @@ export async function GET(request) {
                                     gender: 1,
                                     residenceType: 1,
                                     hasLaptop: 1,
-                                    paidCrtFee: 1,
                                     passoutYear: 1,
+                                    eapcetRank: 1,
+                                    jeeRank: 1,
                                     programName: 1,
                                     createdAt: 1
                                 }
@@ -149,7 +174,7 @@ export async function GET(request) {
             byBranch: clean(facet.byBranch).map((r) => ({ name: r._id, value: r.n })),
             byResidence: clean(facet.byResidence).map((r) => ({ name: r._id, value: r.n })),
             byLaptop: clean(facet.byLaptop).map((r) => ({ name: r._id, value: r.n })),
-            byCrtFee: clean(facet.byCrtFee).map((r) => ({ name: r._id, value: r.n })),
+            byAdmission: clean(facet.byAdmission).map((r) => ({ name: r._id, value: r.n })),
             byProgram: facet.byProgram
                 .filter((r) => r._id?.name)
                 .map((r) => ({ name: r._id.name, year: r._id.year, label: r._id.label, value: r.n })),

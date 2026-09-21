@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     BRANCH_GROUPS,
+    PASSOUT_YEARS,
     PASSOUT_YEAR_PROGRAM_MAP,
     CLOSED_PASSOUT_YEARS,
     FIELD_LIMITS,
@@ -45,16 +46,12 @@ const LAPTOP_OPTIONS = [
     }
 ];
 
-const CRT_FEE_OPTIONS = [
-    {
-        value: 'Yes', label: 'Yes, enrolled',
-        icon: (<svg {...ico}><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>)
-    },
-    {
-        value: 'No', label: 'Not yet',
-        icon: (<svg {...ico}><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>)
-    }
-];
+// CRT enrolment question retired per management — options kept (commented) so the
+// whole field can be restored in one place if it's ever needed again.
+// const CRT_FEE_OPTIONS = [
+//     { value: 'Yes', label: 'Yes, enrolled', icon: (<svg {...ico}><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>) },
+//     { value: 'No', label: 'Not yet', icon: (<svg {...ico}><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>) }
+// ];
 
 // Custom, theme-styled branch dropdown. A native <select> can't be styled (its
 // option list is browser-chrome) and picks its own open direction — this renders a
@@ -141,8 +138,10 @@ const RegistrationModal = ({ isOpen, onClose }) => {
         gender: '',
         residenceType: '',
         hasLaptop: '',
-        paidCrtFee: '',
+        // paidCrtFee: '', // CRT enrolment retired
         passoutYear: '2030',
+        eapcetRank: '',
+        jeeRank: '',
     });
 
     const [errors, setErrors] = useState({});
@@ -173,8 +172,10 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                 gender: '',
                 residenceType: '',
                 hasLaptop: '',
-                paidCrtFee: '',
+                // paidCrtFee: '', // CRT enrolment retired
                 passoutYear: '2030',
+                eapcetRank: '',
+                jeeRank: '',
             });
         }
     }, [isOpen]);
@@ -186,8 +187,16 @@ const RegistrationModal = ({ isOpen, onClose }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         // Keep the phone field to digits only so the +91 prefix stays accurate and
-        // the 10-digit maxLength can't be spent on spaces or dashes.
-        const nextValue = name === 'mobileNumber' ? value.replace(/[^\d]/g, '').slice(0, 10) : value;
+        // the 10-digit maxLength can't be spent on spaces or dashes. The optional
+        // entrance-rank fields are digits-only too.
+        let nextValue = value;
+        if (name === 'mobileNumber') {
+            nextValue = value.replace(/[^\d]/g, '').slice(0, 10);
+        } else if (name === 'eapcetRank') {
+            nextValue = value.replace(/[^\d]/g, '').slice(0, FIELD_LIMITS.eapcetRank);
+        } else if (name === 'jeeRank') {
+            nextValue = value.replace(/[^\d]/g, '').slice(0, FIELD_LIMITS.jeeRank);
+        }
         setFormData(prev => ({ ...prev, [name]: nextValue }));
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
         if (submitError) setSubmitError('');
@@ -411,23 +420,13 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            {/* Row 5: Laptop availability & CRT training fee */}
-                            <div className="srkr-reg-row-2">
-                                <div className="srkr-reg-field">
-                                    <label>
-                                        Do you have a Laptop? <span className="required">*</span>
-                                    </label>
-                                    {renderSegment('hasLaptop', LAPTOP_OPTIONS)}
-                                    {errors.hasLaptop && <span className="srkr-reg-error">{errors.hasLaptop}</span>}
-                                </div>
-
-                                <div className="srkr-reg-field">
-                                    <label>
-                                        Have you enrolled for CRT? <span className="required">*</span>
-                                    </label>
-                                    {renderSegment('paidCrtFee', CRT_FEE_OPTIONS)}
-                                    {errors.paidCrtFee && <span className="srkr-reg-error">{errors.paidCrtFee}</span>}
-                                </div>
+                            {/* Row 5: Laptop availability (CRT enrolment question retired) */}
+                            <div className="srkr-reg-field">
+                                <label>
+                                    Do you have a Laptop? <span className="required">*</span>
+                                </label>
+                                {renderSegment('hasLaptop', LAPTOP_OPTIONS)}
+                                {errors.hasLaptop && <span className="srkr-reg-error">{errors.hasLaptop}</span>}
                             </div>
 
                             {/* Row 6: Passout Year */}
@@ -437,7 +436,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                     <small className="srkr-reg-hint"> (Automatically maps your designated curriculum)</small>
                                 </label>
                                 <div className="srkr-reg-year-grid">
-                                    {['2030', '2029', '2028'].map((year) => {
+                                    {PASSOUT_YEARS.map((year) => {
                                         const isClosed = CLOSED_PASSOUT_YEARS.includes(year);
                                         const isSelected = !isClosed && formData.passoutYear === year;
                                         const yearInfo = PASSOUT_YEAR_PROGRAM_MAP[year];
@@ -457,7 +456,12 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                                 {isClosed && <span className="srkr-reg-year-closed-tag">Closed</span>}
                                                 <div className="srkr-reg-year-radio">
                                                     <span className={`srkr-radio-dot ${isSelected ? 'checked' : ''}`} />
-                                                    <strong>{year} Passouts</strong>
+                                                    <strong>
+                                                        {year} Passouts
+                                                        {yearInfo?.yearLabel && (
+                                                            <span className="srkr-reg-year-ord"> ({yearInfo.yearLabel.split(' ')[0]} Years)</span>
+                                                        )}
+                                                    </strong>
                                                 </div>
                                                 <span className="srkr-reg-year-mapped" style={{ color: isClosed ? undefined : yearInfo.color }}>
                                                     {yearInfo.programName}
@@ -480,6 +484,59 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                 )}
                                 {errors.passoutYear && <span className="srkr-reg-error">{errors.passoutYear}</span>}
                             </div>
+
+                            {/* Row 7: Entrance-exam ranks — 1st year (2030) intake only.
+                                Both OPTIONAL: rank-based students fill theirs in; management
+                                students simply leave them blank. */}
+                            {formData.passoutYear === '2030' && (
+                                <div className="srkr-reg-field">
+                                    <label>
+                                        Entrance Exam Ranks
+                                        <small className="srkr-reg-hint"> (Optional — leave blank if management quota)</small>
+                                    </label>
+                                    <div className="srkr-reg-row-2">
+                                        <div className="srkr-reg-field">
+                                            <div className="srkr-reg-input-wrap">
+                                                <span className="srkr-reg-input-icon">
+                                                    <svg {...ico}><circle cx="12" cy="8" r="6" /><path d="M8.21 13.89 7 22l5-3 5 3-1.21-8.11" /></svg>
+                                                </span>
+                                                <input
+                                                    type="text" id="eapcetRank" name="eapcetRank"
+                                                    placeholder="AP/TS EAPCET rank"
+                                                    value={formData.eapcetRank} onChange={handleChange}
+                                                    className={errors.eapcetRank ? 'has-error' : ''}
+                                                    maxLength={FIELD_LIMITS.eapcetRank}
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
+                                                    aria-label="EAPCET rank (optional)"
+                                                    aria-invalid={errors.eapcetRank ? 'true' : 'false'}
+                                                />
+                                            </div>
+                                            {errors.eapcetRank && <span className="srkr-reg-error">{errors.eapcetRank}</span>}
+                                        </div>
+
+                                        <div className="srkr-reg-field">
+                                            <div className="srkr-reg-input-wrap">
+                                                <span className="srkr-reg-input-icon">
+                                                    <svg {...ico}><circle cx="12" cy="8" r="6" /><path d="M8.21 13.89 7 22l5-3 5 3-1.21-8.11" /></svg>
+                                                </span>
+                                                <input
+                                                    type="text" id="jeeRank" name="jeeRank"
+                                                    placeholder="JEE Mains highest rank"
+                                                    value={formData.jeeRank} onChange={handleChange}
+                                                    className={errors.jeeRank ? 'has-error' : ''}
+                                                    maxLength={FIELD_LIMITS.jeeRank}
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
+                                                    aria-label="JEE Mains rank (optional)"
+                                                    aria-invalid={errors.jeeRank ? 'true' : 'false'}
+                                                />
+                                            </div>
+                                            {errors.jeeRank && <span className="srkr-reg-error">{errors.jeeRank}</span>}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Mapped program live preview */}
                             <div
@@ -564,8 +621,9 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                             <div className="srkr-reg-success-row"><span>Gender</span><strong>{formData.gender}</strong></div>
                             <div className="srkr-reg-success-row"><span>Residence</span><strong>{formData.residenceType}</strong></div>
                             <div className="srkr-reg-success-row"><span>Has Laptop</span><strong>{formData.hasLaptop}</strong></div>
-                            <div className="srkr-reg-success-row"><span>Enrolled to CRT</span><strong>{formData.paidCrtFee}</strong></div>
                             <div className="srkr-reg-success-row"><span>Passout Year</span><strong>{formData.passoutYear}</strong></div>
+                            {formData.eapcetRank && <div className="srkr-reg-success-row"><span>EAPCET Rank</span><strong>{formData.eapcetRank}</strong></div>}
+                            {formData.jeeRank && <div className="srkr-reg-success-row"><span>JEE Mains Rank</span><strong>{formData.jeeRank}</strong></div>}
                             <div className="srkr-reg-success-row"><span>Assigned Program</span><strong>{mappedProgram.programName}</strong></div>
                         </div>
 

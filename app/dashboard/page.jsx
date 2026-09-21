@@ -11,12 +11,13 @@ import {
     BranchBar,
     ResidenceSplit,
     LaptopSplit,
-    CrtFeeSplit,
+    AdmissionSplit,
     LaptopByProgram,
     BranchYearStacked
 } from '../../components/srkr/dashboard/dashboard-charts';
+import AnnouncementManager from '../../components/srkr/dashboard/announcement-manager';
 import { RANGES, formatDateTime } from '../../components/srkr/dashboard/dashboard-theme';
-import { IconDownload, IconRefresh, IconLogout, IconAlert } from '../../components/srkr/dashboard/dashboard-icons';
+import { IconDownload, IconRefresh, IconLogout, IconAlert, IconMegaphone } from '../../components/srkr/dashboard/dashboard-icons';
 
 const AUTO_REFRESH_MS = 30000;
 
@@ -30,6 +31,7 @@ export default function DashboardPage() {
     const [refreshing, setRefreshing] = useState(false);
     const [downloading, setDownloading] = useState(false);
     const [autoRefresh, setAutoRefresh] = useState(false);
+    const [isAnnouncementMgrOpen, setIsAnnouncementMgrOpen] = useState(false);
     const rangeRef = useRef(range);
     rangeRef.current = range;
 
@@ -165,6 +167,9 @@ export default function DashboardPage() {
                         <button className={`dash-btn ${refreshing ? 'is-spinning' : ''}`} onClick={() => loadStats(range, { silent: true })} disabled={refreshing}>
                             <IconRefresh /> Refresh
                         </button>
+                        <button className="dash-btn" onClick={() => setIsAnnouncementMgrOpen(true)}>
+                            <IconMegaphone /> New Announcement
+                        </button>
                         <button className="dash-btn dash-btn--primary" onClick={handleDownload} disabled={downloading || !data}>
                             <IconDownload /> {downloading ? 'Preparing…' : 'Download Excel'}
                         </button>
@@ -202,7 +207,7 @@ export default function DashboardPage() {
                             <ProgramDonut data={data.byProgram} />
                             <ResidenceSplit data={data.byResidence} />
                             <LaptopSplit data={data.byLaptop || []} />
-                            <CrtFeeSplit data={data.byCrtFee || []} />
+                            <AdmissionSplit data={data.byAdmission || []} />
                             <LaptopByProgram data={data.laptopByProgram || []} />
                             <BranchYearStacked branchByYear={data.branchByYear} byBranch={data.byBranch} />
                         </div>
@@ -214,6 +219,8 @@ export default function DashboardPage() {
                     </>
                 ) : null}
             </div>
+
+            <AnnouncementManager isOpen={isAnnouncementMgrOpen} onClose={() => setIsAnnouncementMgrOpen(false)} />
         </div>
     );
 }

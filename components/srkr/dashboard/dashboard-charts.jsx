@@ -24,6 +24,7 @@ import {
     RESIDENCE_COLORS,
     LAPTOP_COLORS,
     CRT_FEE_COLORS,
+    ADMISSION_COLORS,
     BRANCH_RAMP,
     shortBranch,
     shortDay,
@@ -334,6 +335,49 @@ export function CrtFeeSplit({ data }) {
                             <div className="dash-splitbar-label dash-splitbar-label--right">
                                 <strong>{rows[1].value}</strong>
                                 <span><span className="dash-legend-swatch" style={{ background: CRT_FEE_COLORS.No }} /> Not yet</span>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ── 5c-ii. Admission basis: rank-based vs management (100% split bar) ──
+export function AdmissionSplit({ data }) {
+    const total = data.reduce((s, d) => s + d.value, 0);
+    const order = ['Rank-based', 'Management'];
+    const rows = order.map((name) => ({ name, value: data.find((d) => d.name === name)?.value || 0 }));
+    return (
+        <div className="dash-card dash-card--6">
+            <div className="dash-card-head">
+                <h3 className="dash-card-title">Admission basis</h3>
+                <p className="dash-card-sub">Rank-based (EAPCET / JEE) vs management quota</p>
+            </div>
+            <div className="dash-card-body">
+                {total === 0 ? <EmptyChart label="No rank data yet" /> : (
+                    <>
+                        <div className="dash-splitbar">
+                            {rows.map((r) => r.value > 0 && (
+                                <div
+                                    key={r.name}
+                                    className="dash-splitbar-seg"
+                                    style={{ flexGrow: r.value, background: ADMISSION_COLORS[r.name] }}
+                                    title={`${r.name}: ${r.value}`}
+                                >
+                                    {pct(r.value, total) >= 10 ? `${pct(r.value, total)}%` : ''}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="dash-splitbar-labels">
+                            <div className="dash-splitbar-label">
+                                <strong>{rows[0].value}</strong>
+                                <span><span className="dash-legend-swatch" style={{ background: ADMISSION_COLORS['Rank-based'] }} /> Rank-based</span>
+                            </div>
+                            <div className="dash-splitbar-label dash-splitbar-label--right">
+                                <strong>{rows[1].value}</strong>
+                                <span><span className="dash-legend-swatch" style={{ background: ADMISSION_COLORS.Management }} /> Management</span>
                             </div>
                         </div>
                     </>

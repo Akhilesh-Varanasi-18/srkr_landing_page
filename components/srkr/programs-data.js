@@ -3,6 +3,65 @@
 // Structured curriculum with concise, high-impact statements for optimal UI readability.
 // =========================================================================
 
+// Shared "Practice Journey" pipeline — used by the Bamboo Coder and SkillUp Coder tracks.
+// Each node is a square (1:1) achievement badge that keeps its own brand colours;
+// our palette lives in the frame / connectors / tags around it. Ordered as a
+// learning arc — certify → practice platforms → compete → collaborate → interview —
+// so it reads as "start the course → finish placement-ready". `tags` float beside
+// each node; the final node is flagged as the destination.
+const JOURNEY_DIR = '/assets/images/srkr/project-images/course_journey_roadmap';
+const PRACTICE_JOURNEY = [
+    {
+        image: `${JOURNEY_DIR}/Cisco_C_Essentials.png`,
+        label: 'CISCO — C Essentials 1',
+        caption: 'Verified certification',
+        tags: ['Course Completion from CISCO']
+    },
+    {
+        image: `${JOURNEY_DIR}/HackerRank.png`,
+        label: 'HackerRank',
+        caption: 'Topic-wise mastery',
+        tags: ['5-Star Badges', 'Problem-Solving Practice', 'Topic-Wise Problem Solving', 'Mixed-Concept Problem Solving']
+    },
+    {
+        image: `${JOURNEY_DIR}/leetcode.jpeg`,
+        label: 'LeetCode',
+        caption: 'Core problem solving',
+        tags: ['LeetCode Problem Solving', 'LeetCode Contest Participation']
+    },
+    {
+        image: `${JOURNEY_DIR}/codechef.jpeg`,
+        label: 'CodeChef',
+        caption: 'Contest problem solving',
+        tags: ['CodeChef Problem Solving', 'CodeChef Contest Participation']
+    },
+    {
+        image: `${JOURNEY_DIR}/monthly_coding_contest.jpeg`,
+        label: 'Monthly Coding Contest',
+        caption: 'Compete & win',
+        tags: ['Monthly Coding Contest', 'Post-Contest Upsolving', 'Prizes for Winners']
+    },
+    {
+        image: `${JOURNEY_DIR}/github_versioncontrol.jpeg`,
+        label: 'GitHub',
+        caption: 'Store & manage your projects',
+        tags: ['Git Version Control']
+    },
+    {
+        image: `${JOURNEY_DIR}/Course_Completion_From_ToriiMinds.png`,
+        label: 'ToriiMinds — Course Completion',
+        caption: 'Program certificate',
+        tags: ['Course Completion from ToriiMinds']
+    },
+    {
+        image: `${JOURNEY_DIR}/Interivew_Prep.png`,
+        label: 'Interview Preparation',
+        caption: 'Job-ready',
+        tags: ['Company Interview Questions', 'Pattern Breakdown'],
+        destination: true
+    }
+];
+
 export const programsData = [
     {
         id: 'bamboo',
@@ -21,7 +80,7 @@ export const programsData = [
                 title: 'C Programming & Logic Building',
                 code: 'BMB-101',
                 level: 'Beginner to Intermediate',
-                prerequisites: 'None — Designed for B.Tech 1st Year Students',
+                // prerequisites: 'None — Designed for B.Tech 1st Year Students', // hidden: no real prerequisite to show for this course
                 overview: 'Master foundational computer science concepts, memory layout, pointer arithmetic, structures, and file-driven modular C programs.',
                 outcomes: [
                     'Write, debug, and compile clean, modular C programs independently',
@@ -92,7 +151,8 @@ export const programsData = [
                             'Mini-Project: Student Record System / Library Management System'
                         ]
                     }
-                ]
+                ],
+                journey: PRACTICE_JOURNEY
             }
         ]
     },
@@ -485,7 +545,8 @@ export const programsData = [
                         'Topic-Wise Problem Solving',
                         'Mixed Concept Problem Solving'
                     ]
-                }
+                },
+                journey: PRACTICE_JOURNEY
             },
             {
                 id: 'skillup-problem-solving',
@@ -584,7 +645,8 @@ export const programsData = [
                         'HackerRank Problem Solving Badge Completion',
                         'Topic-Wise Coding Practice'
                     ]
-                }
+                },
+                journey: PRACTICE_JOURNEY
             }
         ]
     },

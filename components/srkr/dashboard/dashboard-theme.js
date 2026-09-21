@@ -44,9 +44,16 @@ export const LAPTOP_COLORS = {
     No: BRAND.muted
 };
 
+// CRT enrolment split retired from the dashboard — colours kept for easy restore.
 export const CRT_FEE_COLORS = {
     Yes: BRAND.primary,
     No: BRAND.muted
+};
+
+// Admission basis (1st-year intake): rank-based vs management-quota students.
+export const ADMISSION_COLORS = {
+    'Rank-based': BRAND.secondary,
+    Management: BRAND.muted
 };
 
 // A ranked sequential coral→amber→slate ramp for the branch bar chart. 12 stops —
