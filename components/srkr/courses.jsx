@@ -6,15 +6,14 @@ import ProgramDetailModal from './program-detail-modal';
 // Distinct course items linked to programs with rich highlights
 const coursesList = [
     {
-        id: 'skillup-dsa',
+        id: 'skillup-problem-solving-dsa',
         programId: 'skillup',
-        code: 'SKL-201',
-        title: 'Data Structures & Algorithms (DSA)',
+        title: 'Problem Solving & DSA',
         category: 'dsa',
         categoryLabel: 'Core DSA',
         programName: 'SkillUp Coder',
         programYear: '2nd Year',
-        modulesCount: '11 Modules',
+        modulesCount: '10 Modules',
         accentColor: 'var(--srkr-secondary)',
         accentGradient: 'linear-gradient(135deg, var(--srkr-tertiary) 0%, var(--srkr-secondary) 100%)',
         accentBg: 'var(--srkr-bg-warm-tint)',
@@ -27,44 +26,17 @@ const coursesList = [
                 <line x1="12" y1="8" x2="19" y2="16" />
             </svg>
         ),
-        description: 'Comprehensive core DSA curriculum covering Big-O analysis, linear structures, trees, heaps, graphs, and dynamic programming.',
+        description: 'One end-to-end track from programming fundamentals through core data structures and algorithms — arrays, strings, searching, sorting, hashing, recursion, stacks, queues, linked lists and trees.',
         highlights: [
-            'Tree traversals, BST operations & LCA',
-            'BFS/DFS graphs & 1D dynamic programming'
+            'Big-O analysis, hashing, two pointers & sliding window',
+            'Stacks, queues, linked lists & binary tree traversals'
         ],
-        tags: ['Arrays & Matrices', 'Linked Lists', 'Trees & BST', 'Graphs', 'Dynamic Programming'],
+        tags: ['Arrays & Strings', 'Searching & Sorting', 'Hashing & Sets', 'Recursion', 'Linked Lists & Trees'],
         courseIndex: 0,
-    },
-    {
-        id: 'skillup-problem-solving',
-        programId: 'skillup',
-        code: 'SKL-202',
-        title: 'Applied Problem Solving & Contest Prep',
-        category: 'dsa',
-        categoryLabel: 'Problem Solving',
-        programName: 'SkillUp Coder',
-        programYear: '2nd Year',
-        modulesCount: '4 Modules',
-        accentColor: 'var(--srkr-primary)',
-        accentGradient: 'linear-gradient(135deg, var(--srkr-secondary) 0%, var(--srkr-primary) 100%)',
-        accentBg: 'var(--srkr-bg-coral-tint)',
-        icon: (
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-        ),
-        description: 'Targeted bootcamp focusing on pattern recognition, edge-case optimization, sliding window, and timed online assessments.',
-        highlights: [
-            '2-minute algorithmic pattern recognition',
-            'Timed 90-minute mock OA assessments'
-        ],
-        tags: ['Two Pointers', 'Sliding Window', 'Binary Search on Answer', 'Bitmasking', 'Mock OAs'],
-        courseIndex: 1,
     },
     {
         id: 'aiready-fullstack',
         programId: 'aiready',
-        code: 'AIR-301',
         title: 'Full Stack Development + AI Integration',
         category: 'dev',
         categoryLabel: 'Full Stack',
@@ -92,7 +64,6 @@ const coursesList = [
     {
         id: 'aiready-flutter',
         programId: 'aiready',
-        code: 'AIR-302',
         title: 'Google Flutter + AI Integration',
         category: 'dev',
         categoryLabel: 'Mobile App',
@@ -119,13 +90,12 @@ const coursesList = [
     {
         id: 'aiready-cloud-devops',
         programId: 'aiready',
-        code: 'AIR-303',
         title: 'AWS Cloud and Devops + AI Integration',
         category: 'cloud',
         categoryLabel: 'Cloud & DevOps',
         programName: 'AI Ready Program',
         programYear: '3rd Year',
-        modulesCount: '6 Modules',
+        modulesCount: '5 Modules',
         accentColor: 'var(--srkr-tertiary)',
         accentGradient: 'linear-gradient(135deg, var(--srkr-secondary) 0%, var(--srkr-tertiary) 100%)',
         accentBg: 'var(--srkr-bg-warm-offwhite)',
@@ -145,7 +115,6 @@ const coursesList = [
     {
         id: 'aiready-servicenow',
         programId: 'aiready',
-        code: 'AIR-304',
         title: 'ServiceNow Platform Engineering',
         category: 'cloud',
         categoryLabel: 'Platform Eng',
@@ -172,7 +141,6 @@ const coursesList = [
     {
         id: 'bamboo-c',
         programId: 'bamboo',
-        code: 'BMB-101',
         title: 'C Programming & Logic Building',
         category: 'core',
         categoryLabel: 'Foundation',
@@ -207,7 +175,6 @@ const coursesList = [
     {
         id: 'owl-cp-dsa',
         programId: 'owlcoder',
-        code: 'OWL-401',
         title: 'Advanced Competitive Programming & DSA',
         category: 'dsa',
         categoryLabel: 'Expert CP',
@@ -235,7 +202,6 @@ const coursesList = [
     {
         id: 'moon-dsa-ready',
         programId: 'mooncoder',
-        code: 'MOON-101',
         title: 'Core Problem Solving & DSA Readiness',
         category: 'dsa',
         categoryLabel: 'DSA Ready',
@@ -401,8 +367,7 @@ const Courses = () => {
                             >
                                 {/* Top Header Bar */}
                                 <div className="srkr-course-card-top">
-                                    <span className="srkr-course-code-badge">{course.code}</span>
-                                    <span 
+                                    <span
                                         className="srkr-course-category-pill"
                                         style={{ color: course.accentColor, background: course.accentBg }}
                                     >

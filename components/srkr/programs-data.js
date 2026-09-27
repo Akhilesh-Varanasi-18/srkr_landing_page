@@ -3,26 +3,54 @@
 // Structured curriculum with concise, high-impact statements for optimal UI readability.
 // =========================================================================
 
-// Shared "Practice Journey" pipeline — used by the Bamboo Coder and SkillUp Coder tracks.
-// Each node is a square (1:1) achievement badge that keeps its own brand colours;
-// our palette lives in the frame / connectors / tags around it. Ordered as a
-// learning arc — certify → practice platforms → compete → collaborate → interview —
-// so it reads as "start the course → finish placement-ready". `tags` float beside
-// each node; the final node is flagged as the destination.
+// Shared "Roadmap" pipeline — used by the Bamboo Coder and SkillUp Coder tracks.
+// Each node is an achievement badge that keeps its own brand colours; our palette
+// lives in the frame / connectors / tags around it. Ordered as a learning arc —
+// certify → practice platforms → compete → collaborate → interview — so it reads
+// as "start the course → finish placement-ready". `tags` float beside each node;
+// the final node is flagged as the destination.
+//
+// The first two nodes differ per track by language: Bamboo Coder (1st year) works
+// in C, SkillUp Coder (2nd year) in C++, so each gets its own CISCO certificate
+// and its own HackerRank 5-star badge. Everything from LeetCode onward is shared,
+// so `buildRoadmap(cert, hackerRank)` stamps the right pair on the front.
+//
+// Most badges are square (1254x1254). The HackerRank ones are portrait (~385x418),
+// so they carry `fit: 'contain'` — the figure letterboxes them on white instead of
+// cropping the badge edges off. See `.srkr-journey-figure.is-contain`.
 const JOURNEY_DIR = '/assets/images/srkr/project-images/course_journey_roadmap';
-const PRACTICE_JOURNEY = [
-    {
-        image: `${JOURNEY_DIR}/Cisco_C_Essentials.png`,
-        label: 'CISCO — C Essentials 1',
-        caption: 'Verified certification',
-        tags: ['Course Completion from CISCO']
-    },
-    {
-        image: `${JOURNEY_DIR}/HackerRank.png`,
-        label: 'HackerRank',
-        caption: 'Topic-wise mastery',
-        tags: ['5-Star Badges', 'Problem-Solving Practice', 'Topic-Wise Problem Solving', 'Mixed-Concept Problem Solving']
-    },
+
+const CISCO_C_CERT = {
+    image: `${JOURNEY_DIR}/Cisco_C_Essentials.png`,
+    label: 'CISCO — C Essentials 1',
+    caption: 'Verified certification',
+    tags: ['Course Completion from CISCO']
+};
+
+const CISCO_CPP_CERT = {
+    image: `${JOURNEY_DIR}/cisco_cpp_image.png`,
+    label: 'CISCO — C++ Essentials 1',
+    caption: 'Verified certification',
+    tags: ['Course Completion from CISCO']
+};
+
+const HACKERRANK_C_BADGE = {
+    image: `${JOURNEY_DIR}/HR_C_5star_badge.jpeg`,
+    fit: 'contain',
+    label: 'HackerRank — C (5 Star)',
+    caption: 'Topic-wise mastery',
+    tags: ['5-Star C Badge', 'Problem-Solving Practice', 'Topic-Wise Problem Solving', 'Mixed-Concept Problem Solving']
+};
+
+const HACKERRANK_CPP_BADGE = {
+    image: `${JOURNEY_DIR}/HR_Cpp_5star_Badge.jpeg`,
+    fit: 'contain',
+    label: 'HackerRank — C++ (5 Star)',
+    caption: 'Topic-wise mastery',
+    tags: ['5-Star C++ Badge', 'Problem-Solving Practice', 'Topic-Wise Problem Solving', 'Mixed-Concept Problem Solving']
+};
+
+const SHARED_ROADMAP = [
     {
         image: `${JOURNEY_DIR}/leetcode.jpeg`,
         label: 'LeetCode',
@@ -42,7 +70,7 @@ const PRACTICE_JOURNEY = [
         tags: ['Monthly Coding Contest', 'Post-Contest Upsolving', 'Prizes for Winners']
     },
     {
-        image: `${JOURNEY_DIR}/github_versioncontrol.jpeg`,
+        image: `${JOURNEY_DIR}/github_versioncontrol.png`,
         label: 'GitHub',
         caption: 'Store & manage your projects',
         tags: ['Git Version Control']
@@ -62,6 +90,11 @@ const PRACTICE_JOURNEY = [
     }
 ];
 
+const buildRoadmap = (cert, hackerRank) => [cert, hackerRank, ...SHARED_ROADMAP];
+
+const BAMBOO_ROADMAP = buildRoadmap(CISCO_C_CERT, HACKERRANK_C_BADGE);
+const SKILLUP_ROADMAP = buildRoadmap(CISCO_CPP_CERT, HACKERRANK_CPP_BADGE);
+
 export const programsData = [
     {
         id: 'bamboo',
@@ -78,7 +111,6 @@ export const programsData = [
             {
                 id: 'bamboo-c',
                 title: 'C Programming & Logic Building',
-                code: 'BMB-101',
                 level: 'Beginner to Intermediate',
                 // prerequisites: 'None — Designed for B.Tech 1st Year Students', // hidden: no real prerequisite to show for this course
                 overview: 'Master foundational computer science concepts, memory layout, pointer arithmetic, structures, and file-driven modular C programs.',
@@ -152,7 +184,7 @@ export const programsData = [
                         ]
                     }
                 ],
-                journey: PRACTICE_JOURNEY
+                journey: BAMBOO_ROADMAP
             }
         ]
     },
@@ -172,7 +204,7 @@ export const programsData = [
             /* ==================================================================
                ARCHIVED — previous SkillUp 'DSA' & 'Problem Solving' syllabus.
                Preserved for rollback. If the new syllabus is not a good fit,
-               revert by replacing the two live skillup courses below with these
+               revert by replacing the single merged skillup course below with these
                two archived course objects (and remove this comment wrapper).
                ================================================================== */
             /*
@@ -368,200 +400,24 @@ export const programsData = [
             }
             */
 
+            /* Single merged track — the former 'DSA' and 'Problem Solving'
+               courses were combined into one 10-module curriculum (was 21
+               modules across two courses) by pairing sibling topics and
+               dropping duplicated ones. */
             {
-                id: 'skillup-dsa',
-                title: 'Data Structures & Algorithms (DSA)',
-                code: 'SKL-201',
-                level: '',
-                prerequisites: 'C / C++ or Java Fundamentals',
-                overview: 'Comprehensive core DSA curriculum spanning math foundations, complexity analysis, arrays & strings, recursion & backtracking, sorting, hashing, sets, two pointers, sliding window, stacks, queues, linked lists, and binary trees.',
-                outcomes: [
-                    'Analyze time and space complexity with Big-O notation',
-                    'Apply number theory, modular arithmetic & the Sieve of Eratosthenes',
-                    'Solve array & string problems using hashing, sets, two pointers and sliding window',
-                    'Implement stacks, queues, and linked lists from scratch',
-                    'Master recursion, backtracking and core sorting algorithms',
-                    'Traverse and solve problems on binary trees'
-                ],
-                modules: [
-                    {
-                        moduleNumber: 'Module 1',
-                        title: 'Mathematics for DSA',
-                        topics: [
-                            'Mathematical Foundations',
-                            'Number Theory Basics',
-                            'Modular Arithmetic',
-                            'Prime Numbers & Sieve of Eratosthenes',
-                            'GCD & LCM'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 2',
-                        title: 'Complexity Analysis',
-                        topics: [
-                            'Time Complexity',
-                            'Space Complexity',
-                            'Big-O Notation',
-                            'Complexity Analysis of Solutions'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 3',
-                        title: 'Dynamic Arrays',
-                        topics: [
-                            'Dynamic Array Concepts',
-                            'Dynamic Array Operations'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 4',
-                        title: 'Arrays & Strings',
-                        topics: [
-                            'Array-Based Problem Solving',
-                            'String-Based Problem Solving',
-                            'Character Frequency Problems'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 5',
-                        title: 'Recursion & Backtracking',
-                        topics: [
-                            'Recursion Fundamentals',
-                            'Recursive Problem Solving',
-                            'Recursion with Arrays & Strings',
-                            'Backtracking Fundamentals',
-                            'Backtracking Problem Solving'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 6',
-                        title: 'Sorting Techniques',
-                        topics: [
-                            'Merge Sort',
-                            'Quick Sort',
-                            'Counting Sort',
-                            'Custom Sorting & Comparators'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 7',
-                        title: 'Hash Tables & Hash Maps',
-                        topics: [
-                            'Hashing Fundamentals',
-                            'Hash Tables',
-                            'Hash Maps',
-                            'Key-Value Operations',
-                            'Hash-Based Problem Solving'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 8',
-                        title: 'Sets',
-                        topics: [
-                            'Set Fundamentals',
-                            'Set Operations',
-                            'Ordered & Unordered Sets',
-                            'Set-Based Problem Solving'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 9',
-                        title: 'Two Pointer Algorithm',
-                        topics: [
-                            'Two Pointer Technique',
-                            'Opposite Direction Pointers',
-                            'Same Direction Pointers',
-                            'Two Pointer Problem Solving'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 10',
-                        title: 'Sliding Window',
-                        topics: [
-                            'Fixed-Size Window',
-                            'Variable-Size Window',
-                            'Sliding Window Problem Solving'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 11',
-                        title: 'Stacks',
-                        topics: [
-                            'Stack Fundamentals',
-                            'Stack Operations',
-                            'Valid Parentheses',
-                            'Expression Evaluation',
-                            'Calculation-Based Problems',
-                            'Stack-Based Problem Solving'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 12',
-                        title: 'Queues',
-                        topics: [
-                            'Queue Fundamentals',
-                            'Queue Operations',
-                            'Circular Queue',
-                            'Queue-Based Problem Solving'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 13',
-                        title: 'Linked List',
-                        topics: [
-                            'Linked List Fundamentals',
-                            'Singly Linked List',
-                            'Linked List Operations',
-                            'Insertion & Deletion',
-                            'Linked List Traversal',
-                            'Linked List Problem Solving'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 14',
-                        title: 'Binary Trees',
-                        topics: [
-                            'Binary Tree Fundamentals',
-                            'Tree Terminology',
-                            'Tree Representation',
-                            'Tree Traversals',
-                            'Preorder, Inorder & Postorder',
-                            'Level Order Traversal',
-                            'Binary Tree Problem Solving'
-                        ]
-                    }
-                ],
-                skillBuilding: {
-                    title: 'Problem Solving & Skill Building',
-                    items: [
-                        'Monthly Coding Contest',
-                        'OwlCoder Platform Access',
-                        'LeetCode Problem Solving',
-                        'LeetCode Contest Participation',
-                        'CodeChef Problem Solving',
-                        'CodeChef Contest Participation',
-                        'Post-Contest Problem Solving (Upsolving)',
-                        'HackerRank Problem Solving Practice',
-                        'Topic-Wise Problem Solving',
-                        'Mixed Concept Problem Solving'
-                    ]
-                },
-                journey: PRACTICE_JOURNEY
-            },
-            {
-                id: 'skillup-problem-solving',
-                title: 'Programming & Problem-Solving Foundation',
-                code: 'SKL-202',
+                id: 'skillup-problem-solving-dsa',
+                title: 'Problem Solving & DSA',
                 level: '',
                 prerequisites: 'Beginner Friendly — Basic Programming Syntax',
-                overview: 'Beginner-friendly foundation building programming fundamentals and core problem-solving skills across math, arrays, searching, sorting, strings, and counting.',
+                overview: 'A single end-to-end track that starts from programming fundamentals and problem-solving basics and builds up to core data structures and algorithms — arrays, strings, searching, sorting, hashing, sets, two pointers, sliding window, recursion, stacks, queues, linked lists and binary trees.',
                 outcomes: [
                     'Write clean programs using variables, operators, conditionals, loops & functions',
-                    'Solve number, digit, prime, GCD & LCM based math problems',
-                    'Manipulate 1D & 2D arrays and apply basic array mathematics',
-                    'Apply linear and binary search to problem solving',
-                    'Implement selection, bubble & insertion sort',
-                    'Solve string, palindrome, anagram, frequency & counting problems'
+                    'Analyze time and space complexity with Big-O notation',
+                    'Solve number, prime, GCD/LCM and modular arithmetic problems',
+                    'Manipulate arrays, matrices and strings with confidence',
+                    'Apply searching, sorting, hashing, sets, two pointers and sliding window techniques',
+                    'Implement stacks, queues and linked lists from scratch',
+                    'Master recursion, backtracking and binary tree traversals'
                 ],
                 modules: [
                     {
@@ -578,57 +434,111 @@ export const programsData = [
                     },
                     {
                         moduleNumber: 'Module 2',
-                        title: 'Mathematics for Problem Solving',
+                        title: 'Mathematics & Complexity Analysis',
                         topics: [
-                            'Number System',
-                            'Number & Digit Problems',
-                            'Prime Numbers',
-                            'Factors, GCD & LCM'
+                            'Number System & Digit Problems',
+                            'Number Theory & Modular Arithmetic',
+                            'Prime Numbers & Sieve of Eratosthenes',
+                            'Factors, GCD & LCM',
+                            'Time & Space Complexity',
+                            'Big-O Notation & Analysis of Solutions'
                         ]
                     },
                     {
                         moduleNumber: 'Module 3',
-                        title: 'Arrays for Problem Solving',
+                        title: 'Arrays & Matrices',
                         topics: [
                             'Array Basics & Traversal',
                             'Array Manipulation',
-                            '2D Arrays',
-                            'Basic Mathematics with Arrays'
+                            'Dynamic Arrays & Operations',
+                            '2D Arrays & Matrices',
+                            'Basic Mathematics with Arrays',
+                            'Array-Based Problem Solving'
                         ]
                     },
                     {
                         moduleNumber: 'Module 4',
-                        title: 'Searching',
+                        title: 'Strings & Character Processing',
                         topics: [
-                            'Linear Search',
-                            'Binary Search',
-                            'Search-Based Problems'
+                            'String Basics & Traversal',
+                            'Character Operations',
+                            'Palindrome & Anagram Problems',
+                            'Character Frequency Problems',
+                            'String-Based Problem Solving'
                         ]
                     },
                     {
                         moduleNumber: 'Module 5',
-                        title: 'Basic Sorting',
+                        title: 'Searching & Sorting',
                         topics: [
-                            'Selection Sort',
-                            'Bubble Sort',
-                            'Insertion Sort'
+                            'Linear Search',
+                            'Binary Search',
+                            'Search-Based Problems',
+                            'Selection, Bubble & Insertion Sort',
+                            'Merge Sort & Quick Sort',
+                            'Counting Sort',
+                            'Custom Sorting & Comparators'
                         ]
                     },
                     {
                         moduleNumber: 'Module 6',
-                        title: 'Strings for Problem Solving',
+                        title: 'Hashing, Maps & Sets',
                         topics: [
-                            'String Basics & Traversal',
-                            'Character Operations',
-                            'Palindrome & Anagram Problems'
+                            'Hashing Fundamentals',
+                            'Hash Tables & Hash Maps',
+                            'Key-Value Operations',
+                            'Ordered & Unordered Sets',
+                            'Set Operations',
+                            'Frequency & Counting Problems',
+                            'Hash & Set Based Problem Solving'
                         ]
                     },
                     {
                         moduleNumber: 'Module 7',
-                        title: 'Frequency & Counting',
+                        title: 'Two Pointers & Sliding Window',
                         topics: [
-                            'Frequency Counting',
-                            'Counting-Based Problems'
+                            'Two Pointer Technique',
+                            'Opposite & Same Direction Pointers',
+                            'Fixed-Size Window',
+                            'Variable-Size Window',
+                            'Two Pointer & Sliding Window Problem Solving'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 8',
+                        title: 'Recursion & Backtracking',
+                        topics: [
+                            'Recursion Fundamentals',
+                            'Recursive Problem Solving',
+                            'Recursion with Arrays & Strings',
+                            'Backtracking Fundamentals',
+                            'Backtracking Problem Solving'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 9',
+                        title: 'Stacks & Queues',
+                        topics: [
+                            'Stack Fundamentals & Operations',
+                            'Valid Parentheses & Expression Evaluation',
+                            'Stack-Based Problem Solving',
+                            'Queue Fundamentals & Operations',
+                            'Circular Queue',
+                            'Queue-Based Problem Solving'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 10',
+                        title: 'Linked Lists & Binary Trees',
+                        topics: [
+                            'Linked List Fundamentals & Singly Linked List',
+                            'Insertion, Deletion & Traversal',
+                            'Linked List Problem Solving',
+                            'Binary Tree Fundamentals & Terminology',
+                            'Tree Representation',
+                            'Preorder, Inorder & Postorder Traversals',
+                            'Level Order Traversal',
+                            'Binary Tree Problem Solving'
                         ]
                     }
                 ],
@@ -637,16 +547,18 @@ export const programsData = [
                     items: [
                         'Monthly Coding Contest',
                         'OwlCoder Platform Access',
-                        'LeetCode Basic-Level Problem Solving',
+                        'LeetCode Problem Solving',
+                        'LeetCode Contest Participation',
                         'CodeChef Problem Solving',
                         'CodeChef Contest Participation',
                         'Post-Contest Problem Solving (Upsolving)',
                         'HackerRank Programming Badge Completion',
                         'HackerRank Problem Solving Badge Completion',
-                        'Topic-Wise Coding Practice'
+                        'Topic-Wise Problem Solving',
+                        'Mixed Concept Problem Solving'
                     ]
                 },
-                journey: PRACTICE_JOURNEY
+                journey: SKILLUP_ROADMAP
             }
         ]
     },
@@ -665,7 +577,6 @@ export const programsData = [
             {
                 id: 'aiready-fullstack',
                 title: 'Full Stack Development + AI Integration',
-                code: 'AIR-301',
                 level: 'Beginner to Advanced',
                 prerequisites: 'Basic Programming Fundamentals',
                 overview: 'Master HTML5, CSS3, JavaScript, React.js, Node.js, Express, MongoDB, Generative AI API integrations, and cloud deployment.',
@@ -773,7 +684,6 @@ export const programsData = [
             {
                 id: 'aiready-flutter',
                 title: 'Google Flutter + AI Integration',
-                code: 'AIR-302',
                 level: 'Beginner to Advanced',
                 prerequisites: 'Basic Programming Fundamentals',
                 overview: 'Build cross-platform mobile apps from Dart basics to Firebase backends, AI Chatbots, and Play Store / App Store publishing.',
@@ -877,7 +787,6 @@ export const programsData = [
             {
                 id: 'aiready-cloud-devops',
                 title: 'AWS Cloud and Devops + AI Integration',
-                code: 'AIR-303',
                 level: 'Intermediate to Advanced',
                 prerequisites: 'Basic Computer Networking & Operating System Fundamentals',
                 overview: 'Master AWS cloud architecture, Linux, Docker, Kubernetes, Terraform CI/CD, and Amazon Bedrock GenAI with capstone project.',
@@ -970,7 +879,6 @@ export const programsData = [
             {
                 id: 'aiready-servicenow',
                 title: 'ServiceNow Platform Engineering',
-                code: 'AIR-304',
                 level: 'Intermediate to Advanced',
                 prerequisites: 'JavaScript Fundamentals & Relational Data Basics',
                 overview: 'Master ServiceNow administration, GlideRecord scripting, Flow Designer, IntegrationHub, Now Assist AI, and CSA / CAD certification prep.',
@@ -1155,7 +1063,6 @@ export const programsData = [
             {
                 id: 'owl-adv-dsa',
                 title: 'Advanced Competitive Programming & DSA Mastery',
-                code: 'OWL-401',
                 level: '',
                 prerequisites: 'Strong DSA & Coding Foundations',
                 overview: 'Intensive 21-module advanced roadmap covering complexity analysis, advanced data structures, Graph algorithms, DP patterns, Segment Trees, and competitive number theory.',
@@ -1392,7 +1299,6 @@ export const programsData = [
             {
                 id: 'moon-dsa-mastery',
                 title: 'Core Problem Solving & DSA Readiness',
-                code: 'MOON-501',
                 level: '',
                 prerequisites: 'Beginner Friendly — Designed for BTech Coursework Pace',
                 overview: 'Sequential 15-module coverage from programming fundamentals through Arrays, Strings, Hashing, Linked Lists, Stacks, Queues, Two Pointers, and Backtracking.',

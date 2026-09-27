@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 // ── Line-icon set (replaces the old emoji) ──────────────────────────────
 const ic = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' };
@@ -15,6 +15,7 @@ const IconGauge = () => (<svg viewBox="0 0 24 24" width="18" height="18" {...ic}
 const IconArrow = () => (<svg viewBox="0 0 24 24" width="16" height="16" {...ic} strokeWidth="2.2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>);
 const IconFlag = () => (<svg viewBox="0 0 24 24" width="18" height="18" {...ic}><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1Z" /><path d="M4 22v-7" /></svg>);
 const IconSpark = () => (<svg viewBox="0 0 24 24" width="16" height="16" {...ic}><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" /></svg>);
+const IconChevron = () => (<svg viewBox="0 0 24 24" width="15" height="15" {...ic} strokeWidth="2.4"><polyline points="9 18 15 12 9 6" /></svg>);
 
 // Coding-themed header icon per program (replaces the old emoji), tinted in our
 // palette. Falls back to a generic </> for any unmapped program.
@@ -32,12 +33,7 @@ const PROGRAM_ICONS = {
     mooncoder: { color: 'var(--srkr-secondary)', svg: (<svg viewBox="0 0 24 24" width="27" height="27" {...badgeIc}><rect x="14" y="14" width="4" height="6" rx="1" /><rect x="6" y="4" width="4" height="6" rx="1" /><path d="M6 20h4M14 10h4M6 14h2v6M14 4h2v6" /></svg>) },
 };
 
-// Detailed-modules layout: 'blend' = rail + chips + watermark (equal heights),
-// 'grid' = vibrant chip cards, 'split' = gradient number-rail panels,
-// 'timeline' = numbered roadmap spine. Flip this one value to swap the section.
-const MODULES_LAYOUT = 'grid';
-
-// Rotating accent per module card (grid layout) — coral → orange → amber.
+// Rotating accent per module row (curriculum ladder) — coral → orange → amber.
 const MOD_ACCENTS = [
     { accent: 'var(--srkr-primary)', grad: 'linear-gradient(135deg, #E2544C, #ED7236)', tint: 'var(--srkr-bg-coral-tint)' },
     { accent: 'var(--srkr-secondary)', grad: 'linear-gradient(135deg, #ED7236, #F2A63B)', tint: 'var(--srkr-bg-warm-tint)' },
@@ -62,10 +58,14 @@ const ProgramDetailModal = ({
     const bodyRef = useRef(null);
     const sectionRefs = useRef({});
 
+    // A single-course program has nothing to pick between, so the course grid
+    // would be a dead step — those land straight on the syllabus.
+    const singleCourse = program?.courses?.length === 1;
+
     // Honor the caller's requested entry point on each open.
     useEffect(() => {
         if (program && isOpen) {
-            setView(initialView);
+            setView(program.courses?.length === 1 ? 'syllabus' : initialView);
             setSelectedCourseIndex(initialCourseIndex);
             setActiveSection('overview');
         }
@@ -86,8 +86,10 @@ const ProgramDetailModal = ({
         return [
             { id: 'overview', label: 'Overview', icon: <IconBook /> },
             currentCourse.outcomes?.length ? { id: 'outcomes', label: 'Outcomes', icon: <IconTarget /> } : null,
-            currentCourse.journey?.length ? { id: 'journey', label: 'Practice', icon: <IconRocket /> } : null,
-            currentCourse.modules?.length ? { id: 'roadmap', label: 'Roadmap', icon: <IconMap /> } : null,
+            // 'journey' is the certification/platform image pipeline — shown as "Roadmap".
+            // 'roadmap' is the module/topic curriculum — shown as "Modules".
+            currentCourse.journey?.length ? { id: 'journey', label: 'Roadmap', icon: <IconMap /> } : null,
+            currentCourse.modules?.length ? { id: 'roadmap', label: 'Modules', icon: <IconLayers /> } : null,
         ].filter(Boolean);
     }, [currentCourse]);
 
@@ -162,7 +164,7 @@ const ProgramDetailModal = ({
                             type="button"
                             className={`srkr-bc-item srkr-bc-btn ${view === 'courses' ? 'is-current' : ''}`}
                             onClick={handleBackToCourses}
-                            disabled={view === 'courses'}
+                            disabled={view === 'courses' || singleCourse}
                         >
                             {program.name}
                         </button>
@@ -193,9 +195,9 @@ const ProgramDetailModal = ({
                             {program.tagline && <p className="srkr-pmodal-tagline">{program.tagline}</p>}
                         </div>
                     </div>
-                    {view === 'syllabus' && (
+                    {view === 'syllabus' && !singleCourse && (
                         <button type="button" className="srkr-back-to-courses-btn" onClick={handleBackToCourses}>
-                            ← {program.courses.length > 1 ? 'Back to Courses' : 'Back to Overview'}
+                            ← Back to Courses
                         </button>
                     )}
                 </div>
@@ -208,10 +210,11 @@ const ProgramDetailModal = ({
                             <div className={`srkr-pmodal-courses-cards-grid grid-${Math.min(program.courses.length, 4)}`}>
                                 {program.courses.map((course, idx) => (
                                     <div key={course.id} className="srkr-course-card-interactive" onClick={() => handleSelectCourse(idx)}>
-                                        <div className="srkr-ccard-top">
-                                            <span className="srkr-ccard-code">{course.code}</span>
-                                            {course.level && <span className="srkr-ccard-level">{course.level}</span>}
-                                        </div>
+                                        {course.level && (
+                                            <div className="srkr-ccard-top">
+                                                <span className="srkr-ccard-level">{course.level}</span>
+                                            </div>
+                                        )}
                                         <h3 className="srkr-ccard-title">{course.title}</h3>
                                         <p className="srkr-ccard-overview">{course.overview}</p>
                                         <div className="srkr-ccard-meta-row">
@@ -265,7 +268,6 @@ const ProgramDetailModal = ({
                             {/* ── OVERVIEW ── */}
                             <section className="srkr-syll-section" data-section="overview" ref={setRef('overview')}>
                                 <div className="srkr-syll-hero">
-                                    <span className="srkr-syll-code-chip">{currentCourse.code}</span>
                                     <h3 className="srkr-syll-hero-title">{currentCourse.title}</h3>
                                     <p className="srkr-syll-hero-lead">{currentCourse.overview}</p>
 
@@ -287,7 +289,7 @@ const ProgramDetailModal = ({
                                         {currentCourse.journey?.length > 0 && (
                                             <div className="srkr-syll-stat">
                                                 <span className="srkr-syll-stat-ic"><IconRocket /></span>
-                                                <span className="srkr-syll-stat-body"><strong>{currentCourse.journey.length}</strong><span>Practice milestones</span></span>
+                                                <span className="srkr-syll-stat-body"><strong>{currentCourse.journey.length}</strong><span>Roadmap milestones</span></span>
                                             </div>
                                         )}
                                     </div>
@@ -319,7 +321,7 @@ const ProgramDetailModal = ({
                             {/* ── PRACTICE JOURNEY PIPELINE ── */}
                             {currentCourse.journey?.length > 0 && (
                                 <section className="srkr-syll-section" data-section="journey" ref={setRef('journey')}>
-                                    <SectionHead eyebrow="Practice Pipeline" title="Your Journey to Placement-Ready" sub="The platforms & milestones you'll conquer — start the course, finish job-ready" icon={<IconRocket />} />
+                                    <SectionHead eyebrow="Your Roadmap" title="The Path to Placement-Ready" sub="The certifications, platforms & milestones you'll conquer — start the course, finish job-ready" icon={<IconMap />} />
 
                                     <div className="srkr-journey">
                                         <span className="srkr-journey-spine" aria-hidden="true" />
@@ -329,7 +331,7 @@ const ProgramDetailModal = ({
                                             <motion.div key={i} className={`srkr-journey-node ${i % 2 === 0 ? 'is-left' : 'is-right'} ${node.destination ? 'is-destination' : ''}`} {...reveal(0, 22)}>
                                                 <span className="srkr-journey-pin" aria-hidden="true" />
                                                 <div className="srkr-journey-card">
-                                                    <div className="srkr-journey-figure">
+                                                    <div className={`srkr-journey-figure ${node.fit === 'contain' ? 'is-contain' : ''}`}>
                                                         <span className="srkr-journey-num">{String(i + 1).padStart(2, '0')}</span>
                                                         <img src={node.image} alt={node.label} loading="lazy" />
                                                     </div>
@@ -352,133 +354,11 @@ const ProgramDetailModal = ({
                                     </div>
                                 </section>
                             )}
-
-                            {/* ── MODULES ROADMAP TIMELINE ── */}
+                            {/* ── MODULES — CURRICULUM LADDER ── */}
                             {currentCourse.modules?.length > 0 && (
                                 <section className="srkr-syll-section" data-section="roadmap" ref={setRef('roadmap')}>
-                                    <SectionHead eyebrow="Full curriculum" title="Detailed Modules & Roadmap" sub="Every module and the topics it covers, in learning order" icon={<IconMap />} />
-
-                                    {MODULES_LAYOUT === 'blend' ? (
-                                        /* Blend: gradient number rail + filled chips + ghost-number
-                                           watermark. Equal heights; the watermark fills the space that
-                                           stretching creates so shorter modules never read as empty. */
-                                        <div className="srkr-modblend">
-                                            {currentCourse.modules.map((module, mIdx) => {
-                                                const a = MOD_ACCENTS[mIdx % MOD_ACCENTS.length];
-                                                const num = String(mIdx + 1).padStart(2, '0');
-                                                return (
-                                                    <motion.article
-                                                        key={mIdx}
-                                                        className="srkr-modblend-card"
-                                                        style={{ '--c-grad': a.grad, '--c-accent': a.accent, '--c-tint': a.tint }}
-                                                        {...reveal(0, 16)}
-                                                    >
-                                                        <div className="srkr-modblend-rail">
-                                                            <span className="srkr-modblend-num">{num}</span>
-                                                            <span className="srkr-modblend-lbl">Module</span>
-                                                        </div>
-                                                        <div className="srkr-modblend-body">
-                                                            <span className="srkr-modblend-watermark" aria-hidden="true">{num}</span>
-                                                            <div className="srkr-modblend-content">
-                                                                <span className="srkr-modblend-eyebrow">{module.moduleNumber}</span>
-                                                                <h4 className="srkr-modblend-title">{module.title}</h4>
-                                                                <div className="srkr-modblend-chips">
-                                                                    {module.topics.map((topic, tIdx) => (
-                                                                        <span key={tIdx} className="srkr-modblend-chip"><span className="srkr-modblend-chip-dot" />{topic}</span>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </motion.article>
-                                                );
-                                            })}
-                                        </div>
-                                    ) : MODULES_LAYOUT === 'split' ? (
-                                        /* Split-panel: gradient number rail + content panel */
-                                        <div className="srkr-modsplit">
-                                            {currentCourse.modules.map((module, mIdx) => {
-                                                const a = MOD_ACCENTS[mIdx % MOD_ACCENTS.length];
-                                                return (
-                                                    <motion.article
-                                                        key={mIdx}
-                                                        className="srkr-modsplit-card"
-                                                        style={{ '--c-grad': a.grad, '--c-accent': a.accent }}
-                                                        {...reveal(0, 16)}
-                                                    >
-                                                        <div className="srkr-modsplit-rail">
-                                                            <span className="srkr-modsplit-num">{String(mIdx + 1).padStart(2, '0')}</span>
-                                                            <span className="srkr-modsplit-lbl">Module</span>
-                                                        </div>
-                                                        <div className="srkr-modsplit-body">
-                                                            <h4 className="srkr-modsplit-title">{module.title}</h4>
-                                                            <div className="srkr-modsplit-chips">
-                                                                {module.topics.map((topic, tIdx) => (
-                                                                    <span key={tIdx} className="srkr-modsplit-chip">{topic}</span>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    </motion.article>
-                                                );
-                                            })}
-                                        </div>
-                                    ) : MODULES_LAYOUT === 'grid' ? (
-                                        /* Vibrant chip-card grid */
-                                        <div className="srkr-modgrid">
-                                            {currentCourse.modules.map((module, mIdx) => {
-                                                const a = MOD_ACCENTS[mIdx % MOD_ACCENTS.length];
-                                                const isTrack = module.duration && !/\d+\s*(hours?|weeks?)/i.test(module.duration);
-                                                return (
-                                                    <motion.article
-                                                        key={mIdx}
-                                                        className="srkr-modcard"
-                                                        style={{ '--c-accent': a.accent, '--c-grad': a.grad, '--c-tint': a.tint }}
-                                                        {...reveal(0, 16)}
-                                                    >
-                                                        {isTrack && <span className="srkr-modcard-track">{module.duration}</span>}
-                                                        <span className="srkr-modcard-watermark" aria-hidden="true">{String(mIdx + 1).padStart(2, '0')}</span>
-                                                        <div className="srkr-modcard-head">
-                                                            <span className="srkr-modcard-badge">{String(mIdx + 1).padStart(2, '0')}</span>
-                                                            <div className="srkr-modcard-titlewrap">
-                                                                <span className="srkr-modcard-eyebrow">{module.moduleNumber}</span>
-                                                                <h4 className="srkr-modcard-title">{module.title}</h4>
-                                                            </div>
-                                                        </div>
-                                                        <div className="srkr-modcard-chips">
-                                                            {module.topics.map((topic, tIdx) => (
-                                                                <span key={tIdx} className="srkr-modcard-chip"><span className="srkr-modcard-chip-dot" />{topic}</span>
-                                                            ))}
-                                                        </div>
-                                                    </motion.article>
-                                                );
-                                            })}
-                                        </div>
-                                    ) : (
-                                        /* Fallback: numbered roadmap timeline */
-                                        <div className="srkr-roadmap">
-                                            <span className="srkr-roadmap-spine" aria-hidden="true" />
-                                            {currentCourse.modules.map((module, mIdx) => (
-                                                <motion.div key={mIdx} className="srkr-roadmap-node" {...reveal(0, 18)}>
-                                                    <span className="srkr-roadmap-dot">{mIdx + 1}</span>
-                                                    <div className="srkr-roadmap-card">
-                                                        <div className="srkr-roadmap-card-head">
-                                                            <div>
-                                                                <span className="srkr-roadmap-modnum">{module.moduleNumber}</span>
-                                                                <h4 className="srkr-roadmap-modtitle">{module.title}</h4>
-                                                            </div>
-                                                            {module.duration && !/\d+\s*(hours?|weeks?)/i.test(module.duration) && (
-                                                                <span className="srkr-roadmap-tracktag">{module.duration}</span>
-                                                            )}
-                                                        </div>
-                                                        <div className="srkr-roadmap-topics">
-                                                            {module.topics.map((topic, tIdx) => (
-                                                                <span key={tIdx} className="srkr-roadmap-topic"><span className="srkr-roadmap-topic-tick"><IconCheck /></span>{topic}</span>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </motion.div>
-                                            ))}
-                                        </div>
-                                    )}
+                                    <SectionHead eyebrow="Full curriculum" title="Modules & Topics" sub="Every module and the topics it covers, in learning order" icon={<IconLayers />} />
+                                    <ModuleLadder modules={currentCourse.modules} totalTopics={totalTopics} reduceMotion={reduceMotion} />
                                 </section>
                             )}
                         </div>
@@ -507,6 +387,167 @@ const ProgramDetailModal = ({
         </div>
     );
 };
+
+// ── Modules — "Curriculum Ladder" ────────────────────────────────────────
+// A numbered accordion spine. Progressive disclosure keeps a long syllabus
+// (10 modules / 60+ topics) readable as a scannable table of contents rather
+// than a wall of chips. The gradient spine fills down to the deepest open row
+// so the rail doubles as a progress indicator. Module 1 is open on mount and
+// any number of rows may be open at once.
+const LADDER_EASE = [0.16, 1, 0.3, 1];
+
+function ModuleLadder({ modules, totalTopics, reduceMotion }) {
+    const [openRows, setOpenRows] = useState(() => new Set([0]));
+    const [fillPx, setFillPx] = useState(0);
+    const trackRef = useRef(null);
+    const rowRefs = useRef([]);
+
+    // Reset to the first module whenever the course (and so the module list) changes.
+    useEffect(() => { setOpenRows(new Set([0])); }, [modules]);
+
+    const allOpen = openRows.size === modules.length;
+
+    const toggleRow = (i) => setOpenRows((prev) => {
+        const next = new Set(prev);
+        if (next.has(i)) next.delete(i); else next.add(i);
+        return next;
+    });
+
+    const toggleAll = () => setOpenRows(allOpen ? new Set() : new Set(modules.map((_, i) => i)));
+
+    // The spine fills down to the bottom of the deepest open row. Measured
+    // rather than computed as a fraction so the fill always lands on a real
+    // row edge — a ResizeObserver on the track keeps it correct while a panel
+    // is mid-expand and across breakpoint changes.
+    const deepestOpen = openRows.size ? Math.max(...openRows) : -1;
+
+    useEffect(() => {
+        const track = trackRef.current;
+        if (!track) return undefined;
+
+        const measure = () => {
+            const row = deepestOpen >= 0 ? rowRefs.current[deepestOpen] : null;
+            if (!row) { setFillPx(0); return; }
+            // SPINE_INSET mirrors the spine's `top`/`bottom` offsets in CSS.
+            const SPINE_INSET = 10;
+            const spineHeight = Math.max(track.offsetHeight - SPINE_INSET * 2, 0);
+            const bottom = row.offsetTop + row.offsetHeight - SPINE_INSET;
+            setFillPx(Math.max(0, Math.min(bottom, spineHeight)));
+        };
+
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(track);
+        return () => ro.disconnect();
+    }, [deepestOpen, modules]);
+
+    const dur = (s) => (reduceMotion ? { duration: 0 } : { duration: s, ease: LADDER_EASE });
+
+    return (
+        <div className="srkr-modlad">
+            <div className="srkr-modlad-bar">
+                <div className="srkr-modlad-counts">
+                    <span className="srkr-modlad-count"><strong>{modules.length}</strong> Modules</span>
+                    <span className="srkr-modlad-sep" aria-hidden="true" />
+                    <span className="srkr-modlad-count"><strong>{totalTopics}</strong> Topics</span>
+                </div>
+                <button type="button" className="srkr-modlad-toggleall" onClick={toggleAll}>
+                    {allOpen ? 'Collapse all' : 'Expand all'}
+                </button>
+            </div>
+
+            <div className="srkr-modlad-track" ref={trackRef}>
+                <span className="srkr-modlad-spine" aria-hidden="true">
+                    <motion.span
+                        className="srkr-modlad-spine-fill"
+                        initial={false}
+                        animate={{ height: fillPx }}
+                        transition={dur(0.45)}
+                    />
+                </span>
+
+                {modules.map((module, i) => {
+                    const a = MOD_ACCENTS[i % MOD_ACCENTS.length];
+                    const isOpen = openRows.has(i);
+                    const panelId = `srkr-modlad-panel-${i}`;
+                    // Some tracks tag modules with a stream name ("CSA Track", "Core")
+                    // rather than an hour count — surface those, hide hour strings.
+                    const trackTag = module.duration && !/\d+\s*(hours?|weeks?)/i.test(module.duration)
+                        ? module.duration
+                        : null;
+
+                    return (
+                        <div
+                            key={i}
+                            ref={(el) => { rowRefs.current[i] = el; }}
+                            className={`srkr-modlad-row ${isOpen ? 'is-open' : ''}`}
+                            style={{ '--c-accent': a.accent, '--c-grad': a.grad, '--c-tint': a.tint }}
+                        >
+                            <span className="srkr-modlad-marker" aria-hidden="true">
+                                {String(i + 1).padStart(2, '0')}
+                            </span>
+
+                            <button
+                                type="button"
+                                className="srkr-modlad-head"
+                                onClick={() => toggleRow(i)}
+                                aria-expanded={isOpen}
+                                aria-controls={panelId}
+                            >
+                                <span className="srkr-modlad-headtext">
+                                    <span className="srkr-modlad-eyebrow">{module.moduleNumber}</span>
+                                    <span className="srkr-modlad-title">{module.title}</span>
+                                </span>
+                                <span className="srkr-modlad-meta">
+                                    {trackTag && <span className="srkr-modlad-track-tag">{trackTag}</span>}
+                                    <span className="srkr-modlad-topiccount">{module.topics.length} topics</span>
+                                    <motion.span
+                                        className="srkr-modlad-chevron"
+                                        initial={false}
+                                        animate={{ rotate: isOpen ? 90 : 0 }}
+                                        transition={dur(0.32)}
+                                    >
+                                        <IconChevron />
+                                    </motion.span>
+                                </span>
+                            </button>
+
+                            <AnimatePresence initial={false}>
+                                {isOpen && (
+                                    <motion.div
+                                        id={panelId}
+                                        className="srkr-modlad-panel"
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={dur(0.38)}
+                                    >
+                                        <ul className="srkr-modlad-topics">
+                                            {module.topics.map((topic, t) => (
+                                                <motion.li
+                                                    key={t}
+                                                    className="srkr-modlad-topic"
+                                                    initial={reduceMotion ? false : { opacity: 0, x: -6 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={reduceMotion
+                                                        ? { duration: 0 }
+                                                        : { duration: 0.3, delay: 0.06 + t * 0.035, ease: LADDER_EASE }}
+                                                >
+                                                    <span className="srkr-modlad-tick"><IconCheck /></span>
+                                                    <span>{topic}</span>
+                                                </motion.li>
+                                            ))}
+                                        </ul>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
 
 // Shared section heading
 function SectionHead({ eyebrow, title, sub, icon }) {

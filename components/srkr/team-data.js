@@ -101,44 +101,45 @@ const teamData = [
             '1650+ rating in Data Structures & Algorithms on CodeChef'
         ]
     },
-    {
-        id: 'manikanta',
-        name: 'Manikanta',
-        role: 'ServiceNow Developer',
-        tagline: 'Enterprise Platform Automation & Workflow Specialist',
-        photo: '/assets/images/srkr/project-images/team/Manikanta_ServiceNow_Developer_uniform.png',
-        linkedin: 'https://www.linkedin.com/in/manikanta-srighakollapu/',
-        portfolio: '/portfolios/manikanta.html',
-        accentColor: 'var(--srkr-primary)',
-        accentBg: 'var(--srkr-bg-coral-tint)',
-        tags: ['ServiceNow CAD', 'Now Platform', 'GlideRecord', 'Flow Designer', 'IntegrationHub'],
-        highlights: [
-            'ServiceNow Developer with deep expertise in Now Platform enterprise architecture',
-            'Hands-on experience in GlideRecord scripting, Business Rules, Client Scripts & UI Policies',
-            'Specialized in Flow Designer, Process Automation & IntegrationHub REST APIs',
-            'Expertise in CSA & CAD certification mentoring and enterprise workflow engineering',
-            'Passionate technical mentor guiding students into high-growth enterprise platform roles'
-        ]
-    },
-    {
-        id: 'abhilash',
-        name: 'Anala Abhilash',
-        role: 'Power BI & Snowflake Developer',
-        tagline: 'Building automated Power BI dashboards & reporting solutions that drive smarter, faster decisions',
-        photo: '/assets/images/srkr/project-images/team/Abhilash_PowerBI_Snowflake_Developer_uniform.png',
-        linkedin: 'https://www.linkedin.com/in/anala-abhilash/',
-        portfolio: '/portfolios/abhilash.html',
-        accentColor: 'var(--srkr-secondary)',
-        accentBg: 'var(--srkr-bg-warm-tint)',
-        tags: ['Power BI', 'Snowflake', 'SQL & DAX', 'Power Platform', 'Data Modeling'],
-        highlights: [
-            'Data Analyst with 3+ years turning complex operational data into actionable dashboards',
-            'Core toolkit spans Power BI, SQL, Snowflake, Excel & the Microsoft Power Platform',
-            'Designs star-schema data models with advanced DAX & Power Query transformations',
-            'Delivered 50+ end-to-end BI solutions processing 300K+ records',
-            'Holds 5 global certifications across Microsoft, Oracle & Snowflake; trained 700+ students'
-        ]
-    },
+    // ——— Temporarily hidden from the Trainers section: Manikanta, Anala Abhilash. Uncomment the block below to restore. ———
+    // {
+    //     id: 'manikanta',
+    //     name: 'Manikanta',
+    //     role: 'ServiceNow Developer',
+    //     tagline: 'Enterprise Platform Automation & Workflow Specialist',
+    //     photo: '/assets/images/srkr/project-images/team/Manikanta_ServiceNow_Developer_uniform.png',
+    //     linkedin: 'https://www.linkedin.com/in/manikanta-srighakollapu/',
+    //     portfolio: '/portfolios/manikanta.html',
+    //     accentColor: 'var(--srkr-primary)',
+    //     accentBg: 'var(--srkr-bg-coral-tint)',
+    //     tags: ['ServiceNow CAD', 'Now Platform', 'GlideRecord', 'Flow Designer', 'IntegrationHub'],
+    //     highlights: [
+    //         'ServiceNow Developer with deep expertise in Now Platform enterprise architecture',
+    //         'Hands-on experience in GlideRecord scripting, Business Rules, Client Scripts & UI Policies',
+    //         'Specialized in Flow Designer, Process Automation & IntegrationHub REST APIs',
+    //         'Expertise in CSA & CAD certification mentoring and enterprise workflow engineering',
+    //         'Passionate technical mentor guiding students into high-growth enterprise platform roles'
+    //     ]
+    // },
+    // {
+    //     id: 'abhilash',
+    //     name: 'Anala Abhilash',
+    //     role: 'Power BI & Snowflake Developer',
+    //     tagline: 'Building automated Power BI dashboards & reporting solutions that drive smarter, faster decisions',
+    //     photo: '/assets/images/srkr/project-images/team/Abhilash_PowerBI_Snowflake_Developer_uniform.png',
+    //     linkedin: 'https://www.linkedin.com/in/anala-abhilash/',
+    //     portfolio: '/portfolios/abhilash.html',
+    //     accentColor: 'var(--srkr-secondary)',
+    //     accentBg: 'var(--srkr-bg-warm-tint)',
+    //     tags: ['Power BI', 'Snowflake', 'SQL & DAX', 'Power Platform', 'Data Modeling'],
+    //     highlights: [
+    //         'Data Analyst with 3+ years turning complex operational data into actionable dashboards',
+    //         'Core toolkit spans Power BI, SQL, Snowflake, Excel & the Microsoft Power Platform',
+    //         'Designs star-schema data models with advanced DAX & Power Query transformations',
+    //         'Delivered 50+ end-to-end BI solutions processing 300K+ records',
+    //         'Holds 5 global certifications across Microsoft, Oracle & Snowflake; trained 700+ students'
+    //     ]
+    // },
     {
         id: 'azarunnisa',
         name: 'Mohammad Azarunnisa',
@@ -158,25 +159,26 @@ const teamData = [
             'Claude Certified Architect with 350+ CodeChef problems solved'
         ]
     },
-    {
-        id: 'sampath',
-        name: 'Sampath Rayi',
-        role: 'ServiceNow Developer & Trainer',
-        tagline: 'Training ServiceNow professionals while shipping real-world ITSM & automation projects',
-        photo: '/assets/images/srkr/project-images/team/Sampath_ServiceNow_Developer_uniform.png',
-        linkedin: 'https://www.linkedin.com/in/sampathrayi/',
-        portfolio: '/portfolios/sampath.html',
-        accentColor: 'var(--srkr-secondary)',
-        accentBg: 'var(--srkr-bg-warm-tint)',
-        tags: ['ServiceNow CSA', 'ServiceNow CAD', 'ITSM', 'Java & SQL', 'Power BI'],
-        highlights: [
-            'ServiceNow Trainer & IT graduate with 2+ years in ITSM & automation',
-            'Trained 600+ students in ServiceNow, lifting average assessment scores by 25%',
-            'Built Service Hub campus ticketing portal serving 1,000+ students, cutting response times 40%',
-            'Holds ServiceNow CSA, CAD & Microsoft Office Specialist among 6 certifications',
-            'Skilled in Java, SQL, JavaScript, Power BI & Excel'
-        ]
-    }
+    // ——— Temporarily hidden from the Trainers section: Sampath Rayi. Uncomment the block below to restore. ———
+    // {
+    //     id: 'sampath',
+    //     name: 'Sampath Rayi',
+    //     role: 'ServiceNow Developer & Trainer',
+    //     tagline: 'Training ServiceNow professionals while shipping real-world ITSM & automation projects',
+    //     photo: '/assets/images/srkr/project-images/team/Sampath_ServiceNow_Developer_uniform.png',
+    //     linkedin: 'https://www.linkedin.com/in/sampathrayi/',
+    //     portfolio: '/portfolios/sampath.html',
+    //     accentColor: 'var(--srkr-secondary)',
+    //     accentBg: 'var(--srkr-bg-warm-tint)',
+    //     tags: ['ServiceNow CSA', 'ServiceNow CAD', 'ITSM', 'Java & SQL', 'Power BI'],
+    //     highlights: [
+    //         'ServiceNow Trainer & IT graduate with 2+ years in ITSM & automation',
+    //         'Trained 600+ students in ServiceNow, lifting average assessment scores by 25%',
+    //         'Built Service Hub campus ticketing portal serving 1,000+ students, cutting response times 40%',
+    //         'Holds ServiceNow CSA, CAD & Microsoft Office Specialist among 6 certifications',
+    //         'Skilled in Java, SQL, JavaScript, Power BI & Excel'
+    //     ]
+    // }
 ];
 
 export default teamData;

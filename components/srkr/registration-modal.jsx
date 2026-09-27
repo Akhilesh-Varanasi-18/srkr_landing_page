@@ -553,7 +553,6 @@ const RegistrationModal = ({ isOpen, onClose }) => {
                                     </div>
                                     <div className="srkr-reg-program-details">
                                         <div className="srkr-reg-program-tags">
-                                            <span className="srkr-reg-tag-code">{mappedProgram.code}</span>
                                             <span className="srkr-reg-tag-badge" style={{ color: mappedProgram.color }}>{mappedProgram.badge}</span>
                                             <span className="srkr-reg-tag-year">{mappedProgram.yearLabel}</span>
                                         </div>
@@ -607,7 +606,7 @@ const RegistrationModal = ({ isOpen, onClose }) => {
 
                         <h3>Registration Successful!</h3>
                         <p className="srkr-reg-success-sub">
-                            Welcome aboard, <strong>{formData.fullName}</strong>! You have been successfully registered for the <strong>{mappedProgram.programName} ({mappedProgram.code})</strong> track at SRKR.
+                            Welcome aboard, <strong>{formData.fullName}</strong>! You have been successfully registered for the <strong>{mappedProgram.programName}</strong> track at SRKR.
                         </p>
 
                         <div className="srkr-reg-id-box">

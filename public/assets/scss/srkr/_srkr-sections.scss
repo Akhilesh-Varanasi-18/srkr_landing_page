@@ -1622,16 +1622,6 @@
     margin-bottom: 10px;
   }
 
-  .srkr-ccard-code {
-    font-size: 10.5px;
-    font-weight: 700;
-    color: var(--srkr-primary);
-    background: var(--srkr-bg-coral-tint);
-    padding: 2px 7px;
-    border-radius: 4px;
-    border: 1px solid rgba(226, 84, 76, 0.2);
-  }
-
   .srkr-ccard-level {
     font-size: 10.5px;
     font-weight: 600;
@@ -2702,16 +2692,6 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 16px;
-  }
-
-  .srkr-course-code-badge {
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--srkr-body-alt);
-    background: var(--srkr-bg-section-alt);
-    padding: 4px 9px;
-    border-radius: 7px;
-    letter-spacing: 0.6px;
   }
 
   .srkr-course-category-pill {
@@ -5411,22 +5391,15 @@
 
 /* ---- Overview hero + stats ---- */
 .srkr-syll-hero { padding: 4px 0; }
-.srkr-syll-code-chip {
-  display: inline-block;
-  padding: 4px 11px;
-  border-radius: 8px;
-  background: var(--srkr-bg-coral-tint);
-  color: var(--srkr-primary);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-}
-.srkr-syll-hero-title { margin: 12px 0 8px; font-size: 24px; font-weight: 800; color: var(--srkr-heading); line-height: 1.2; font-family: var(--srkr-font-primary); }
+.srkr-syll-hero-title { margin: 0 0 8px; font-size: 24px; font-weight: 800; color: var(--srkr-heading); line-height: 1.2; font-family: var(--srkr-font-primary); }
 .srkr-syll-hero-lead { margin: 0 0 18px; font-size: 14.5px; line-height: 1.65; color: var(--srkr-body-alt); max-width: 70ch; }
 
 .srkr-syll-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  // `min(160px, 100%)` keeps the column floor from ever exceeding the container,
+  // so the grid can still fall to a single column inside the narrow mobile modal
+  // instead of pushing a fixed 150px track past the edge.
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
   gap: 10px;
   margin-bottom: 16px;
 }
@@ -5439,6 +5412,10 @@
   --stat-tint: var(--srkr-bg-coral-tint);
   display: flex;
   align-items: center;
+  // Grid items default to `min-width: auto`, which refuses to shrink below the
+  // widest word inside. Without this a long label ("ROADMAP MILESTONES") blows
+  // the track out and the whole row overflows the modal horizontally.
+  min-width: 0;
   gap: 10px;
   padding: 11px 14px;
   border-radius: 12px;
@@ -5470,14 +5447,34 @@
   // Text values (e.g. "Beginner to Intermediate") run longer than a plain
   // number — scale down so they don't dominate the tile or force it to grow.
   &.is-text strong { font-size: 13.5px; }
-  span:last-child { font-size: 10.5px; font-weight: 600; color: var(--srkr-muted); text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
+  // Labels wrap rather than run off the tile. `nowrap` here was what forced the
+  // stats row wider than the mobile modal.
+  span:last-child {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--srkr-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    overflow-wrap: anywhere;
+  }
+  // Long text values ("Beginner to Intermediate") get the same treatment.
+  &.is-text strong { overflow-wrap: anywhere; }
 }
 
-@media (max-width: 480px) {
-  .srkr-syll-stats { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 560px) {
+  // `minmax(0, …)` — not `1fr` — so a track may shrink past its min-content.
+  .srkr-syll-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .srkr-syll-stat { padding: 9px 11px; gap: 8px; }
   .srkr-syll-stat .srkr-syll-stat-ic { width: 30px; height: 30px; }
   .srkr-syll-stat strong { font-size: 15.5px; }
+  // "Beginner to Intermediate" is the widest value we ship; at 13.5px its
+  // longest word still overshoots a half-width tile and would break mid-word.
+  .srkr-syll-stat.is-text strong { font-size: 12px; }
+}
+
+@media (max-width: 380px) {
+  // Two tiles stop being legible below this — go single file.
+  .srkr-syll-stats { grid-template-columns: 1fr; }
 }
 
 .srkr-syll-prereq {
@@ -5659,6 +5656,22 @@
     display: block;
     transition: transform 0.35s ease;
   }
+
+  /* Non-square badges (the portrait HackerRank 5-star ones, ~385x418) would
+     lose their edges to `cover` in this square frame — letterbox them on white
+     so the whole badge stays readable. */
+  /* NOTE: never add `overflow: hidden` here — `.srkr-journey-num` is hung
+     outside this box at -9px/-9px and would get clipped. */
+  &.is-contain img {
+    object-fit: contain;
+    padding: 6px;
+    background: #fff;
+  }
+
+  /* A letterboxed badge's white box is wider than its artwork, so the full
+     hover zoom would push white out over the gradient border. Since we can't
+     clip (see note above), ease the zoom back instead. */
+  .srkr-journey-card:hover &.is-contain img { transform: scale(1.02); }
 }
 .srkr-journey-num {
   position: absolute;
@@ -5699,396 +5712,345 @@
   .srkr-journey-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--srkr-primary); flex-shrink: 0; }
 }
 
-/* ---- Modules roadmap timeline ---- */
-.srkr-roadmap { position: relative; padding: 4px 0; }
-.srkr-roadmap-spine {
-  position: absolute;
-  left: 19px;
-  top: 8px;
-  bottom: 8px;
-  width: 2.5px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--srkr-primary), var(--srkr-tertiary));
-  opacity: 0.4;
+/* ---- Modules: "Curriculum Ladder" (numbered accordion spine) ----
+   Replaces the old chip-card grid. A long syllabus (10 modules / 60+ topics)
+   reads as a scannable table of contents; topics reveal on demand. The spine
+   gradient fills down to the deepest open row so the rail doubles as a
+   progress indicator through the course. */
+
+.srkr-modlad {
+  --lad-rail: 52px;    // gutter reserved for the marker column
+  --lad-marker: 42px;
+  --lad-spine-x: 20px; // spine sits on the marker's centre line
 }
-.srkr-roadmap-node { position: relative; padding-left: 52px; margin-bottom: 14px; }
-.srkr-roadmap-dot {
-  position: absolute;
-  left: 6px;
-  top: 0;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  z-index: 2;
-  background: var(--srkr-gradient-primary);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-  border: 3px solid var(--srkr-bg-body);
-  box-shadow: 0 4px 12px rgba(226, 84, 76, 0.28);
-}
-.srkr-roadmap-card {
-  border: 1px solid var(--srkr-border);
-  border-radius: 14px;
-  padding: 14px 16px;
-  background: var(--srkr-bg-body);
-  box-shadow: var(--srkr-shadow-card);
-  transition: var(--srkr-transition);
-  &:hover { border-color: rgba(226, 84, 76, 0.3); box-shadow: var(--srkr-shadow-hover); }
-}
-.srkr-roadmap-card-head {
+
+/* Summary bar — counts + expand/collapse all */
+.srkr-modlad-bar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 12px;
-
-  .srkr-roadmap-modnum { font-size: 10.5px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; color: var(--srkr-primary); }
-  .srkr-roadmap-modtitle { margin: 2px 0 0; font-size: 15.5px; font-weight: 800; color: var(--srkr-heading); font-family: var(--srkr-font-primary); }
-  .srkr-roadmap-tracktag { flex-shrink: 0; padding: 4px 10px; border-radius: 999px; background: var(--srkr-bg-warm-tint); color: var(--srkr-secondary); font-size: 11px; font-weight: 700; }
-}
-.srkr-roadmap-topics { display: flex; flex-wrap: wrap; gap: 8px; }
-.srkr-roadmap-topic {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
-  border-radius: 9px;
-  background: var(--srkr-bg-section);
+  margin-bottom: 14px;
+  padding: 11px 16px;
+  border-radius: 14px;
   border: 1px solid var(--srkr-border);
-  color: var(--srkr-body-alt);
-  font-size: 12px;
-  font-weight: 500;
+  background: var(--srkr-bg-section);
+}
 
-  .srkr-roadmap-topic-tick {
-    width: 17px;
-    height: 17px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(226, 84, 76, 0.12);
-    color: var(--srkr-primary);
-    flex-shrink: 0;
+.srkr-modlad-counts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.srkr-modlad-count {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--srkr-body-alt);
+  white-space: nowrap;
+
+  strong {
+    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+    font-size: 15px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--srkr-heading);
+    margin-right: 3px;
   }
 }
 
-/* ---- Modules: vibrant chip-card grid (default) ---- */
-.srkr-modgrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 14px;
+.srkr-modlad-sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--srkr-tertiary);
+  flex-shrink: 0;
 }
-.srkr-modcard {
-  position: relative;
-  overflow: hidden;
-  padding: 18px;
-  border-radius: 18px;
+
+.srkr-modlad-toggleall {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 999px;
   border: 1px solid var(--srkr-border);
   background: var(--srkr-bg-body);
-  box-shadow: var(--srkr-shadow-card);
+  color: var(--srkr-primary);
+  font-family: var(--srkr-font-primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
   transition: var(--srkr-transition);
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 4px;
-    background: var(--c-grad, var(--srkr-gradient-primary));
-  }
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--srkr-shadow-hover);
-    border-color: color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 45%, var(--srkr-border));
-    .srkr-modcard-watermark { opacity: 0.13; transform: translateY(-2px); }
+    border-color: rgba(226, 84, 76, 0.45);
+    background: var(--srkr-bg-coral-tint);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--srkr-primary);
+    outline-offset: 2px;
   }
 }
-.srkr-modcard-watermark {
-  position: absolute;
-  right: -8px;
-  bottom: -26px;
-  z-index: 0;
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-  font-size: 104px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -5px;
-  font-variant-numeric: tabular-nums;
-  color: var(--c-accent, var(--srkr-primary));
-  opacity: 0.08;
-  pointer-events: none;
-  user-select: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-.srkr-modcard-track {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--c-accent, var(--srkr-primary));
-  background: var(--c-tint, var(--srkr-bg-coral-tint));
-  border: 1px solid var(--srkr-border);
-  border-color: color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 22%, transparent);
-}
-.srkr-modcard-head {
+
+/* Ladder track + spine */
+.srkr-modlad-track {
   position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-bottom: 14px;
+  padding-left: var(--lad-rail);
 }
-.srkr-modcard-badge {
-  flex-shrink: 0;
-  width: 46px;
-  height: 46px;
-  border-radius: 13px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: -0.5px;
-  background: var(--c-grad, var(--srkr-gradient-primary));
-  box-shadow: 0 8px 16px -8px var(--c-accent, var(--srkr-primary));
-}
-.srkr-modcard-titlewrap { min-width: 0; }
-.srkr-modcard-eyebrow {
-  display: block;
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: var(--c-accent, var(--srkr-primary));
-}
-.srkr-modcard-title {
-  margin: 2px 0 0;
-  font-size: 16.5px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--srkr-heading);
-  font-family: var(--srkr-font-primary);
-  line-height: 1.25;
-}
-.srkr-modcard-chips { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 7px; }
-.srkr-modcard-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
+
+.srkr-modlad-spine {
+  position: absolute;
+  left: var(--lad-spine-x);
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--srkr-heading);
-  background: var(--c-tint, var(--srkr-bg-coral-tint));
-  border: 1px solid var(--srkr-border);
-  border-color: color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 22%, transparent);
-
-  .srkr-modcard-chip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--c-accent, var(--srkr-primary)); flex-shrink: 0; }
-}
-@media (max-width: 480px) {
-  .srkr-modgrid { grid-template-columns: 1fr; }
-  .srkr-modcard-badge { width: 42px; height: 42px; font-size: 15px; }
-}
-
-/* ---- Modules: split-panel (gradient number rail + content) ---- */
-.srkr-modsplit {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
-  gap: 12px;
-  align-items: start; // cards size to their own content — no stretched empty space
-}
-.srkr-modsplit-card {
-  display: flex;
+  background: var(--srkr-border);
   overflow: hidden;
+  pointer-events: none;
+}
+
+.srkr-modlad-spine-fill {
+  display: block;
+  width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #E2544C 0%, #ED7236 55%, #F2A63B 100%);
+}
+
+/* Row = one module card, with its number marker hung out into the rail */
+.srkr-modlad-row {
+  position: relative;
+  margin-bottom: 10px;
   border-radius: 14px;
   border: 1px solid var(--srkr-border);
   background: var(--srkr-bg-body);
-  box-shadow: var(--srkr-shadow-card);
-  transition: var(--srkr-transition);
+  box-shadow: var(--srkr-shadow-neutral);
+  transition: border-color var(--srkr-transition), box-shadow var(--srkr-transition), transform var(--srkr-transition);
+
+  &:last-child { margin-bottom: 0; }
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--srkr-shadow-hover);
-    border-color: color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 40%, var(--srkr-border));
+    border-color: color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 38%, var(--srkr-border));
+    box-shadow: var(--srkr-shadow-card);
   }
-}
-.srkr-modsplit-rail {
-  flex-shrink: 0;
-  width: 56px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 10px 6px;
-  color: #fff;
-  background: var(--c-grad, var(--srkr-gradient-primary));
 
-  .srkr-modsplit-num {
-    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-    font-size: 23px;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -1px;
-    font-variant-numeric: tabular-nums;
+  &.is-open {
+    border-color: color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 45%, var(--srkr-border));
+    box-shadow: var(--srkr-shadow-card);
   }
-  .srkr-modsplit-lbl {
-    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-    font-size: 8.5px;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    opacity: 0.9;
-  }
-}
-.srkr-modsplit-body { padding: 12px 14px; min-width: 0; }
-.srkr-modsplit-title {
-  margin: 0 0 9px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--srkr-heading);
-  font-family: var(--srkr-font-primary);
-  line-height: 1.25;
-}
-.srkr-modsplit-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.srkr-modsplit-chip {
-  padding: 4px 9px;
-  border-radius: 7px;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--srkr-body-alt);
-  background: var(--srkr-bg-section);
-  border: 1px solid var(--srkr-border);
-}
-@media (max-width: 480px) {
-  .srkr-modsplit { grid-template-columns: 1fr; }
-  .srkr-modsplit-rail { width: 52px; }
 }
 
-/* ---- Modules: BLEND (rail + chips + ghost-number watermark, equal heights) ---- */
-.srkr-modblend {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
-  gap: 13px;
-  // default align-items: stretch → every card in a row is the SAME height
-}
-.srkr-modblend-card {
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  border-radius: 15px;
-  border: 1px solid var(--srkr-border);
-  background: var(--srkr-bg-body);
-  box-shadow: var(--srkr-shadow-card);
-  transition: var(--srkr-transition);
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--srkr-shadow-hover);
-    border-color: color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 42%, var(--srkr-border));
-    .srkr-modblend-watermark { opacity: 0.12; transform: translateY(-2px); }
-  }
-}
-.srkr-modblend-rail {
-  flex-shrink: 0;
-  width: 58px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 12px 6px;
-  color: #fff;
-  background: var(--c-grad, var(--srkr-gradient-primary));
-
-  .srkr-modblend-num {
-    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -1px;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-  .srkr-modblend-lbl {
-    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-    font-size: 8.5px;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    opacity: 0.92;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  }
-}
-.srkr-modblend-body {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  padding: 13px 15px;
-  overflow: hidden;
-}
-.srkr-modblend-watermark {
+.srkr-modlad-marker {
   position: absolute;
-  right: -8px;
-  bottom: -26px;
-  z-index: 0;
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-  font-size: 104px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -5px;
-  font-variant-numeric: tabular-nums;
+  left: calc(var(--lad-rail) * -1);
+  top: 10px;
+  z-index: 2;
+  width: var(--lad-marker);
+  height: var(--lad-marker);
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  border: 2px solid color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 35%, var(--srkr-border));
+  background: var(--srkr-bg-body);
   color: var(--c-accent, var(--srkr-primary));
-  opacity: 0.08;
-  pointer-events: none;
-  user-select: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+  transition: background var(--srkr-transition), color var(--srkr-transition),
+              border-color var(--srkr-transition), box-shadow var(--srkr-transition);
 }
-.srkr-modblend-content { position: relative; z-index: 1; }
-.srkr-modblend-eyebrow {
+
+.srkr-modlad-row.is-open .srkr-modlad-marker {
+  border-color: transparent;
+  background: var(--c-grad, var(--srkr-gradient-primary));
+  color: #fff;
+  box-shadow: 0 8px 18px -8px var(--c-accent, var(--srkr-primary));
+}
+
+/* Row header (the whole thing is the toggle) */
+.srkr-modlad-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 62px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--srkr-font-primary);
+
+  &:focus-visible {
+    outline: 2px solid var(--c-accent, var(--srkr-primary));
+    outline-offset: -2px;
+  }
+}
+
+.srkr-modlad-headtext { min-width: 0; }
+
+.srkr-modlad-eyebrow {
   display: block;
   font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-  font-size: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  font-weight: 700;
   color: var(--c-accent, var(--srkr-primary));
 }
-.srkr-modblend-title {
-  margin: 2px 0 11px;
-  font-size: 15.5px;
+
+.srkr-modlad-title {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.01em;
+  line-height: 1.3;
   color: var(--srkr-heading);
-  font-family: var(--srkr-font-primary);
-  line-height: 1.25;
 }
-.srkr-modblend-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.srkr-modblend-chip {
-  display: inline-flex;
+
+.srkr-modlad-meta {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.srkr-modlad-track-tag {
+  padding: 4px 10px;
   border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--c-accent, var(--srkr-primary));
+  background: var(--c-tint, var(--srkr-bg-coral-tint));
+  border: 1px solid color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 22%, transparent);
+}
+
+.srkr-modlad-topiccount {
   font-size: 11.5px;
   font-weight: 600;
-  color: var(--srkr-heading);
-  background: var(--c-tint, var(--srkr-bg-coral-tint));
-  border: 1px solid var(--srkr-border);
-  border-color: color-mix(in srgb, var(--c-accent, var(--srkr-primary)) 22%, transparent);
-
-  .srkr-modblend-chip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--c-accent, var(--srkr-primary)); flex-shrink: 0; }
+  white-space: nowrap;
+  color: var(--srkr-muted);
+  font-variant-numeric: tabular-nums;
 }
-@media (max-width: 480px) {
-  .srkr-modblend { grid-template-columns: 1fr; }
-  .srkr-modblend-rail { width: 52px; }
-  .srkr-modblend-watermark { font-size: 92px; }
+
+.srkr-modlad-chevron {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: var(--srkr-muted);
+  background: var(--srkr-bg-section);
+  transition: color var(--srkr-transition), background var(--srkr-transition);
+}
+
+.srkr-modlad-row.is-open .srkr-modlad-chevron,
+.srkr-modlad-head:hover .srkr-modlad-chevron {
+  color: var(--c-accent, var(--srkr-primary));
+  background: var(--c-tint, var(--srkr-bg-coral-tint));
+}
+
+/* Expanding topic panel */
+.srkr-modlad-panel { overflow: hidden; }
+
+.srkr-modlad-topics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 18px;
+  margin: 0 16px;
+  padding: 12px 0 15px;
+  list-style: none;
+  border-top: 1px dashed var(--srkr-border);
+}
+
+.srkr-modlad-topic {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 7px 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--srkr-body);
+
+  /* hairline between stacked rows, but not under the last of each column */
+  & + .srkr-modlad-topic { border-top: 1px solid transparent; }
+}
+
+.srkr-modlad-tick {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border-radius: 6px;
+  color: var(--c-accent, var(--srkr-primary));
+  background: var(--c-tint, var(--srkr-bg-coral-tint));
+}
+
+/* ---- Ladder: tablet ---- */
+@media (max-width: 767px) {
+  .srkr-modlad {
+    --lad-rail: 44px;
+    --lad-marker: 36px;
+    --lad-spine-x: 17px;
+  }
+  .srkr-modlad-title { font-size: 15px; }
+  .srkr-modlad-marker { font-size: 13px; border-radius: 11px; }
+}
+
+/* ---- Ladder: mobile ---- */
+@media (max-width: 640px) {
+  .srkr-modlad-topics {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin: 0 13px;
+  }
+  .srkr-modlad-topic {
+    padding: 8px 0;
+    & + .srkr-modlad-topic { border-top-color: var(--srkr-border); }
+  }
+  .srkr-modlad-head {
+    /* keep a comfortable tap target while the row narrows */
+    min-height: 58px;
+    padding: 11px 13px;
+    gap: 10px;
+  }
+  /* the count is redundant once topics are one-per-line — drop it, keep the chevron */
+  .srkr-modlad-topiccount { display: none; }
+  .srkr-modlad-bar { padding: 10px 13px; }
+}
+
+@media (max-width: 420px) {
+  .srkr-modlad {
+    --lad-rail: 38px;
+    --lad-marker: 30px;
+    --lad-spine-x: 14px;
+  }
+  .srkr-modlad-marker { font-size: 11.5px; border-radius: 9px; border-width: 1.5px; }
+  .srkr-modlad-title { font-size: 14.2px; }
+  .srkr-modlad-track-tag { display: none; }
+  .srkr-modlad-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .srkr-modlad-toggleall { width: 100%; }
+}
+
+/* Respect reduced-motion for the CSS-driven transitions too; Framer handles
+   the height/stagger side of it via useReducedMotion. */
+@media (prefers-reduced-motion: reduce) {
+  .srkr-modlad-row,
+  .srkr-modlad-marker,
+  .srkr-modlad-chevron,
+  .srkr-modlad-toggleall { transition: none; }
 }
 
 /* ---- Tablet ---- */
@@ -6119,6 +6081,5 @@
 @media (max-width: 420px) {
   .srkr-journey-card { flex-direction: column; }
   .srkr-journey-figure { width: 84px; height: 84px; }
-  .srkr-roadmap-node { padding-left: 46px; }
 }
 
