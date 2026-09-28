@@ -15,9 +15,17 @@
 // and its own HackerRank 5-star badge. Everything from LeetCode onward is shared,
 // so `buildRoadmap(cert, hackerRank)` stamps the right pair on the front.
 //
-// Most badges are square (1254x1254). The HackerRank ones are portrait (~385x418),
-// so they carry `fit: 'contain'` — the figure letterboxes them on white instead of
-// cropping the badge edges off. See `.srkr-journey-figure.is-contain`.
+// Most badges are square (1254x1254) and fill the figure with `cover`. The
+// HackerRank ones are portrait (~385x418), so they carry `fit: 'contain'` — the
+// figure letterboxes them on white instead of cropping the badge edges off. See
+// `.srkr-journey-figure.is-contain`.
+//
+// `github_logo_square.png` is derived from the supplied GitHub-logo.png, which is
+// a 3840x2160 (16:9) export whose artwork is only 2335x2095 of that canvas — the
+// rest is transparent padding. Dropped in as-is it rendered at roughly half the
+// visual weight of its neighbours, so it was trimmed and re-centred on a 1254x1254
+// white square to match the rest of the set. Regenerate with `trim()` + `extend`
+// if the source logo is ever replaced.
 const JOURNEY_DIR = '/assets/images/srkr/project-images/course_journey_roadmap';
 
 const CISCO_C_CERT = {
@@ -70,7 +78,7 @@ const SHARED_ROADMAP = [
         tags: ['Monthly Coding Contest', 'Post-Contest Upsolving', 'Prizes for Winners']
     },
     {
-        image: `${JOURNEY_DIR}/github_versioncontrol.png`,
+        image: `${JOURNEY_DIR}/github_logo_square.png`,
         label: 'GitHub',
         caption: 'Store & manage your projects',
         tags: ['Git Version Control']
