@@ -421,7 +421,7 @@ export const programsData = [
                 outcomes: [
                     'Write clean programs using variables, operators, conditionals, loops & functions',
                     'Analyze time and space complexity with Big-O notation',
-                    'Solve number, prime, GCD/LCM and modular arithmetic problems',
+                    'Solve number system, digit, prime, factor, GCD & LCM problems',
                     'Manipulate arrays, matrices and strings with confidence',
                     'Apply searching, sorting, hashing, sets, two pointers and sliding window techniques',
                     'Implement stacks, queues and linked lists from scratch',
@@ -430,49 +430,49 @@ export const programsData = [
                 modules: [
                     {
                         moduleNumber: 'Module 1',
-                        title: 'Programming Fundamentals',
+                        title: 'Programming Fundamentals & Basic Mathematics',
                         topics: [
                             'Variables & Data Types',
+                            'Input & Output',
                             'Operators',
                             'Conditional Statements',
                             'Loops',
-                            'Functions',
-                            'Input & Output'
+                            'Number System & Digit Problems',
+                            'Factors, GCD & LCM'
                         ]
                     },
                     {
                         moduleNumber: 'Module 2',
-                        title: 'Mathematics & Complexity Analysis',
-                        topics: [
-                            'Number System & Digit Problems',
-                            'Number Theory & Modular Arithmetic',
-                            'Prime Numbers & Sieve of Eratosthenes',
-                            'Factors, GCD & LCM',
-                            'Time & Space Complexity',
-                            'Big-O Notation & Analysis of Solutions'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 3',
                         title: 'Arrays & Matrices',
                         topics: [
                             'Array Basics & Traversal',
                             'Array Manipulation',
+                            'Basic Mathematics with Arrays',
                             'Dynamic Arrays & Operations',
                             '2D Arrays & Matrices',
-                            'Basic Mathematics with Arrays',
-                            'Array-Based Problem Solving'
+                            'Array-Based Problem Solving',
+                            'Prime Numbers & Sieve of Eratosthenes'
                         ]
                     },
                     {
-                        moduleNumber: 'Module 4',
+                        moduleNumber: 'Module 3',
                         title: 'Strings & Character Processing',
                         topics: [
                             'String Basics & Traversal',
                             'Character Operations',
-                            'Palindrome & Anagram Problems',
                             'Character Frequency Problems',
+                            'Palindrome & Anagram Problems',
                             'String-Based Problem Solving'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 4',
+                        title: 'Functions & Complexity Analysis',
+                        topics: [
+                            'Writing Functions',
+                            'Built-in Functions',
+                            'Time & Space Complexity',
+                            'Big-O Notation & Analysis of Solutions'
                         ]
                     },
                     {
@@ -481,10 +481,9 @@ export const programsData = [
                         topics: [
                             'Linear Search',
                             'Binary Search',
+                            'lower_bound & upper_bound',
                             'Search-Based Problems',
-                            'Selection, Bubble & Insertion Sort',
-                            'Merge Sort & Quick Sort',
-                            'Counting Sort',
+                            'Sorting-Based Problem Solving',
                             'Custom Sorting & Comparators'
                         ]
                     },
@@ -495,9 +494,9 @@ export const programsData = [
                             'Hashing Fundamentals',
                             'Hash Tables & Hash Maps',
                             'Key-Value Operations',
+                            'Frequency & Counting Problems',
                             'Ordered & Unordered Sets',
                             'Set Operations',
-                            'Frequency & Counting Problems',
                             'Hash & Set Based Problem Solving'
                         ]
                     },
