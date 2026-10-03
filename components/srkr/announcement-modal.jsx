@@ -2,9 +2,16 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
-// Announcement pop-up. Laptop/tablet show the poster as-is (spotlight); phones
-// get a readable hybrid — a cropped poster banner + the details as native text.
-// Clicking the blurred backdrop, the ✕, or pressing Esc dismisses it.
+// Announcement pop-up. Admins upload two posters: a 2:3 web/tablet artwork and
+// an optional 4:5 mobile one. Laptops and tablets always get the web poster;
+// phones get the mobile poster when there is one, falling back to the web
+// artwork otherwise. Clicking the blurred backdrop, the ✕, or Esc dismisses it.
+//
+// The swap is done with <picture><source media> rather than a JS width check so
+// the right poster is chosen before first paint — no hydration mismatch, no
+// flash of the wrong artwork, and it re-evaluates live on rotate/resize.
+const MOBILE_POSTER_QUERY = '(max-width: 600px)'; // must match the SCSS breakpoint
+
 const AnnouncementModal = ({ isOpen, onClose, onJoinCommunity, announcement }) => {
     const reduceMotion = useReducedMotion();
 
@@ -77,8 +84,11 @@ const AnnouncementModal = ({ isOpen, onClose, onJoinCommunity, announcement }) =
                                 Admin-uploaded posters vary in aspect ratio, so a fixed crop tuned
                                 to one design would cut off content on another; "contain" is the
                                 one treatment that's safe for any poster. */}
-                            <div className="srkr-ann-poster">
-                                <img src={a.image} alt={a.alt || a.title || 'Announcement'} />
+                            <div className={`srkr-ann-poster${a.mobileImage ? ' has-mobile' : ''}`}>
+                                <picture>
+                                    {a.mobileImage && <source media={MOBILE_POSTER_QUERY} srcSet={a.mobileImage} />}
+                                    <img src={a.image} alt={a.alt || a.title || 'Announcement'} />
+                                </picture>
                             </div>
 
                             {/* Optional readable text below the poster — only renders if the

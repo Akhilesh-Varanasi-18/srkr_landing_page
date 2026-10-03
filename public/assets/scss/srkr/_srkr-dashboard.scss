@@ -594,38 +594,111 @@
 
 .ann-error { font-size: 11.5px; font-weight: 600; color: var(--srkr-danger); }
 
-/* Drag & drop image zone with live preview */
+/* ── Poster slots: one tab per screen size (web & tablet / mobile) ───────── */
+.ann-poster-field { gap: 10px; }
+.ann-poster-heading { font-size: 12.5px; font-weight: 700; color: var(--srkr-heading); }
+
+.ann-poster-tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.ann-poster-tab {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 11px; border-radius: var(--srkr-radius);
+  border: 1.5px solid var(--srkr-border); background: #fff;
+  cursor: pointer; text-align: left; transition: all 0.2s ease;
+  min-width: 0;
+
+  &:hover { border-color: rgba(226,84,76,0.4); }
+  &.is-active { border-color: var(--srkr-primary); background: rgba(226,84,76,0.06); }
+  &.has-error { border-color: var(--srkr-danger); }
+}
+.ann-poster-tab-ic {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px;
+  display: grid; place-items: center;
+  background: var(--srkr-bg-section); color: var(--srkr-muted);
+  svg { width: 14px; height: 14px; }
+
+  .ann-poster-tab.is-active & { background: rgba(226,84,76,0.12); color: var(--srkr-primary); }
+}
+.ann-poster-tab-txt {
+  display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1;
+
+  // The tabs sit two-up inside a half-width column, so the label has to stay
+  // on one line and truncate rather than wrap the panel open.
+  strong, small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  strong { font-size: 12px; font-weight: 700; color: var(--srkr-heading); line-height: 1.25; }
+  small { font-size: 10px; color: var(--srkr-muted); }
+
+  .ann-poster-tab.is-active & strong { color: var(--srkr-primary); }
+}
+.ann-poster-tab-state {
+  flex-shrink: 0; display: grid; place-items: center; color: #16a34a;
+  svg { width: 15px; height: 15px; }
+}
+.ann-poster-blurb { font-size: 11px; color: var(--srkr-muted); line-height: 1.4; }
+
+/* Drag & drop image zone with live preview. Each slot is sized to its own
+   template ratio so the box is an honest preview of what will be uploaded. */
 .ann-dropzone {
   position: relative;
-  aspect-ratio: 3 / 4;
-  max-height: 320px;
+  width: 100%;
+  margin: 0 auto;
   border: 1.5px dashed var(--srkr-border);
   border-radius: var(--srkr-radius-big);
   background: var(--srkr-bg-section);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; overflow: hidden;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease;
+
+  &.is-web { max-width: 232px; aspect-ratio: 2 / 3; }
+  &.is-mobile { max-width: 272px; aspect-ratio: 4 / 5; }
 
   &:hover { border-color: var(--srkr-primary); }
-  &.is-drag { border-color: var(--srkr-primary); background: rgba(226,84,76,0.06); transform: scale(1.01); }
+  &.is-drag { border-color: var(--srkr-primary); background: rgba(226,84,76,0.06); }
   &.has-error { border-color: var(--srkr-danger); }
   &.has-image { cursor: default; border-style: solid; border-color: var(--srkr-border); }
 
-  @media (max-width: 640px) { aspect-ratio: 4 / 3; max-height: 220px; }
+  @media (max-width: 420px) {
+    &.is-web { max-width: 190px; }
+    &.is-mobile { max-width: 224px; }
+  }
 }
 .ann-dropzone-empty {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: 20px; text-align: center; color: var(--srkr-muted);
+  padding: 18px 14px; text-align: center; color: var(--srkr-muted);
 
-  strong { font-size: 13px; color: var(--srkr-heading); font-weight: 700; }
-  span { font-size: 11.5px; }
+  strong { font-size: 12.5px; color: var(--srkr-heading); font-weight: 700; line-height: 1.3; }
+  span { font-size: 11px; line-height: 1.4; }
 }
 .ann-dropzone-ic {
   width: 42px; height: 42px; border-radius: 12px; margin-bottom: 4px;
   display: grid; place-items: center; background: rgba(226,84,76,0.1); color: var(--srkr-primary);
   svg { width: 20px; height: 20px; }
 }
-.ann-dropzone-preview { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* "contain", not "cover" — letterboxing is the signal that the uploaded
+   artwork does not match the template ratio for this slot. */
+.ann-dropzone-preview { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* Small on/off switch, reused by the create form and the history list */
+.ann-switch-row {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 11.5px; font-weight: 600; color: var(--srkr-body-alt); line-height: 1.35;
+}
+.ann-switch {
+  flex-shrink: 0; width: 34px; height: 19px; padding: 0;
+  border-radius: 999px; border: none; cursor: pointer;
+  background: #cbd5e1; transition: background 0.2s ease;
+
+  span {
+    display: block; width: 15px; height: 15px; margin: 2px;
+    border-radius: 50%; background: #fff;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.3);
+    transition: transform 0.2s ease;
+  }
+
+  &.is-on { background: var(--srkr-primary); span { transform: translateX(15px); } }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
 .ann-dropzone-remove {
   position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 9px;
   border: none; background: rgba(15,23,42,0.65); color: #fff; cursor: pointer;
@@ -665,18 +738,56 @@
 .ann-history-empty { text-align: center; padding: 40px 20px; color: var(--srkr-muted); font-size: 13.5px; }
 
 .ann-history-card {
-  display: flex; align-items: center; gap: 13px;
+  display: flex; flex-direction: column; gap: 10px;
   padding: 11px 13px; border-radius: var(--srkr-radius);
   border: 1px solid var(--srkr-border); background: var(--srkr-bg-section);
   transition: all 0.2s ease;
 
   &.is-live { border-color: rgba(226,84,76,0.35); background: rgba(226,84,76,0.04); }
+}
+.ann-history-main {
+  display: flex; align-items: center; gap: 13px;
 
   @media (max-width: 560px) { flex-wrap: wrap; }
 }
+.ann-history-thumbs { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.ann-history-thumb-wrap {
+  position: relative; display: block; line-height: 0;
+
+  &.is-off { opacity: 0.45; filter: grayscale(0.6); }
+}
+.ann-history-thumb-tag {
+  position: absolute; right: -4px; bottom: -4px;
+  width: 18px; height: 18px; border-radius: 6px;
+  display: grid; place-items: center;
+  background: var(--srkr-heading); color: #fff; border: 1.5px solid var(--srkr-bg-section);
+  svg { width: 9px; height: 9px; }
+}
 .ann-history-thumb {
   width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0;
-  border: 1px solid var(--srkr-border);
+  border: 1px solid var(--srkr-border); display: block;
+}
+
+/* Per-announcement mobile-poster controls (upload / on-off / replace) */
+.ann-history-mobile {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding-top: 9px; border-top: 1px dashed var(--srkr-border);
+}
+.ann-history-mobile-label {
+  display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+  font-size: 11px; font-weight: 700; color: var(--srkr-heading);
+  svg { width: 12px; height: 12px; color: var(--srkr-muted); }
+}
+.ann-history-mobile-state { font-size: 11px; color: var(--srkr-muted); flex: 1; min-width: 120px; }
+.ann-history-mobile-links { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.ann-link-btn {
+  border: none; background: none; padding: 0; cursor: pointer;
+  font-family: var(--srkr-font-primary); font-size: 11.5px; font-weight: 700;
+  color: var(--srkr-secondary); text-decoration: none;
+
+  &:hover:not(:disabled) { color: var(--srkr-primary); text-decoration: underline; }
+  &.is-danger { color: var(--srkr-danger); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 .ann-history-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .ann-history-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -704,4 +815,12 @@
   .ann-mgr-head { padding: 16px 16px 12px; }
   .ann-mgr-tabs { padding: 8px 16px 0; }
   .ann-mgr-body { padding: 16px; }
+}
+
+@media (max-width: 400px) {
+  // On the narrowest phones the two poster tabs share ~150px each.
+  .ann-poster-tab { padding: 8px; gap: 7px; }
+  .ann-poster-tab-ic { width: 24px; height: 24px; svg { width: 13px; height: 13px; } }
+  .ann-history-mobile-state { min-width: 100%; order: 3; }
+  .ann-history-mobile-links { margin-left: auto; }
 }

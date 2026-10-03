@@ -4940,6 +4940,10 @@
   line-height: 0;
   flex-shrink: 0;
 
+  // <picture> is inline by default, which would leave a baseline gap under the
+  // poster; the <source> inside it is what swaps in the phone artwork.
+  picture { display: block; }
+
   img {
     display: block;
     width: 100%;
@@ -5007,7 +5011,12 @@
 
 @media (max-width: 600px) {
   .srkr-ann-dialog { max-width: 94vw; border-radius: 18px; }
+  // A web/tablet poster squeezed onto a phone has to stay small or its text
+  // gets unreadable, so it keeps the conservative cap and leans on the text
+  // block below it. A purpose-built 4:5 mobile poster is readable at full
+  // width, so it gets the room to actually fill the screen.
   .srkr-ann-poster img { max-height: 48vh; }
+  .srkr-ann-poster.has-mobile img { max-height: 64vh; max-width: 100%; }
   .srkr-ann-ribbon { font-size: 12px; padding: 9px 46px; gap: 6px; }
   .srkr-ann-textblock { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px 4px; overflow-y: auto; }
 
