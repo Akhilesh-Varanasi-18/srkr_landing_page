@@ -5306,6 +5306,18 @@
   small { font-size: 11.5px; color: var(--srkr-muted); }
 }
 
+/* Raised ordinal suffix — the "st" in 1ˢᵗ Year. `line-height: 0` keeps the
+   <sup> from stretching the row it sits in, so the group card height is
+   identical to a label with no ordinal in it. */
+.srkr-wa-ord {
+  font-size: 0.65em;
+  font-weight: 700;
+  line-height: 0;
+  vertical-align: super;
+  margin-left: 0.5px;
+  letter-spacing: 0.2px;
+}
+
 .srkr-wa-group-arrow {
   flex-shrink: 0;
   color: var(--srkr-muted);
