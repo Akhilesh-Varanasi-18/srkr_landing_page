@@ -26,6 +26,17 @@
 // visual weight of its neighbours, so it was trimmed and re-centred on a 1254x1254
 // white square to match the rest of the set. Regenerate with `trim()` + `extend`
 // if the source logo is ever replaced.
+//
+// `codechef_logo_square.png` / `leetcode_logo_square.png` replace the earlier
+// codechef.jpeg / leetcode.jpeg screenshots with the real brand marks. Their
+// sources ("codechef logo.png" / "leetcode logo.png", kept beside them) were
+// exported with the transparency checkerboard flattened into the pixels — the
+// alpha channel is opaque everywhere and the background is a 20px tile grid of
+// #FFF / #F0F0F0, so dropping them in would have shown a grey chequer behind
+// each logo. They were rebuilt by flood-filling that grid to white inwards from
+// the border (border-connected only, so the cream chef hat and its highlights
+// survive), trimming to the ink, then centring it at the same ~83% occupancy
+// github_logo_square.png uses. Being square, they need no `fit: 'contain'`.
 const JOURNEY_DIR = '/assets/images/srkr/project-images/course_journey_roadmap';
 
 const CISCO_C_CERT = {
@@ -60,13 +71,13 @@ const HACKERRANK_CPP_BADGE = {
 
 const SHARED_ROADMAP = [
     {
-        image: `${JOURNEY_DIR}/codechef.jpeg`,
+        image: `${JOURNEY_DIR}/codechef_logo_square.png`,
         label: 'CodeChef',
         caption: 'Contest problem solving',
         tags: ['CodeChef Problem Solving', 'CodeChef Contest Participation']
     },
     {
-        image: `${JOURNEY_DIR}/leetcode.jpeg`,
+        image: `${JOURNEY_DIR}/leetcode_logo_square.png`,
         label: 'LeetCode',
         caption: 'Core problem solving',
         tags: ['LeetCode Problem Solving', 'LeetCode Contest Participation']
