@@ -2,7 +2,7 @@
 const teamData = [
     {
         id: 'bobby',
-        name: 'Veerabadhra Bobby',
+        name: 'Bobby Pamarthi',
         role: 'Team Manager · AWS & DevOps Specialist',
         tagline: 'AWS Cloud, DevOps & GPU Infrastructure Specialist',
         photo: '/assets/images/srkr/project-images/team/Bobby_Devops_Engineer_and_Team_Manager_uniform.png',
