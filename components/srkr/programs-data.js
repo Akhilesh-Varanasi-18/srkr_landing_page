@@ -12,7 +12,7 @@
 //
 // The first two nodes differ per track by language: Bamboo Coder (1st year) works
 // in C, SkillUp Coder (2nd year) in C++, so each gets its own CISCO certificate
-// and its own HackerRank 5-star badge. Everything from LeetCode onward is shared,
+// and its own HackerRank 5-star badge. Everything from CodeChef onward is shared,
 // so `buildRoadmap(cert, hackerRank)` stamps the right pair on the front.
 //
 // Most badges are square (1254x1254) and fill the figure with `cover`. The
@@ -60,16 +60,16 @@ const HACKERRANK_CPP_BADGE = {
 
 const SHARED_ROADMAP = [
     {
-        image: `${JOURNEY_DIR}/leetcode.jpeg`,
-        label: 'LeetCode',
-        caption: 'Core problem solving',
-        tags: ['LeetCode Problem Solving', 'LeetCode Contest Participation']
-    },
-    {
         image: `${JOURNEY_DIR}/codechef.jpeg`,
         label: 'CodeChef',
         caption: 'Contest problem solving',
         tags: ['CodeChef Problem Solving', 'CodeChef Contest Participation']
+    },
+    {
+        image: `${JOURNEY_DIR}/leetcode.jpeg`,
+        label: 'LeetCode',
+        caption: 'Core problem solving',
+        tags: ['LeetCode Problem Solving', 'LeetCode Contest Participation']
     },
     {
         image: `${JOURNEY_DIR}/monthly_coding_contest.jpeg`,
@@ -121,74 +121,111 @@ export const programsData = [
                 title: 'C Programming & Logic Building',
                 level: 'Beginner to Intermediate',
                 // prerequisites: 'None — Designed for B.Tech 1st Year Students', // hidden: no real prerequisite to show for this course
-                overview: 'Master foundational computer science concepts, memory layout, pointer arithmetic, structures, and file-driven modular C programs.',
+                overview: 'Master foundational computer science concepts, memory layout, pointer arithmetic, structures, arrays, strings and pointer-driven C programs.',
                 outcomes: [
                     'Write, debug, and compile clean, modular C programs independently',
                     'Apply control structures, loops, and functions to solve logical and aptitude problems',
                     'Work confidently with 1D/2D arrays, strings, pointer arithmetic, and dynamic memory',
-                    'Use structures, unions, and file handling for structured persistent data storage',
-                    'Build and present a complete real-world console-based C application from scratch'
+                    'Use structures and arrays of structures to model real-world data',
+                    'Solve arithmetic, digit, array, string and pointer problems with confidence'
                 ],
                 modules: [
                     {
                         moduleNumber: 'Module 1',
-                        title: 'Fundamentals & Problem Solving',
+                        title: 'Programming Fundamentals',
                         topics: [
-                            'Introduction to Programming, Compilers & IDEs (Writing & Running C Programs)',
-                            'Structure of a C Program, main() Function, Comments & Syntax',
-                            'Data Types, Variables, Constants & Type Modifiers',
-                            'Operators: Arithmetic, Relational, Logical, Bitwise, Assignment & Increment',
-                            'Expressions, Operator Precedence & Input/Output (printf, scanf)',
-                            'Basics of Algorithms & Flowcharts: Translating Logic into Code'
+                            'Installing C Compiler & IDE Setup',
+                            'Basic Structure of a C Program',
+                            'Variables & Data Types',
+                            'Input & Output',
+                            'Operators',
+                            'Problem Solving on Arithmetic'
                         ]
                     },
                     {
                         moduleNumber: 'Module 2',
-                        title: 'Control Structures & Looping',
+                        title: 'Conditional Statements',
                         topics: [
-                            'Decision-Making: if, if-else, nested if, else-if ladder & switch-case',
-                            'Looping Constructs: for, while & do-while loops',
-                            'Nested Loops & Loop Controls: break, continue & goto',
-                            'Pattern Printing & Number-Based Problem Solving',
-                            'Introduction to Time and Space Efficiency in Simple Programs'
+                            'If Statement',
+                            'If-Else & Else-If Ladder',
+                            'Nested If',
+                            'Switch Case',
+                            'Problem Solving on Conditional Statements'
                         ]
                     },
                     {
                         moduleNumber: 'Module 3',
-                        title: 'Functions & Recursion',
+                        title: 'Loops & Number Problems',
                         topics: [
-                            'Function Declarations, Definitions, Function Calls & Return Types',
-                            'Parameter Passing: Call by Value vs Call by Reference',
-                            'Function Prototypes, Header Files & Modular Program Structure',
-                            'Storage Classes: auto, static, extern & register',
-                            'Scope & Lifetime of Variables',
-                            'Recursion Principles, Base Cases & Classic Problems (Factorial, Fibonacci, GCD)',
-                            'Recursion vs Iteration: Trade-offs & Call Stack Memory'
+                            'For Loop',
+                            'While & Do-While Loop',
+                            'Nested Loops',
+                            'Digit Problems',
+                            'Prime Numbers',
+                            'Factors, GCD & LCM',
+                            'Problem Solving on Digits & Numbers'
                         ]
                     },
                     {
                         moduleNumber: 'Module 4',
-                        title: 'Arrays, Strings & Pointers',
+                        title: 'Functions & Recursion',
                         topics: [
-                            '1D & 2D Arrays: Declaration, Initialization & Matrix Traversals',
-                            'Passing Arrays to Functions & Array Algorithms',
-                            'String Handling: Character Arrays & String Functions (strlen, strcpy, strcat, strcmp)',
-                            'Pointers: Address Arithmetic, Pointers with Arrays & Strings',
-                            'Pointers and Functions: Passing Pointers & Returning Pointers',
-                            'Dynamic Memory Allocation: malloc, calloc, realloc & free'
+                            'Introduction to Functions',
+                            'Writing Basic Functions',
+                            'Parameters & Return Values',
+                            'Recursion',
+                            'Problem Solving on Functions & Recursion'
                         ]
                     },
                     {
                         moduleNumber: 'Module 5',
-                        title: 'Structures, File Handling & Mini Project',
+                        title: 'Arrays',
                         topics: [
-                            'Structures: Declaration, Nested Structures & Arrays of Structures',
-                            'Unions: Concept & Key Differences from Structures',
-                            'File Handling: fopen, fclose, fread, fwrite, fprintf, fscanf',
-                            'Sequential vs Random File Access, Preprocessor Directives & Macros',
-                            'Pointers to Structures, Function Pointers & Command-Line Arguments',
-                            'Debugging Techniques & Common Compile-Time/Run-Time Error Patterns',
-                            'Mini-Project: Student Record System / Library Management System'
+                            'Introduction to Arrays',
+                            'Array Input, Output & Traversal',
+                            'Searching & Sorting',
+                            'Problem Solving on Arrays'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 6',
+                        title: '2D Arrays',
+                        topics: [
+                            'Introduction to 2D Arrays',
+                            'Matrix Input & Output',
+                            'Matrix Operations',
+                            'Problem Solving on 2D Arrays'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 7',
+                        title: 'Strings',
+                        topics: [
+                            'Introduction to Strings',
+                            'String Input & Output',
+                            'String Functions',
+                            'Problem Solving on Strings'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 8',
+                        title: 'Pointers',
+                        topics: [
+                            'Introduction to Pointers',
+                            'Call by Value & Call by Reference',
+                            'Pointers with Arrays & Strings',
+                            'Dynamic Memory Allocation',
+                            'Problem Solving on Pointers'
+                        ]
+                    },
+                    {
+                        moduleNumber: 'Module 9',
+                        title: 'Structures',
+                        topics: [
+                            'Introduction to Structures',
+                            'Array of Structures',
+                            'Pointers to Structures',
+                            'Problem Solving on Structures'
                         ]
                     }
                 ],

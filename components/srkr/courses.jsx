@@ -146,7 +146,7 @@ const coursesList = [
         categoryLabel: 'Foundation',
         programName: 'Bamboo Coder',
         programYear: '1st Year',
-        modulesCount: '5 Modules',
+        modulesCount: '9 Modules',
         accentColor: 'var(--srkr-primary)',
         accentGradient: 'linear-gradient(135deg, var(--srkr-secondary) 0%, var(--srkr-primary) 100%)',
         accentBg: 'var(--srkr-bg-coral-tint)',
@@ -164,12 +164,12 @@ const coursesList = [
                 <line x1="1" y1="14" x2="4" y2="14" />
             </svg>
         ),
-        description: 'Master computer science fundamentals, memory models, pointer arithmetic, structures, file handling, and modular console programs.',
+        description: 'Master computer science fundamentals, memory models, pointer arithmetic, 2D arrays, strings, pointers and structures.',
         highlights: [
             'Pointer arithmetic & dynamic memory management',
-            'Console mini-project & modular C architecture'
+            'Searching, sorting & matrix problem solving'
         ],
-        tags: ['C Fundamentals', 'Pointer Arithmetic', 'Dynamic Memory', 'Structures & Files', 'Modular Design'],
+        tags: ['C Fundamentals', 'Pointer Arithmetic', 'Dynamic Memory', 'Structures', 'Modular Design'],
         courseIndex: 0,
     },
     {
