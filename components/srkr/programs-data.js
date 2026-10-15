@@ -126,6 +126,7 @@ export const programsData = [
         badge: 'Foundation Track',
         themeColor: 'var(--srkr-primary)',
         accentBg: 'var(--srkr-bg-coral-tint)',
+        registrationsClosed: true, // 1st-year (2030) registrations closed — shows a badge on the card
         courses: [
             {
                 id: 'bamboo-c',
