@@ -1,0 +1,671 @@
+// ============================================
+// Coding Profiles — the student profile panel's body
+// Prefix: .cp-prof-*, .cp-pf*, .cp-diff*, .cp-ms*, .cp-facts/.cp-fact, .cp-tiles,
+// .cp-stars, .cp-langs/.cp-lang/.cp-pip, .cp-empty-block.
+// (The panel's frame — .cp-detail — stays in _srkr-coding.scss.)
+//
+// Colour comes from the --srkr-* tokens; each platform card carries its own accent
+// as --cp-pf (set inline from PLATFORMS) with two tints derived from it.
+// ============================================
+
+$pr-sm: 560px;
+$pr-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+// The panel body is a grid inside a fixed-height panel. Its auto rows would
+// otherwise stretch to fill the height, and on a phone — where the portrait row
+// comes first — that stretched row shoved every number below the fold.
+.cp-detail__body {
+    align-content: start;
+}
+
+// ── Total card ──────────────────────────────────────────────────────────────
+
+.cp-prof-total {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 18px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    background:
+        radial-gradient(360px 200px at 100% 0%, rgba(242, 166, 59, 0.18), transparent 70%), // --srkr-tertiary
+        radial-gradient(300px 180px at 0% 100%, rgba(226, 84, 76, 0.1), transparent 70%), // --srkr-primary
+        linear-gradient(160deg, var(--srkr-bg-warm-offwhite) 0%, var(--srkr-white) 100%);
+    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.07), inset 0 1px 0 var(--srkr-white); // --srkr-heading
+
+    &__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    &__figure {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    &__value {
+        font-family: var(--srkr-font-heading);
+        font-size: 46px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__label {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-family: var(--srkr-font-heading);
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--srkr-heading);
+
+        small {
+            font-family: var(--srkr-font-primary);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--srkr-muted);
+        }
+    }
+
+    // The composition bar: segments grow with their count; white gaps do the separating.
+    &__bar {
+        display: flex;
+        gap: 3px;
+        height: 12px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(15, 23, 42, 0.06); // --srkr-heading
+    }
+
+    &__seg {
+        display: block;
+        flex: 0 1 auto;
+        min-width: 6px;
+        border-radius: 999px;
+        transition: flex-grow 0.5s $pr-ease;
+
+        &--empty {
+            flex: 1;
+            background: transparent;
+        }
+    }
+
+    // Two by two: the panel's main column is about 500px wide, and four-across
+    // left "GeeksforGeeks" clipped beside its badge.
+    &__parts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    &__bench {
+        margin: 0;
+        font-size: 12px;
+        color: var(--srkr-body-alt);
+
+        strong {
+            color: var(--srkr-heading);
+        }
+    }
+}
+
+// One platform's share of the total. The label clips with an ellipsis if a tile ever
+// gets too narrow for it, rather than escaping the tile.
+.cp-prof-part {
+    --cp-part-accent: var(--srkr-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 9px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(15, 23, 42, 0.05); // --srkr-heading
+    border-bottom: 2px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    transition: transform 0.3s $pr-ease, box-shadow 0.3s;
+
+    &.is-active {
+        border-bottom-color: var(--cp-part-accent);
+    }
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
+    }
+
+    &__text {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
+    }
+
+    &__value {
+        font-family: var(--srkr-font-heading);
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &:not(.is-active) &__value {
+        color: var(--srkr-muted);
+    }
+
+    &__label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--srkr-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+// ── Platform cards ──────────────────────────────────────────────────────────
+
+.cp-pf-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+
+    > * {
+        min-width: 0;
+    }
+
+    @media (max-width: $pr-sm) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.cp-pf {
+    --cp-pf: var(--srkr-primary);
+    --cp-pf-tint: rgba(226, 84, 76, 0.14);
+    --cp-pf-tint-soft: rgba(226, 84, 76, 0.04);
+    --cp-pf-glow: rgba(226, 84, 76, 0.35);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.06); // --srkr-heading
+    background: var(--srkr-white);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+    transition: box-shadow 0.3s, transform 0.3s $pr-ease;
+
+    &:hover {
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+    }
+
+    &--wide {
+        grid-column: 1 / -1;
+    }
+
+    // Tinted header band with a soft accent orb in the corner.
+    &__head {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        background: linear-gradient(135deg, var(--cp-pf-tint) 0%, var(--cp-pf-tint-soft) 60%, var(--srkr-white) 100%);
+        border-bottom: 1px solid rgba(15, 23, 42, 0.05); // --srkr-heading
+
+        &::before {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: -40px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--cp-pf-glow) 0%, transparent 70%);
+            filter: blur(6px);
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        > * {
+            position: relative;
+        }
+    }
+
+    &__name {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--srkr-heading);
+    }
+
+    // What the headline count means, as the card's last line — never in the
+    // header, where a half-width card would wrap it one word per line.
+    &__note {
+        margin: auto 0 0;
+        padding-top: 2px;
+        font-size: 11px;
+        line-height: 1.45;
+        color: var(--srkr-muted);
+    }
+
+    &__count {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        flex: none;
+        text-align: right;
+
+        strong {
+            font-family: var(--srkr-font-heading);
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--srkr-heading);
+            font-variant-numeric: tabular-nums;
+        }
+
+        span {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--srkr-muted);
+            white-space: nowrap;
+        }
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 14px 14px;
+    }
+
+    &__quiet {
+        margin: 0;
+        font-size: 11.5px;
+        color: var(--srkr-muted);
+    }
+
+    &__certs {
+        margin: 0;
+        font-size: 12px;
+        color: var(--srkr-body);
+    }
+
+    &__nothing {
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: var(--srkr-bg-section);
+        border: 1px dashed var(--srkr-border);
+
+        p {
+            margin: 0;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--srkr-body-alt);
+        }
+
+        small {
+            display: block;
+            margin-top: 2px;
+            font-size: 11px;
+            color: var(--srkr-muted);
+        }
+    }
+
+}
+
+// ── Difficulty split (LeetCode) ─────────────────────────────────────────────
+
+.cp-diff {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &__bar {
+        display: flex;
+        gap: 3px;
+        height: 10px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(15, 23, 42, 0.06); // --srkr-heading
+    }
+
+    &__seg {
+        display: block;
+        min-width: 4px;
+        border-radius: 999px;
+        transition: flex-basis 0.5s $pr-ease;
+
+        &--easy {
+            background: var(--srkr-tertiary);
+        }
+
+        &--medium {
+            background: var(--srkr-secondary);
+        }
+
+        &--hard {
+            background: var(--srkr-primary-hover);
+        }
+    }
+
+    &__tiles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 0;
+    }
+
+    &__tile {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 9px 11px;
+        border-radius: 12px;
+        background: var(--srkr-bg-section);
+        // The difficulty is named in text, so the strip colour never carries it alone.
+        border-top: 3px solid var(--srkr-border);
+
+        dt {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--srkr-muted);
+        }
+
+        dd {
+            margin: 0;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+
+            strong {
+                font-family: var(--srkr-font-heading);
+                font-size: 20px;
+                line-height: 1;
+                color: var(--srkr-heading);
+                font-variant-numeric: tabular-nums;
+            }
+
+            span {
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--srkr-muted);
+            }
+        }
+
+        &--easy {
+            border-top-color: var(--srkr-tertiary);
+        }
+
+        &--medium {
+            border-top-color: var(--srkr-secondary);
+        }
+
+        &--hard {
+            border-top-color: var(--srkr-primary-hover);
+        }
+    }
+}
+
+// ── Milestone ladder ────────────────────────────────────────────────────────
+
+.cp-ms {
+    --cp-ms-accent: var(--srkr-primary);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    &__row {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        font-size: 11.5px;
+        color: var(--srkr-body-alt);
+    }
+
+    &__from,
+    &__to {
+        flex: none;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        color: var(--srkr-muted);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__text {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+
+        strong {
+            color: var(--srkr-heading);
+        }
+    }
+
+    &__track {
+        height: 8px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(15, 23, 42, 0.06); // --srkr-heading
+    }
+
+    &__fill {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--cp-ms-accent) 0%, var(--srkr-tertiary) 100%);
+        box-shadow: 0 0 10px var(--cp-pf-glow, rgba(226, 84, 76, 0.3));
+        transition: width 0.6s $pr-ease;
+    }
+}
+
+// ── Facts, tiles, stars ─────────────────────────────────────────────────────
+
+.cp-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+}
+
+.cp-fact {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 76px;
+    padding: 7px 11px;
+    border-radius: 10px;
+    background: var(--srkr-bg-section);
+
+    dt {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--srkr-muted);
+    }
+
+    dd {
+        margin: 0;
+        font-family: var(--srkr-font-heading);
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+.cp-tiles {
+    --cp-tiles-accent: var(--srkr-primary);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+    gap: 8px;
+    margin: 0;
+
+    &__tile {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: var(--srkr-bg-section);
+        border-left: 3px solid var(--cp-tiles-accent);
+
+        dt {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--srkr-muted);
+        }
+
+        dd {
+            margin: 0;
+            font-family: var(--srkr-font-heading);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--srkr-heading);
+        }
+    }
+}
+
+.cp-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 15px;
+    line-height: 1;
+
+    &__star {
+        color: var(--srkr-border);
+
+        &.is-on {
+            color: var(--srkr-tertiary);
+        }
+    }
+
+    &__text {
+        margin-left: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--srkr-muted);
+    }
+}
+
+// ── HackerRank language tracks ──────────────────────────────────────────────
+
+.cp-langs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+
+    @media (max-width: $pr-sm) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.cp-lang {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    background: var(--srkr-bg-section);
+    border: 1px solid transparent;
+    transition: border-color 0.25s, background 0.25s;
+
+    &.is-active {
+        background: var(--srkr-white);
+        border-color: rgba(88, 102, 235, 0.25); // --srkr-extra-blue
+        box-shadow: 0 4px 12px rgba(88, 102, 235, 0.08);
+    }
+
+    &:not(.is-active) {
+        opacity: 0.65;
+    }
+
+    &__name {
+        flex: 1;
+        min-width: 0;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--srkr-body);
+    }
+
+    &__stars {
+        display: flex;
+        gap: 3px;
+    }
+
+    &__count {
+        min-width: 12px;
+        text-align: right;
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+.cp-pip {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--srkr-border);
+
+    &.is-on {
+        background: var(--srkr-extra-blue);
+        box-shadow: 0 0 6px rgba(88, 102, 235, 0.45); // --srkr-extra-blue
+    }
+}
+
+// ── Not captured ────────────────────────────────────────────────────────────
+
+.cp-empty-block {
+    border: 1px dashed var(--srkr-border);
+    border-radius: var(--srkr-radius-big);
+    padding: 20px;
+    background: var(--srkr-bg-section);
+
+    h3 {
+        margin: 0 0 8px;
+        font-size: 15px;
+    }
+
+    p {
+        margin: 0 0 8px;
+        font-size: 13px;
+    }
+
+    &__action {
+        font-weight: 600;
+        color: var(--srkr-primary-hover);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cp-prof-total__seg,
+    .cp-diff__seg,
+    .cp-ms__fill,
+    .cp-prof-part,
+    .cp-pf {
+        transition: none;
+    }
+}

@@ -1,0 +1,2324 @@
+// ============================================
+// Coding Profiles dashboard
+// Prefix: .cp-*   (keeps it clear of .dash-* in _srkr-dashboard.scss, which is a
+// global partial with no module scoping — a shared class name would leak)
+//
+// All colour comes from the tokens in _srkr-theme.scss. Where an rgba() is needed
+// for a tint, ring or glow, it is derived from a token's own literal value and the
+// token is named in a comment beside it.
+//
+// CONTRAST NOTE: --srkr-tertiary (#F2A63B) measures 2.04:1 on white and
+// --srkr-text-secondary (#ED9035) 2.43:1. Both fail the 4.5:1 text floor and the 3:1
+// non-text floor, so neither is ever used for text, icons or focus rings here. They
+// fill bars, rings and medals; the value beside them is always --srkr-heading ink.
+//
+// LAYOUT: the shell grid, the glass navigation rail, the scope bar and the top bar
+// live in _srkr-coding-shell.scss, imported straight after this partial.
+// ============================================
+
+$cp-bp-xs: 480px;
+$cp-bp-sm: 560px;
+$cp-bp-md: 768px;
+$cp-bp-lg: 1024px;
+$cp-bp-xl: 1280px;
+
+$cp-radius-lg: 20px;
+
+.cp-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.cp-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.cp-boot {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+    color: var(--srkr-muted);
+    font-size: 14px;
+}
+
+// ── Top bar ─────────────────────────────────────────────────────────────────
+
+.cp-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 14px 24px;
+    background: var(--srkr-white);
+    border-bottom: 1px solid var(--srkr-border);
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    &__logo {
+        width: 86px;
+        height: auto;
+        flex: none;
+
+        @media (max-width: $cp-bp-xs) {
+            width: 64px;
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: clamp(20px, 2.6vw, 26px);
+        line-height: 1.15;
+    }
+
+    &__sub {
+        margin: 3px 0 0;
+        font-size: 12.5px;
+        color: var(--srkr-body-alt);
+    }
+
+    &__platforms {
+        margin: 1px 0 0;
+        font-size: 11px;
+        color: var(--srkr-muted);
+
+        @media (max-width: $cp-bp-sm) {
+            display: none;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        @media (max-width: $cp-bp-sm) {
+            width: 100%;
+
+            .cp-btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    }
+}
+
+.cp-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--srkr-body);
+    margin-right: 6px;
+
+    small {
+        display: block;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--srkr-muted);
+    }
+
+    &__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--srkr-success);
+        flex: none;
+    }
+
+    &--ageing &__dot {
+        background: var(--srkr-warning);
+    }
+
+    &--stale &__dot {
+        background: var(--srkr-primary);
+    }
+
+    @media (max-width: $cp-bp-sm) {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+.cp-viewhead {
+    &__title {
+        margin: 0;
+        font-size: clamp(22px, 3vw, 28px);
+    }
+
+    &__sub {
+        margin: 4px 0 0;
+        font-size: 13px;
+        color: var(--srkr-muted);
+    }
+}
+
+// ── Buttons, chips, alerts ──────────────────────────────────────────────────
+
+.cp-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    border-radius: var(--srkr-radius);
+    padding: 9px 16px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--srkr-transition), border-color var(--srkr-transition),
+        box-shadow var(--srkr-transition), transform var(--srkr-transition);
+
+    &:focus-visible {
+        outline: 2px solid var(--srkr-primary);
+        outline-offset: 2px;
+    }
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    &--primary {
+        background: var(--srkr-primary);
+        color: var(--srkr-white);
+        box-shadow: 0 8px 22px rgba(226, 84, 76, 0.26); // --srkr-primary
+
+        &:hover:not(:disabled) {
+            background: var(--srkr-primary-hover);
+        }
+    }
+
+    &--ghost {
+        background: var(--srkr-white);
+        border-color: var(--srkr-border);
+        color: var(--srkr-body);
+
+        &:hover:not(:disabled) {
+            border-color: var(--srkr-primary);
+            color: var(--srkr-primary);
+        }
+    }
+
+    &--danger {
+        background: var(--srkr-danger);
+        color: var(--srkr-white);
+    }
+}
+
+.cp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+
+    &::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.8;
+    }
+
+    // Every tone keeps dark-enough ink — the amber and coral fills cannot carry light text.
+    &--gold {
+        background: var(--srkr-bg-warm-tint);
+        color: var(--srkr-heading);
+    }
+
+    &--coral {
+        background: var(--srkr-bg-coral-tint);
+        color: var(--srkr-primary-hover);
+    }
+
+    &--green {
+        background: rgba(16, 185, 129, 0.12); // --srkr-success
+        color: #0b7a5c; // --srkr-success darkened to 4.5:1 on its tint
+    }
+
+    &--warn {
+        background: rgba(239, 68, 68, 0.1); // --srkr-danger
+        color: #b42318; // --srkr-danger darkened to 4.5:1 on its tint
+    }
+
+    &--slate {
+        background: var(--srkr-bg-section-alt);
+        color: var(--srkr-body-alt);
+    }
+
+    &--ghost {
+        background: transparent;
+        color: var(--srkr-muted);
+        box-shadow: inset 0 0 0 1px var(--srkr-border);
+    }
+}
+
+.cp-cap-chip {
+    display: inline-block;
+    margin-top: 8px;
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--srkr-bg-section-alt);
+    color: var(--srkr-body-alt);
+}
+
+.cp-delta {
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 6px;
+
+    &--up {
+        color: #0b7a5c;
+    }
+
+    &--down {
+        color: var(--srkr-primary-hover);
+    }
+}
+
+.cp-alert {
+    border-radius: var(--srkr-radius);
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 10px 0;
+
+    summary {
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    &__detail,
+    &__list {
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: var(--srkr-body-alt);
+        word-break: break-word;
+    }
+
+    &__list {
+        padding-left: 18px;
+    }
+
+    &--error {
+        background: rgba(239, 68, 68, 0.08); // --srkr-danger
+        color: #a92222;
+    }
+
+    &--warn {
+        background: var(--srkr-bg-warm-tint);
+        color: #8a5a10; // amber darkened for text on its own tint
+    }
+
+    &--good {
+        background: rgba(16, 185, 129, 0.1);
+        color: #0b7a5c;
+    }
+
+    &--info {
+        background: var(--srkr-bg-section-alt);
+        color: var(--srkr-body-alt);
+    }
+}
+
+// ── Hero ────────────────────────────────────────────────────────────────────
+
+.cp-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+    overflow: hidden;
+    border-radius: $cp-radius-lg;
+    padding: 34px 40px;
+    background: linear-gradient(115deg, var(--srkr-bg-coral-tint) 0%, var(--srkr-bg-warm-tint) 55%, var(--srkr-white) 100%);
+    border: 1px solid rgba(242, 166, 59, 0.25); // --srkr-tertiary
+
+    @media (max-width: $cp-bp-md) {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 26px 22px;
+        gap: 8px;
+    }
+
+    &__copy {
+        position: relative;
+        z-index: 1;
+    }
+
+    &__eyebrow {
+        margin: 0 0 8px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--srkr-primary);
+    }
+
+    &__title {
+        margin: 0;
+        font-size: clamp(30px, 4.6vw, 46px);
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+    }
+
+    &__tag {
+        margin: 10px 0 0;
+        font-family: var(--srkr-font-heading);
+        font-size: clamp(16px, 2vw, 20px);
+        font-weight: 600;
+        color: var(--srkr-heading-alt);
+    }
+
+    &__body {
+        margin: 10px 0 0;
+        max-width: 46ch;
+        font-size: 14px;
+        color: var(--srkr-body-alt);
+    }
+
+    &__art {
+        position: relative;
+        z-index: 1;
+        justify-self: end;
+        width: 100%;
+        max-width: 520px;
+        aspect-ratio: 560 / 320;
+
+        svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (max-width: $cp-bp-md) {
+            justify-self: center;
+            max-width: 340px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: $cp-bp-xs) {
+            display: none;
+        }
+    }
+
+    &__blob {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        filter: blur(30px);
+
+        &--1 {
+            width: 260px;
+            height: 260px;
+            right: -70px;
+            top: -110px;
+            background: rgba(242, 166, 59, 0.28); // --srkr-tertiary
+        }
+
+        &--2 {
+            width: 200px;
+            height: 200px;
+            left: 38%;
+            bottom: -130px;
+            background: rgba(226, 84, 76, 0.16); // --srkr-primary
+        }
+    }
+}
+
+// ── KPI tiles ───────────────────────────────────────────────────────────────
+
+.cp-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+
+    @media (max-width: $cp-bp-lg) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: $cp-bp-xs) {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+    }
+}
+
+.cp-kpi {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 18px 22px;
+    border: 1px solid var(--srkr-border);
+    border-radius: var(--srkr-radius-big);
+    background: var(--srkr-white);
+    box-shadow: var(--srkr-shadow-neutral);
+    overflow: hidden;
+
+    &__icon {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        flex: none;
+        color: var(--srkr-primary);
+        background: var(--srkr-bg-coral-tint);
+
+        svg {
+            width: 22px;
+            height: 22px;
+        }
+    }
+
+    &--green &__icon {
+        color: #0b7a5c;
+        background: rgba(16, 185, 129, 0.12);
+    }
+
+    &--warn &__icon {
+        color: #b42318;
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    &--blue &__icon {
+        color: var(--srkr-extra-blue);
+        background: rgba(88, 102, 235, 0.12); // --srkr-extra-blue
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    &__label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--srkr-muted);
+    }
+
+    &__value {
+        font-family: var(--srkr-font-heading);
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.05;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+
+        &--date {
+            font-size: 21px;
+        }
+    }
+
+    &__sub {
+        font-size: 11.5px;
+        color: var(--srkr-body-alt);
+        margin-top: 2px;
+    }
+
+    &__track {
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 12px;
+        height: 4px;
+        border-radius: 999px;
+        background: var(--srkr-bg-section-alt);
+        overflow: hidden;
+    }
+
+    &__fill {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--srkr-gradient-primary);
+        transform-origin: left center;
+        transition: transform var(--srkr-transition-slow);
+    }
+
+    &--green &__fill {
+        background: var(--srkr-success);
+    }
+
+    &--warn &__fill {
+        background: linear-gradient(90deg, var(--srkr-primary) 0%, var(--srkr-danger) 100%);
+    }
+}
+
+// ── Top performers (dark panel) ─────────────────────────────────────────────
+
+.cp-top {
+    position: relative;
+    overflow: hidden;
+    border-radius: $cp-radius-lg;
+    padding: 26px 28px 30px;
+    color: var(--srkr-white);
+    background:
+        radial-gradient(ellipse at 20% 0%, rgba(226, 84, 76, 0.22) 0%, rgba(226, 84, 76, 0) 55%), // --srkr-primary
+        radial-gradient(ellipse at 100% 100%, rgba(88, 102, 235, 0.16) 0%, rgba(88, 102, 235, 0) 50%), // --srkr-extra-blue
+        var(--srkr-heading);
+
+    @media (max-width: $cp-bp-md) {
+        padding: 20px 16px 24px;
+    }
+
+    &__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 36px;
+
+        @media (max-width: $cp-bp-md) {
+            margin-bottom: 28px;
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: clamp(20px, 2.6vw, 24px);
+        color: var(--srkr-white);
+    }
+
+    &__lede {
+        margin: 5px 0 0;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.66);
+        max-width: 60ch;
+    }
+
+    &__tabs {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        padding: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+
+        @media (max-width: $cp-bp-sm) {
+            width: 100%;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    }
+
+    &__tab {
+        appearance: none;
+        border: 0;
+        border-radius: 999px;
+        padding: 7px 14px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.72);
+        font-family: inherit;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background var(--srkr-transition), color var(--srkr-transition);
+
+        &:hover {
+            color: var(--srkr-white);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-tertiary);
+            outline-offset: 1px;
+        }
+
+        &.is-active {
+            background: var(--srkr-primary);
+            color: var(--srkr-white);
+        }
+
+        // The strip scrolls sideways at this width, so the extra height never wraps.
+        @media (max-width: $cp-bp-sm) {
+            padding: 10px 14px;
+        }
+    }
+
+    &__empty {
+        margin: 0;
+        padding: 24px;
+        text-align: center;
+        border: 1px dashed rgba(255, 255, 255, 0.2);
+        border-radius: var(--srkr-radius-big);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 13px;
+    }
+
+    &__podium {
+        list-style: none;
+        margin: 0;
+        // Room above the cards for the figures' heads, which rise past the card edge
+        // (58px on #1, plus its 26px desktop lift).
+        padding: 72px 0 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        align-items: end;
+
+        // #1 in the middle, standing taller — from 1201px, where three columns are
+        // wide enough for the figure stages (three ~280px columns at 1025px clipped
+        // the heads). One pixel above the stacked rule's limit so they never both fire.
+        @media (min-width: 1201px) {
+            .cp-pcard-slot--1 {
+                order: 2;
+                margin-top: -26px;
+            }
+
+            .cp-pcard-slot--2 {
+                order: 1;
+            }
+
+            .cp-pcard-slot--3 {
+                order: 3;
+            }
+        }
+
+        // Three narrow columns at phone width make a long Telugu name wrap four lines,
+        // so under 1024 the podium becomes a ranked stack: #1 full width, #2/#3 paired.
+        @media (max-width: 1200px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            // Stacked rows need a tall row gap: the lower cards' figures rise 40px
+            // above their card and must not run into the card above.
+            gap: 56px 14px;
+
+            .cp-pcard-slot--1 {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: $cp-bp-xs) {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+}
+
+.cp-pcard-slot {
+    display: flex;
+    min-width: 0;
+}
+
+// The large cut-out figure used on the podium and in the detail panel.
+.cp-figure {
+    display: block;
+    user-select: none;
+    pointer-events: none;
+    filter: drop-shadow(0 12px 20px rgba(15, 23, 42, 0.2)); // --srkr-heading
+}
+
+// A podium card is a two-zone stage: the facts on the left, and the student's figure
+// standing BEHIND the card on the right — head and shoulders rising above the top
+// edge, torso clipped by the card's bottom. The figure is a placeholder illustration
+// until real photos arrive, so the layout must also work with a photo cut-out of a
+// different aspect ratio: the stage anchors the image bottom-centre and lets the
+// sides clip.
+.cp-pcard {
+    appearance: none;
+    position: relative;
+    width: 100%;
+    min-height: 272px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 40%;
+    text-align: left;
+    cursor: pointer;
+    padding: 24px 0 18px 20px;
+    border: 1px solid transparent;
+    border-radius: var(--srkr-radius-big);
+    font-family: inherit;
+    transition: transform var(--srkr-transition), box-shadow var(--srkr-transition);
+
+    &:hover {
+        transform: translateY(-4px);
+
+        .cp-figure {
+            transform: translateX(-50%) translateY(-6px);
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--srkr-tertiary);
+        outline-offset: 3px;
+    }
+
+    // #2 · cool blue tint
+    &--2 {
+        background: linear-gradient(180deg, #eef1ff 0%, #e4e9ff 100%); // --srkr-extra-blue tints
+        border-color: rgba(88, 102, 235, 0.35);
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
+    }
+
+    // #1 · gold, with a glow, and the tallest figure
+    &--1 {
+        min-height: 300px;
+        grid-template-columns: minmax(0, 1fr) 42%;
+
+        @media (max-width: $cp-bp-xs) {
+            grid-template-columns: minmax(0, 1fr) 38%;
+        }
+        background: linear-gradient(180deg, var(--srkr-bg-warm-offwhite) 0%, var(--srkr-bg-warm-tint) 100%);
+        border-color: rgba(242, 166, 59, 0.7); // --srkr-tertiary
+        box-shadow: 0 0 0 1px rgba(242, 166, 59, 0.35), 0 22px 60px rgba(242, 166, 59, 0.32); // --srkr-tertiary
+        padding-top: 28px;
+    }
+
+    // #3 · coral tint
+    &--3 {
+        background: linear-gradient(180deg, #fff5f0 0%, var(--srkr-bg-coral-tint) 100%);
+        border-color: rgba(226, 84, 76, 0.4); // --srkr-primary
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
+    }
+
+    &__body {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        min-width: 0;
+        padding-right: 8px;
+    }
+
+    // The badge sits on the card's top-left corner, where the eye lands first.
+    &__seal {
+        position: absolute;
+        top: -16px;
+        left: 16px;
+        z-index: 2;
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        font-family: var(--srkr-font-heading);
+        font-size: 15px;
+        font-weight: 800;
+        // Dark ink on every metal: white on the amber stop is 2.04:1 and on the copper 2.97:1.
+        color: var(--srkr-heading);
+        box-shadow: 0 0 0 4px var(--srkr-heading);
+    }
+
+    &--2 &__seal {
+        background: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 60%, #94a3b8 100%); // slate tokens
+    }
+
+    &--1 &__seal {
+        width: 42px;
+        height: 42px;
+        top: -19px;
+        font-size: 17px;
+        background: linear-gradient(145deg, var(--srkr-tertiary) 0%, var(--srkr-text-secondary) 55%, var(--srkr-secondary) 100%);
+    }
+
+    &--3 &__seal {
+        // Dark ink like the other seals — white on this coral is under 3:1. The
+        // copper tail starts past the digit so the ink stays above 4.5:1 across it.
+        background: linear-gradient(145deg, var(--srkr-secondary) 0%, var(--srkr-primary) 75%, var(--srkr-primary-hover) 100%);
+    }
+
+    &__crown {
+        position: absolute;
+        top: -44px;
+        left: 25px;
+        z-index: 2;
+        color: var(--srkr-tertiary);
+        filter: drop-shadow(0 6px 14px rgba(242, 166, 59, 0.5));
+    }
+
+    &__rank-word {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--srkr-muted);
+    }
+
+    &__name {
+        font-family: var(--srkr-font-heading);
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.25;
+        color: var(--srkr-heading);
+        overflow-wrap: anywhere;
+    }
+
+    &--1 &__name {
+        font-size: 19px;
+    }
+
+    &__meta {
+        font-size: 11.5px;
+        color: var(--srkr-body-alt);
+        overflow-wrap: anywhere;
+    }
+
+    &__score {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 8px;
+    }
+
+    &__score-value {
+        font-family: var(--srkr-font-heading);
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &--1 &__score-value {
+        font-size: 42px;
+    }
+
+    &__score-label {
+        font-size: 12px;
+        color: var(--srkr-muted);
+        margin-top: 4px;
+    }
+
+    &__tiles {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        width: 100%;
+        max-width: 220px;
+        margin-top: 12px;
+    }
+
+    &__tile {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        border-radius: 10px;
+        padding: 7px 10px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    &__tile-label {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        color: var(--srkr-muted);
+    }
+
+    &__tile-value {
+        font-family: var(--srkr-font-heading);
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__tiles-note {
+        margin-top: 6px;
+        font-size: 10.5px;
+        color: var(--srkr-muted);
+    }
+
+    // The stage extends ABOVE the card so the head clears the top edge, and clips at
+    // the card's bottom so the figure appears to stand behind it.
+    // Its width equals the grid's stage column exactly, so the facts column — and
+    // its 2×2 tiles — can never run underneath the figure.
+    &__stage {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        bottom: 0;
+        width: 40%;
+        overflow: hidden;
+        border-bottom-right-radius: var(--srkr-radius-big);
+        pointer-events: none;
+
+        .cp-figure,
+        .cp-avatar {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: transform var(--srkr-transition);
+        }
+
+        .cp-figure {
+            // Sits 8px below the clip so the hard-cut waist of the cut-out never
+            // surfaces during the 6px hover lift.
+            bottom: -8px;
+            height: calc(96% + 8px);
+            width: auto;
+            // Sized by height, but never wider than 1.5× the stage: the head is the
+            // central ~45% of the cut-out, so it always stays inside the clip even
+            // when a long name makes the card — and therefore the figure — taller.
+            max-width: 150%;
+        }
+
+        // Neutral fallback (no gender on the roster): the sprite at a figure-like size.
+        .cp-avatar {
+            width: 120px;
+            height: 120px;
+            bottom: 24px;
+        }
+    }
+
+    &--1 &__stage {
+        top: -58px;
+        width: 42%;
+    }
+
+    @media (max-width: $cp-bp-xs) {
+        grid-template-columns: minmax(0, 1fr) 38%;
+        min-height: 250px;
+        padding-left: 16px;
+
+        &__stage,
+        &--1 &__stage {
+            width: 38%;
+        }
+
+        &__tiles {
+            max-width: none;
+        }
+    }
+}
+
+// ── Filters ─────────────────────────────────────────────────────────────────
+
+.cp-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--srkr-border);
+    border-radius: var(--srkr-radius-big);
+    background: var(--srkr-white);
+    box-shadow: var(--srkr-shadow-neutral);
+
+    @media (max-width: $cp-bp-md) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        .cp-filters__search {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: $cp-bp-xs) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__search {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+
+        svg {
+            position: absolute;
+            left: 14px;
+            width: 16px;
+            height: 16px;
+            color: var(--srkr-muted);
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            border: 1px solid var(--srkr-border);
+            border-radius: var(--srkr-radius);
+            padding: 10px 14px 10px 40px;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--srkr-heading);
+            background: var(--srkr-bg-section);
+
+            &::placeholder {
+                color: var(--srkr-muted);
+            }
+
+            &:focus {
+                outline: 2px solid var(--srkr-primary);
+                outline-offset: -1px;
+                border-color: var(--srkr-primary);
+                background: var(--srkr-white);
+            }
+        }
+    }
+
+    &__select {
+        display: flex;
+        min-width: 0;
+
+        select {
+            width: 100%;
+            min-width: 0;
+            border: 1px solid var(--srkr-border);
+            border-radius: var(--srkr-radius);
+            padding: 10px 34px 10px 12px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--srkr-body);
+            background: var(--srkr-white)
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+                no-repeat right 12px center;
+            appearance: none;
+            cursor: pointer;
+
+            &:focus-visible {
+                outline: 2px solid var(--srkr-primary);
+                outline-offset: -1px;
+            }
+        }
+    }
+}
+
+// ── Directory ───────────────────────────────────────────────────────────────
+
+.cp-dir {
+    &__head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    &__icon {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        color: var(--srkr-primary);
+        background: var(--srkr-bg-coral-tint);
+        flex: none;
+    }
+
+    &__titles {
+        min-width: 0;
+        flex: 1 1 240px;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: clamp(18px, 2.4vw, 22px);
+        color: var(--srkr-extra-blue);
+    }
+
+    &__sub {
+        margin: 2px 0 0;
+        font-size: 12.5px;
+        color: var(--srkr-muted);
+    }
+
+    &__pager {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+
+        @media (max-width: $cp-bp-sm) {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+
+    &__count {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--srkr-body);
+    }
+
+    &__range {
+        font-weight: 500;
+        color: var(--srkr-muted);
+    }
+
+    &__pagenum {
+        font-size: 12px;
+        color: var(--srkr-muted);
+        font-variant-numeric: tabular-nums;
+        min-width: 44px;
+        text-align: center;
+    }
+
+    &__pagebtn {
+        appearance: none;
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+
+        @media (max-width: $cp-bp-md) {
+            width: 44px;
+            height: 44px;
+        }
+        border: 1px solid var(--srkr-border);
+        border-radius: 10px;
+        background: var(--srkr-white);
+        color: var(--srkr-body);
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            border-color: var(--srkr-primary);
+            color: var(--srkr-primary);
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    &__empty {
+        padding: 28px;
+        text-align: center;
+        color: var(--srkr-muted);
+        border: 1px dashed var(--srkr-border);
+        border-radius: var(--srkr-radius-big);
+        background: var(--srkr-white);
+    }
+}
+
+.cp-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    @media (max-width: $cp-bp-xl) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @media (max-width: $cp-bp-md) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    @media (max-width: $cp-bp-sm) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.cp-grid__item {
+    display: flex;
+    min-width: 0;
+    // Free virtualisation without a dependency: off-screen cards skip layout and
+    // paint. The print override at the bottom of this file is mandatory — without it
+    // every off-screen card prints as a blank rectangle.
+    content-visibility: auto;
+    contain-intrinsic-size: auto 196px;
+}
+
+.cp-card {
+    appearance: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid var(--srkr-border);
+    border-radius: var(--srkr-radius-big);
+    background: var(--srkr-white);
+    padding: 14px 14px 12px;
+    font-family: inherit;
+    box-shadow: var(--srkr-shadow-neutral);
+    transition: border-color var(--srkr-transition), box-shadow var(--srkr-transition), transform var(--srkr-transition);
+
+    &:hover {
+        border-color: rgba(226, 84, 76, 0.5); // --srkr-primary
+        box-shadow: var(--srkr-shadow-card);
+        transform: translateY(-2px);
+
+        .cp-card__chev {
+            color: var(--srkr-primary);
+            transform: translateX(2px);
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--srkr-primary);
+        outline-offset: 2px;
+    }
+
+    &.is-selected {
+        border-color: var(--srkr-primary);
+        box-shadow: inset 0 0 0 1px var(--srkr-primary);
+    }
+
+    // "No profile captured" is a fact about our data collection, not the student —
+    // the only state that looks different, and it looks different on purpose.
+    &--uncaptured {
+        border-style: dashed;
+        background: var(--srkr-bg-section);
+        box-shadow: none;
+    }
+
+    &__head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+    }
+
+    &__names {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    &__name {
+        font-weight: 700;
+        font-size: 13.5px;
+        line-height: 1.3;
+        color: var(--srkr-heading);
+        // Two lines then ellipsis — long names stay readable without making one card
+        // taller than its neighbours.
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    &__meta {
+        font-size: 11px;
+        color: var(--srkr-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__chev {
+        flex: none;
+        color: var(--srkr-muted);
+        transition: color var(--srkr-transition), transform var(--srkr-transition);
+    }
+
+    &__mid {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    &__score {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    &__score-value {
+        font-family: var(--srkr-font-heading);
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__score-label {
+        font-size: 10.5px;
+        color: var(--srkr-muted);
+        margin-top: 3px;
+        white-space: nowrap;
+    }
+
+    &__rail {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        padding-top: 10px;
+        border-top: 1px solid var(--srkr-border);
+    }
+
+    &__notice {
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--srkr-muted);
+        padding-top: 10px;
+        border-top: 1px dashed var(--srkr-border);
+    }
+}
+
+// Fixed four-slot platform rail. Empty slots stay in place as muted tiles rather
+// than disappearing — GeeksforGeeks is empty for ~88% of students, and a collapsing
+// rail would give 300 cards 300 different shapes.
+.cp-rail-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    border-radius: 8px;
+    padding: 6px 2px;
+    background: var(--srkr-bg-section);
+    border-bottom: 2px solid transparent;
+
+    &.is-active {
+        border-bottom-color: var(--cp-slot-accent, var(--srkr-primary));
+    }
+
+    &__label {
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        color: var(--srkr-muted);
+    }
+
+    &__value {
+        font-family: var(--srkr-font-heading);
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &:not(.is-active) &__value {
+        color: var(--srkr-muted);
+        opacity: 0.7;
+    }
+}
+
+.cp-uploadforms {
+    border: 1px solid var(--srkr-border);
+    border-radius: var(--srkr-radius-big);
+    overflow: hidden;
+}
+
+// ── Avatars ─────────────────────────────────────────────────────────────────
+// The circular backdrop is a CSS background here, NOT an SVG gradient. A shared
+// <linearGradient> in <defs> resolves its var() stops against its own context rather
+// than each <use> site, so one gradient would paint every avatar identically and
+// these four variants would silently do nothing. `fill: var(...)` inside the symbol
+// does inherit through <use>, so the figure still tints per card.
+
+.cp-avatar {
+    // A white figure with every detail in one dark ink. The ink has to be dark rather
+    // than light: glasses and headphones drawn in white sat on a white face and were
+    // invisible. Keeping the figure itself untinted also avoids assigning a skin tone
+    // to 317 real students.
+    --cp-av-figure: #FFFFFF;
+    --cp-av-shade: rgba(15, 23, 42, 0.16); // --srkr-heading @ 16% — the collar arc only
+    --cp-av-hair: #27344B; // between --srkr-heading and --srkr-heading-alt
+    --cp-av-ink: #27344B; // eyes, smile, glasses, headphones, cap
+
+    display: inline-grid;
+    place-items: center;
+    border-radius: 50%;
+    overflow: hidden;
+    flex: none;
+    font-family: var(--srkr-font-heading);
+    font-weight: 700;
+    color: var(--srkr-white);
+    background: linear-gradient(160deg, var(--srkr-secondary) 0%, var(--srkr-primary) 100%);
+
+    svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    // Placeholder portrait: cropped to head and shoulders, so the circle is nudged
+    // upward to keep the hair rather than the collar.
+    img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 50% 14%;
+    }
+
+    &--v1 {
+        background: linear-gradient(160deg, var(--srkr-tertiary) 0%, var(--srkr-secondary) 100%);
+    }
+
+    &--v2 {
+        background: linear-gradient(160deg, var(--srkr-extra-blue) 0%, var(--srkr-extra-purple) 100%);
+    }
+
+    &--v3 {
+        background: linear-gradient(160deg, var(--srkr-extra-sky) 0%, var(--srkr-extra-blue) 100%);
+    }
+
+    &--sm {
+        width: 44px;
+        height: 44px;
+        font-size: 14px;
+    }
+
+    &--md {
+        width: 84px;
+        height: 84px;
+        font-size: 26px;
+    }
+
+    &--lg {
+        width: 116px;
+        height: 116px;
+        font-size: 38px;
+
+        @media (max-width: $cp-bp-md) {
+            width: 92px;
+            height: 92px;
+            font-size: 30px;
+        }
+    }
+
+    &--mono {
+        background: var(--srkr-bg-section-alt);
+        color: var(--srkr-muted);
+    }
+}
+
+// ── Student detail (side panel) ─────────────────────────────────────────────
+
+@keyframes cp-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+// Scrim behind the panel. Clicking it closes the panel, and it makes the modality
+// visible — the page behind is inert while the panel is open.
+.cp-detail__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 69;
+    background: rgba(3, 8, 25, 0.34); // --srkr-gallery-scrim family
+}
+
+.cp-detail {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(780px, 94vw);
+    z-index: 70;
+    background: var(--srkr-white);
+    border-left: 1px solid var(--srkr-border);
+    box-shadow: -18px 0 60px rgba(15, 23, 42, 0.16); // --srkr-heading
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    // The panel itself receives focus on open; its edge is the visible boundary, so
+    // no additional ring is drawn around the whole sheet.
+    &:focus {
+        outline: none;
+    }
+
+    // On a phone the panel is the whole screen — a 94vw drawer with a sliver of grid
+    // behind it is neither a sheet nor a page.
+    @media (max-width: $cp-bp-md) {
+        width: 100vw;
+        border-left: 0;
+    }
+
+    &__bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--srkr-border);
+        flex: none;
+        background: var(--srkr-white);
+    }
+
+    &__close {
+        appearance: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 40px;
+        background: none;
+        border: 0;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--srkr-body);
+        cursor: pointer;
+        padding: 4px 6px;
+
+        &:hover {
+            color: var(--srkr-primary);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    &__nav {
+        display: flex;
+        gap: 8px;
+
+        button {
+            appearance: none;
+            width: 36px;
+            height: 36px;
+
+            // Thumb-sized where thumbs are used.
+            @media (max-width: $cp-bp-md) {
+                width: 44px;
+                height: 44px;
+            }
+            border: 1px solid var(--srkr-border);
+            border-radius: 8px;
+            background: var(--srkr-white);
+            color: var(--srkr-body);
+            cursor: pointer;
+            font-size: 13px;
+
+            &:hover:not(:disabled) {
+                border-color: var(--srkr-primary);
+                color: var(--srkr-primary);
+            }
+
+            &:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--srkr-primary);
+                outline-offset: 2px;
+            }
+        }
+    }
+
+    &__body {
+        flex: 1;
+        overflow-y: auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 220px;
+        gap: 20px;
+        padding: 20px;
+        align-items: start;
+
+        // The brief put a big animation on the right. On a phone there is no right,
+        // and a full-width figure above the data would push every number below the
+        // fold — so it becomes a compact inline header instead.
+        @media (max-width: $cp-bp-lg) {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+            padding: 16px;
+        }
+    }
+
+    &__side {
+        order: 2;
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+
+        @media (max-width: $cp-bp-lg) {
+            order: 0;
+            position: static;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+    }
+
+    &__figure {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+        border-radius: var(--srkr-radius-big);
+        background: linear-gradient(160deg, var(--srkr-bg-coral-tint) 0%, var(--srkr-bg-warm-tint) 100%);
+
+        @media (max-width: $cp-bp-lg) {
+            width: auto;
+            height: auto;
+            overflow: visible;
+            background: none;
+        }
+    }
+
+    // Desktop: the full figure standing in the tinted stage.
+    &__stage {
+        position: absolute;
+        // 8px below the clip edge so the 6px float never lifts the figure's cut
+        // waist off the stage floor.
+        inset: 16px 0 -8px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        // A CSS float rather than framer-motion, so the browser skips the work once
+        // the phone/tablet rule hides this node; the reduced-motion block above
+        // zeroes it with everything else.
+        animation: cp-float 5.5s ease-in-out infinite;
+
+        .cp-figure {
+            height: 100%;
+            width: auto;
+            max-width: none;
+        }
+
+        // Neutral fallback (no gender on the roster): the sprite circle, centred in
+        // the tinted stage rather than resting on its floor.
+        .cp-avatar {
+            align-self: center;
+        }
+
+        @media (max-width: $cp-bp-lg) {
+            display: none;
+        }
+    }
+
+    // Phone/tablet header row: the compact portrait instead.
+    &__face {
+        display: none;
+
+        @media (max-width: $cp-bp-lg) {
+            display: inline-grid;
+        }
+    }
+
+    &__links {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+
+        @media (max-width: $cp-bp-lg) {
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: auto;
+        }
+    }
+
+    &__link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        border: 1px solid var(--srkr-border);
+        border-left: 3px solid var(--cp-slot-accent, var(--srkr-primary));
+        border-radius: 8px;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--srkr-body);
+        text-decoration: none;
+
+        &:hover {
+            border-color: var(--srkr-primary);
+            color: var(--srkr-primary);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    &__main {
+        order: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    &__name {
+        margin: 0;
+        font-size: clamp(20px, 3.4vw, 26px);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    &__meta {
+        margin: 5px 0 0;
+        font-size: 13px;
+        color: var(--srkr-muted);
+    }
+
+    &__badges {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+}
+
+// ── Empty states & program picker ───────────────────────────────────────────
+
+.cp-emptystate {
+    border: 1px dashed var(--srkr-border);
+    border-radius: var(--srkr-radius-big);
+    padding: 40px 24px;
+    text-align: center;
+    background: var(--srkr-white);
+
+    h2 {
+        margin: 0 0 8px;
+        font-size: 19px;
+    }
+
+    p {
+        margin: 0 auto 18px;
+        max-width: 56ch;
+        font-size: 14px;
+    }
+}
+
+.cp-page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px 20px 96px;
+}
+
+.cp-picker {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+
+    &__eyebrow {
+        margin: 0 0 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--srkr-primary);
+    }
+
+    &__head h1 {
+        margin: 0;
+        font-size: clamp(24px, 4vw, 32px);
+    }
+
+    &__sub {
+        margin: 8px 0 0;
+        color: var(--srkr-muted);
+        font-size: 14px;
+    }
+
+    &__list {
+        list-style: none;
+        margin: 28px 0 0;
+        padding: 0;
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    &__card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: flex-start;
+        height: 100%;
+        border: 1px solid var(--srkr-border);
+        border-radius: var(--srkr-radius-big);
+        background: var(--srkr-white);
+        padding: 18px;
+        text-decoration: none;
+        transition: all var(--srkr-transition);
+
+        &:hover:not(.is-disabled) {
+            border-color: var(--srkr-primary);
+            box-shadow: var(--srkr-shadow-card);
+            transform: translateY(-2px);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+
+        &.is-disabled {
+            opacity: 0.6;
+            background: var(--srkr-bg-section);
+        }
+    }
+
+    &__name {
+        font-family: var(--srkr-font-heading);
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--srkr-heading);
+    }
+
+    &__meta {
+        font-size: 11px;
+        color: var(--srkr-muted);
+    }
+
+    &__tagline {
+        font-size: 13px;
+        color: var(--srkr-body);
+        line-height: 1.5;
+    }
+}
+
+// ── Upload modal & forms ────────────────────────────────────────────────────
+
+.cp-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+
+    &__scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(3, 8, 25, 0.5); // --srkr-gallery-scrim family
+    }
+
+    &__panel {
+        position: relative;
+        width: min(640px, 100%);
+        max-height: 90vh;
+        overflow-y: auto;
+        background: var(--srkr-white);
+        border-radius: var(--srkr-radius-big);
+        box-shadow: var(--srkr-shadow-hover);
+    }
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--srkr-border);
+
+        h2 {
+            margin: 0;
+            font-size: 17px;
+        }
+    }
+
+    &__close {
+        appearance: none;
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        // Negative margin keeps the header's padding visually unchanged.
+        margin: -8px -8px -8px 0;
+        border: 0;
+        background: none;
+        font-size: 24px;
+        line-height: 1;
+        color: var(--srkr-muted);
+        cursor: pointer;
+        padding: 0;
+
+        &:hover {
+            color: var(--srkr-primary);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+    }
+}
+
+.cp-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--srkr-border);
+
+    &__tab {
+        appearance: none;
+        background: none;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        padding: 12px 16px;
+        text-align: left;
+        cursor: pointer;
+        font-family: inherit;
+
+        span {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--srkr-body);
+        }
+
+        small {
+            display: block;
+            font-size: 11px;
+            color: var(--srkr-muted);
+            margin-top: 2px;
+        }
+
+        &.is-active {
+            border-bottom-color: var(--srkr-primary);
+
+            span {
+                color: var(--srkr-primary);
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: -2px;
+        }
+    }
+}
+
+.cp-upload {
+    padding: 18px 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    // A lone action button hugs its label; inside a full-width Reports panel a
+    // stretched 1200px "Check this file" reads as a banner, not a button.
+    > .cp-btn {
+        align-self: flex-start;
+    }
+
+    &__lede {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--srkr-muted);
+    }
+
+    &__actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+}
+
+.cp-filefield {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    input[type='file'] {
+        display: none;
+    }
+
+    &__name {
+        font-size: 12px;
+        color: var(--srkr-muted);
+        overflow-wrap: anywhere;
+    }
+}
+
+.cp-preview {
+    border: 1px solid var(--srkr-border);
+    border-radius: var(--srkr-radius);
+    padding: 14px;
+    background: var(--srkr-bg-section);
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+
+        @media (max-width: $cp-bp-sm) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    &__top,
+    &__sheet {
+        margin: 12px 0 0;
+        font-size: 12px;
+        color: var(--srkr-body);
+    }
+
+    &__batches {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin: 12px 0 0;
+    }
+}
+
+.cp-pstat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: var(--srkr-white);
+
+    &__value {
+        font-family: var(--srkr-font-heading);
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--srkr-muted);
+    }
+
+    &--warn {
+        background: var(--srkr-bg-warm-tint);
+    }
+
+    &--good {
+        background: rgba(16, 185, 129, 0.1);
+    }
+}
+
+.cp-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--srkr-body);
+    cursor: pointer;
+}
+
+.cp-history {
+    margin-top: 14px;
+    font-size: 12px;
+
+    summary {
+        cursor: pointer;
+        color: var(--srkr-muted);
+    }
+
+    ul {
+        list-style: none;
+        margin: 10px 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    li {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--srkr-border);
+        color: var(--srkr-body-alt);
+    }
+}
+
+// ── Reduced motion ──────────────────────────────────────────────────────────
+// framer-motion already reads the preference via useReducedMotion; this catches the
+// CSS transitions it does not own.
+
+@media (prefers-reduced-motion: reduce) {
+    .cp-shell *,
+    .cp-page * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+// ── Print ───────────────────────────────────────────────────────────────────
+// "Download report" is window.print(): zero dependencies, real vector output,
+// selectable text, and — decisively — it renders from the same DOM the admin is
+// looking at, so the report and the screen cannot disagree.
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 12mm 10mm;
+    }
+
+    body {
+        background: var(--srkr-white);
+    }
+
+    // MANDATORY counterpart to content-visibility: auto on the grid items. Without
+    // it every card that was off-screen prints as an empty rectangle.
+    .cp-grid__item {
+        content-visibility: visible !important;
+        contain-intrinsic-size: auto !important;
+    }
+
+    .cp-shell {
+        display: block;
+        background: var(--srkr-white);
+    }
+
+    .cp-main {
+        padding: 0;
+    }
+
+    // Interactive chrome has no meaning on paper.
+    .cp-nav,
+    .cp-nav__scrim,
+    .cp-scope,
+    .cp-an-filters,
+    .cp-topbar__actions,
+    .cp-filters,
+    .cp-hero__art,
+    .cp-hero__blob,
+    .cp-dir__pagebtn,
+    .cp-dir__pagenum,
+    .cp-dir__range,
+    .cp-detail__scrim,
+    .cp-detail,
+    .cp-modal,
+    .cp-card__chev {
+        display: none !important;
+    }
+
+    .cp-topbar {
+        margin: 0 0 8mm;
+        padding: 0 0 4mm;
+    }
+
+    .cp-hero {
+        padding: 8mm;
+        border: 1px solid var(--srkr-border);
+        background: var(--srkr-bg-warm-tint);
+    }
+
+    // Keep the brand fills rather than letting the browser drop them.
+    .cp-top,
+    .cp-pcard,
+    .cp-pcard__seal,
+    .cp-kpi__fill,
+    .cp-split__seg,
+    .cp-rail-slot,
+    .cp-avatar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    // Nothing atomic may straddle a page break. The podium LIST is in this group
+    // too: the figure stage, crown and seal hang above each slot's own box, so
+    // guarding only the slot strands them at the foot of the previous page, and the
+    // list's 72px top padding is their headroom and must travel with the cards.
+    .cp-top__podium,
+    .cp-kpi,
+    .cp-pcard-slot,
+    .cp-grid__item,
+    .cp-block,
+    .cp-score-block {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .cp-top {
+        break-after: page;
+        // The whole panel is one unit: the figures' heads and the corner seals poke
+        // above each card's box, so a page break inside the podium would cut them.
+        break-inside: avoid;
+        page-break-inside: avoid;
+        padding: 8mm;
+
+        &__podium {
+            // The screen stacking query (max-width: 1024px) also matches the A4 page
+            // box (~718px), so undo its full-row span and tall row gap here.
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4mm;
+            padding-top: 18mm;
+            align-items: start;
+
+            .cp-pcard-slot--1 {
+                grid-column: auto;
+                margin-top: 0;
+            }
+        }
+    }
+
+    .cp-pcard {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .cp-card {
+        box-shadow: none;
+        transform: none !important;
+    }
+
+    .cp-grid {
+        // Three across: the status chip and "#rank · Total Score" are both nowrap,
+        // and at four columns (~140px of content) they overrun the card border.
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4mm;
+    }
+
+    .cp-card__mid {
+        flex-wrap: wrap;
+    }
+
+    .cp-dir__head {
+        break-after: avoid;
+    }
+
+    a[href]::after {
+        content: '';
+    }
+}

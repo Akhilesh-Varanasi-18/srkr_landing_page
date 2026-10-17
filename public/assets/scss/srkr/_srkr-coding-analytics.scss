@@ -1,0 +1,628 @@
+// ============================================
+// Coding Profiles — Analytics view
+// Prefix: .cp-an-*   (imported after _srkr-coding and _srkr-coding-shell; nothing
+// here may reuse a .cp-* name from those partials)
+//
+// All colour comes from the --srkr-* tokens. Where an rgba() is needed it is
+// derived from a token's literal value and noted inline. Chart fills live in
+// analytics-view.jsx (recharts needs real hex) and mirror the same tokens via BRAND.
+//
+// CONTRAST: --srkr-tertiary (#F2A63B) and --srkr-text-secondary (#ED9035) measure
+// 2.0–2.4:1 on white — fills only, never text or thin strokes. Every value label on
+// these charts is --srkr-heading ink.
+// ============================================
+
+$an-sm: 560px;
+$an-md: 768px;
+$an-xl: 1280px;
+$an-gap: 16px;
+$an-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+.cp-an {
+    display: flex;
+    flex-direction: column;
+    gap: $an-gap;
+    min-width: 0;
+
+    @media (max-width: $an-sm) {
+        gap: 12px;
+    }
+}
+
+// ── Card grid ───────────────────────────────────────────────────────────────
+// Wide screens: two chart cards per row, then the platform chart beside the two
+// number cards. Tablet: one chart per row, the number cards paired. Phone: a stack.
+
+.cp-an-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: $an-gap;
+
+    // min-width: 0 is what stops a ResponsiveContainer from pushing its card wider
+    // than the column and forcing a horizontal page scroll.
+    > * {
+        min-width: 0;
+        grid-column: span 12;
+    }
+
+    @media (max-width: $an-sm) {
+        gap: 12px;
+    }
+}
+
+.cp-an-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    padding: 18px 18px 16px;
+    border-radius: var(--srkr-radius-big);
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05), inset 0 1px 0 var(--srkr-white); // --srkr-heading
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+
+    @media (min-width: $an-md) {
+        &--third {
+            grid-column: span 6;
+        }
+    }
+
+    @media (min-width: $an-xl) {
+        &--half {
+            grid-column: span 6;
+        }
+
+        &--third {
+            grid-column: span 3;
+        }
+    }
+
+    @media (max-width: $an-sm) {
+        gap: 12px;
+        padding: 14px 14px 12px;
+        border-radius: var(--srkr-radius);
+    }
+
+    &__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px 16px;
+        flex-wrap: wrap;
+    }
+
+    &__titles {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        min-width: 0;
+        flex: 1 1 240px;
+    }
+
+    &__icon {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 13px;
+        color: var(--srkr-primary);
+        background: var(--srkr-bg-coral-tint);
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    &__text {
+        min-width: 0;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 15.5px;
+        font-weight: 700;
+        color: var(--srkr-heading);
+    }
+
+    &__sub,
+    &__foot {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--srkr-muted);
+    }
+
+    &__sub {
+        margin-top: 2px;
+    }
+
+    &__foot {
+        font-size: 11px;
+    }
+
+    // The narrow number cards always put their filter on its own line.
+    &--third .cp-an-filters {
+        width: 100%;
+    }
+}
+
+.cp-an-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    min-width: 0;
+    max-width: 100%;
+
+    @media (max-width: $an-md) {
+        width: 100%;
+    }
+}
+
+.cp-an-empty {
+    border: 1px dashed var(--srkr-border);
+    border-radius: var(--srkr-radius-big);
+    padding: 28px 20px;
+    text-align: center;
+    background: var(--srkr-white);
+
+    h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+    }
+
+    p {
+        margin: 0 auto;
+        max-width: 52ch;
+        font-size: 13px;
+        color: var(--srkr-muted);
+    }
+}
+
+.cp-an-nothing {
+    margin: 0;
+    border-radius: 10px;
+    padding: 14px 12px;
+    font-size: 12.5px;
+    text-align: center;
+    color: var(--srkr-muted);
+    background: var(--srkr-bg-section);
+}
+
+// ── Contender charts ────────────────────────────────────────────────────────
+
+.cp-an-chart {
+    width: 100%;
+    min-width: 0;
+    font-family: var(--srkr-font-primary);
+
+    // recharts 3 makes the SVG keyboard-focusable (arrow keys walk the tooltip);
+    // keep that focus visible rather than suppressing it.
+    .recharts-surface:focus-visible {
+        outline: 2px solid var(--srkr-primary);
+        outline-offset: 2px;
+        border-radius: 6px;
+    }
+
+    &--click .recharts-bar-rectangle {
+        cursor: pointer;
+    }
+}
+
+.cp-an-tooltip {
+    min-width: 190px;
+    background: var(--srkr-white);
+    border: 1px solid var(--srkr-border);
+    border-radius: 12px;
+    padding: 9px 11px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--srkr-body);
+    box-shadow: var(--srkr-shadow-card);
+
+    &__title {
+        font-weight: 700;
+        color: var(--srkr-heading);
+    }
+
+    &__meta {
+        margin-bottom: 6px;
+        font-size: 11px;
+        color: var(--srkr-muted);
+    }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+
+        b {
+            margin-left: auto;
+            padding-left: 10px;
+            color: var(--srkr-heading);
+            font-variant-numeric: tabular-nums;
+        }
+
+        &--lead {
+            margin-bottom: 4px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--srkr-border);
+            font-weight: 700;
+            color: var(--srkr-heading);
+        }
+    }
+
+    &__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        flex: none;
+    }
+
+    &__hint {
+        margin-top: 6px;
+        font-size: 10.5px;
+        color: var(--srkr-muted);
+    }
+}
+
+// The chart's keyboard twin: invisible until something inside it has focus, then a
+// row of chips — so it never duplicates the chart for a sighted mouse user.
+.cp-an-keylist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+
+    &:focus-within {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
+
+.cp-an-key {
+    appearance: none;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    border: 1px solid var(--srkr-border);
+    border-radius: 999px;
+    background: var(--srkr-white);
+    padding: 4px 11px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--srkr-body);
+    cursor: pointer;
+
+    span {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--srkr-muted);
+    }
+
+    &:hover {
+        border-color: var(--srkr-primary);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--srkr-primary);
+        outline-offset: 2px;
+    }
+}
+
+// ── Number cards ────────────────────────────────────────────────────────────
+
+.cp-an-num {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    &__value {
+        font-family: var(--srkr-font-heading);
+        font-size: 40px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__of {
+        font-size: 12px;
+        line-height: 1.4;
+        color: var(--srkr-body-alt);
+    }
+
+    &--inline {
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px 10px;
+
+        .cp-an-num__value {
+            font-size: 34px;
+        }
+
+        .cp-an-num__of {
+            flex: 1 1 160px;
+        }
+    }
+}
+
+// Share ring: a conic fill with a white core.
+.cp-an-ring {
+    --cp-share: 0%;
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: conic-gradient(var(--srkr-primary) var(--cp-share), rgba(15, 23, 42, 0.08) 0); // --srkr-heading @ 8% track
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        background: var(--srkr-white);
+        box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.06); // --srkr-heading
+    }
+
+    span {
+        position: relative;
+        font-family: var(--srkr-font-heading);
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--srkr-heading);
+    }
+}
+
+// One small bar per batch under the headline number; the selected batch lights up.
+.cp-an-minibars {
+    list-style: none;
+    margin: 0;
+    padding: 6px 4px 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 6px;
+    align-items: end;
+}
+
+.cp-an-minibar {
+    min-width: 0;
+
+    button {
+        appearance: none;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 2px;
+        border: 0;
+        border-radius: 10px;
+        background: none;
+        font: inherit;
+        cursor: pointer;
+        transition: background 0.25s;
+
+        &:hover {
+            background: rgba(15, 23, 42, 0.04); // --srkr-heading
+        }
+    }
+
+    &__value {
+        font-family: var(--srkr-font-heading);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__track {
+        display: flex;
+        align-items: flex-end;
+        width: 100%;
+        max-width: 44px;
+        height: 56px;
+        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.05); // --srkr-heading
+        overflow: hidden;
+    }
+
+    &__fill {
+        display: block;
+        width: 100%;
+        border-radius: 8px 8px 0 0;
+        background: rgba(226, 84, 76, 0.42); // --srkr-primary
+        transition: height 0.5s $an-ease;
+    }
+
+    &__label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--srkr-muted);
+    }
+
+    &.is-active {
+        button {
+            background: var(--srkr-bg-coral-tint);
+        }
+
+        .cp-an-minibar__fill {
+            background: linear-gradient(180deg, var(--srkr-tertiary) 0%, var(--srkr-primary) 100%);
+        }
+
+        .cp-an-minibar__label {
+            color: var(--srkr-primary-hover);
+        }
+    }
+}
+
+// One bar per platform: who has nothing there yet.
+.cp-an-gaps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.cp-an-gap {
+    display: grid;
+    // The name column takes the widest platform name ("GeeksforGeeks"); the track
+    // gets whatever is left.
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+
+    &__name {
+        font-weight: 700;
+        color: var(--srkr-heading);
+        white-space: nowrap;
+    }
+
+    &__track {
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06); // --srkr-heading
+        overflow: hidden;
+    }
+
+    &__fill {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--cp-gap-accent, var(--srkr-primary));
+        opacity: 0.85;
+        transition: width 0.5s $an-ease;
+    }
+
+    &__value {
+        font-family: var(--srkr-font-heading);
+        font-weight: 700;
+        color: var(--srkr-heading);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+
+        small {
+            font-family: var(--srkr-font-primary);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--srkr-muted);
+        }
+    }
+}
+
+.cp-an-link {
+    appearance: none;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: auto;
+    padding: 6px 0;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--srkr-primary-hover);
+    cursor: pointer;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        transition: transform 0.25s $an-ease;
+    }
+
+    &:hover svg {
+        transform: translateX(3px);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--srkr-primary);
+        outline-offset: 2px;
+    }
+}
+
+// ── Motion & print ──────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+    .cp-an-minibar__fill,
+    .cp-an-gap__fill,
+    .cp-an-link svg {
+        transition: none;
+    }
+}
+
+@media print {
+    .cp-an {
+        gap: 12px;
+    }
+
+    .cp-an-grid {
+        display: block;
+    }
+
+    .cp-an-card,
+    .cp-an-empty {
+        margin-bottom: 12px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: var(--srkr-white);
+        border-color: var(--srkr-border);
+    }
+
+    // ResponsiveContainer measures its parent, and a percentage-width parent is 0
+    // wide while the print layout is still being built — so give it a fixed width.
+    .cp-an-chart {
+        width: 640px !important;
+        max-width: 100%;
+    }
+
+    .cp-an-keylist,
+    .cp-an-link {
+        display: none;
+    }
+
+    // Keep the brand fills rather than letting the browser drop them.
+    .cp-an-ring,
+    .cp-an-minibar__fill,
+    .cp-an-gap__fill,
+    .cp-an-tooltip__dot {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

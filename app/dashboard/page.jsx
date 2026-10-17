@@ -18,6 +18,7 @@ import {
 import AnnouncementManager from '../../components/srkr/dashboard/announcement-manager';
 import { RANGES, formatDateTime } from '../../components/srkr/dashboard/dashboard-theme';
 import { IconDownload, IconRefresh, IconLogout, IconAlert, IconMegaphone } from '../../components/srkr/dashboard/dashboard-icons';
+import { IconTrophy } from '../../components/srkr/dashboard/coding/coding-icons';
 
 const AUTO_REFRESH_MS = 30000;
 
@@ -170,6 +171,10 @@ export default function DashboardPage() {
                         <button className="dash-btn" onClick={() => setIsAnnouncementMgrOpen(true)}>
                             <IconMegaphone /> New Announcement
                         </button>
+                        {/* The coding-profiles leaderboard lives on its own route with its own shell. */}
+                        <a className="dash-btn" href="/dashboard/coding-profiles">
+                            <IconTrophy width="16" height="16" /> Coding Profiles
+                        </a>
                         <button className="dash-btn dash-btn--primary" onClick={handleDownload} disabled={downloading || !data}>
                             <IconDownload /> {downloading ? 'Preparing…' : 'Download Excel'}
                         </button>

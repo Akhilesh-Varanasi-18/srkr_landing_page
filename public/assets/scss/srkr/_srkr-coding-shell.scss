@@ -1,0 +1,1009 @@
+// ============================================
+// Coding Profiles — shell
+// The ambient backdrop, the frosted-glass navigation rail, the sticky scope bar,
+// the segmented control and the top bar. Prefixes: .cp-shell, .cp-main, .cp-nav-*,
+// .cp-scope-*, .cp-seg-*, plus .cp-topbar overrides (this partial is imported after
+// _srkr-coding, so same-specificity rules here win).
+//
+// Colour comes from the --srkr-* tokens; every rgba() is derived from a token's
+// literal value and names it. The glass is three things: a translucent white
+// gradient, a backdrop blur and a 1px white inner edge — and it only reads as glass
+// because the shell paints soft brand-coloured orbs behind everything for it to blur.
+// ============================================
+
+$sh-xs: 480px;
+$sh-sm: 560px;
+$sh-md: 768px;
+$sh-lg: 1024px;
+$sh-gutter: 16px;
+$sh-nav-closed: 100px; // 84px rail + 16px gutter
+$sh-nav-open: 264px; // 248px rail + 16px gutter
+$sh-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+@mixin glass($top: 0.84, $bottom: 0.6) {
+    background: linear-gradient(168deg, rgba(255, 255, 255, $top) 0%, rgba(255, 255, 255, $bottom) 100%);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    backdrop-filter: blur(24px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    box-shadow:
+        0 24px 60px rgba(15, 23, 42, 0.1), // --srkr-heading
+        0 0 0 1px rgba(15, 23, 42, 0.03),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+// ── Shell & ambient backdrop ────────────────────────────────────────────────
+
+.cp-shell {
+    --cp-nav-w: #{$sh-nav-closed};
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: var(--cp-nav-w) minmax(0, 1fr);
+    min-height: 100vh;
+    background: var(--srkr-bg-section);
+
+    &--nav-open {
+        --cp-nav-w: #{$sh-nav-open};
+    }
+
+    // Held off until the remembered preference has been applied, so the rail never
+    // animates from its default width on first paint.
+    &.is-ready {
+        transition: grid-template-columns 0.38s $sh-ease;
+    }
+
+    // Soft orbs in the brand hues, fixed to the viewport so the glass has colour to
+    // blur wherever the page is scrolled.
+    &::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+            radial-gradient(560px 440px at 4% 6%, rgba(242, 166, 59, 0.24), transparent 70%), // --srkr-tertiary
+            radial-gradient(640px 520px at 14% 96%, rgba(226, 84, 76, 0.16), transparent 70%), // --srkr-primary
+            radial-gradient(620px 460px at 98% 18%, rgba(88, 102, 235, 0.12), transparent 70%), // --srkr-extra-blue
+            radial-gradient(500px 400px at 70% 100%, rgba(237, 114, 54, 0.1), transparent 70%); // --srkr-secondary
+    }
+
+    @media (max-width: $sh-lg) {
+        grid-template-columns: #{$sh-nav-closed} minmax(0, 1fr);
+    }
+
+    @media (max-width: $sh-md) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.cp-main {
+    min-width: 0;
+    padding: $sh-gutter 24px 96px 20px;
+
+    @media (max-width: $sh-lg) {
+        padding: 12px 16px 96px 12px;
+    }
+
+    @media (max-width: $sh-md) {
+        // Room for the floating tab bar plus the phone's home indicator.
+        padding: 10px 14px calc(96px + env(safe-area-inset-bottom, 0px));
+    }
+
+    @media (max-width: $sh-xs) {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    > * + * {
+        margin-top: 20px;
+    }
+}
+
+// ── Navigation rail ─────────────────────────────────────────────────────────
+
+.cp-nav {
+    position: sticky;
+    top: $sh-gutter;
+    align-self: start;
+    z-index: 50;
+    width: calc(var(--cp-nav-w) - #{$sh-gutter});
+    height: calc(100vh - #{$sh-gutter * 2});
+    margin-left: $sh-gutter;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 10px 12px;
+    border-radius: 26px;
+    @include glass;
+
+    .is-ready & {
+        transition: width 0.38s $sh-ease;
+    }
+
+    // ── Head: mark, wordmark, collapse toggle ──
+    &__head {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 48px;
+        padding: 2px 2px 10px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.06); // --srkr-heading
+    }
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        overflow: hidden;
+        text-decoration: none;
+        border-radius: 12px;
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    &__mark {
+        flex: none;
+        width: 42px;
+        height: 40px;
+        margin-left: 9px;
+        filter: drop-shadow(0 4px 10px rgba(237, 114, 54, 0.28)); // --srkr-secondary
+    }
+
+    &__wordmark {
+        width: 92px;
+        max-width: 92px;
+        height: auto;
+        opacity: 1;
+        transform: none;
+        transition: opacity 0.25s 0.12s, transform 0.32s $sh-ease, max-width 0.32s $sh-ease;
+    }
+
+    .is-closed &__wordmark {
+        max-width: 0;
+        opacity: 0;
+        transform: translateX(-8px);
+        transition-delay: 0s;
+        pointer-events: none;
+    }
+
+    // Sits astride the rail's right edge, like a handle.
+    &__toggle {
+        position: absolute;
+        right: -24px;
+        top: 9px;
+        z-index: 3;
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.95);
+        background: linear-gradient(145deg, var(--srkr-white) 0%, rgba(255, 255, 255, 0.82) 100%);
+        color: var(--srkr-body-alt);
+        cursor: pointer;
+        box-shadow: 0 6px 14px rgba(15, 23, 42, 0.14), inset 0 1px 0 var(--srkr-white); // --srkr-heading
+        transition: color 0.25s, box-shadow 0.25s, transform 0.3s $sh-ease;
+
+        svg {
+            width: 15px;
+            height: 15px;
+            transition: transform 0.35s $sh-ease;
+        }
+
+        &:hover {
+            color: var(--srkr-primary);
+            transform: scale(1.08);
+            box-shadow: 0 8px 18px rgba(226, 84, 76, 0.24), inset 0 1px 0 var(--srkr-white); // --srkr-primary
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    .is-closed &__toggle svg {
+        transform: rotate(180deg);
+    }
+
+    // ── Items ──
+    &__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    &__li {
+        position: relative;
+    }
+
+    &__foot {
+        margin-top: auto;
+        padding-top: 8px;
+        border-top: 1px solid rgba(15, 23, 42, 0.06); // --srkr-heading
+    }
+
+    &__item {
+        position: relative;
+        isolation: isolate;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px;
+        border: 0;
+        border-radius: 18px;
+        background: transparent;
+        color: var(--srkr-body-alt);
+        font-family: inherit;
+        text-align: left;
+        cursor: pointer;
+        overflow: hidden;
+        transition: color 0.3s;
+
+        &:hover {
+            color: var(--srkr-heading);
+
+            .cp-nav__icon {
+                transform: translateY(-1px) scale(1.06);
+            }
+
+            .cp-nav__glow {
+                opacity: 0.45;
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+
+        &.is-active {
+            color: var(--srkr-heading);
+
+            .cp-nav__icon {
+                background: linear-gradient(140deg, var(--srkr-tertiary) 0%, var(--srkr-primary) 100%);
+                border-color: transparent;
+                color: var(--srkr-white);
+                box-shadow: 0 10px 22px rgba(226, 84, 76, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.4); // --srkr-primary
+            }
+
+            .cp-nav__glow {
+                opacity: 1;
+            }
+        }
+
+        &--quiet:hover .cp-nav__icon {
+            color: var(--srkr-primary);
+        }
+    }
+
+    // 46px tile + 9px each side = the 64px inner width of the closed rail.
+    .is-closed &__item {
+        padding: 8px 9px;
+    }
+
+    // The sliding highlight behind the active item.
+    &__pill {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.55) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07), inset 0 1px 0 var(--srkr-white); // --srkr-heading
+    }
+
+    // The "fuzzy" part: a blurred brand-coloured blob BEHIND the icon tile. It is a
+    // sibling of the tile, not a child, because a child can never paint beneath its
+    // parent's own background.
+    &__glow {
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        z-index: -1;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(242, 166, 59, 0.95) 0%, rgba(226, 84, 76, 0.75) 55%, rgba(226, 84, 76, 0) 74%); // tertiary → primary
+        filter: blur(10px);
+        opacity: 0;
+        transition: opacity 0.35s;
+        pointer-events: none;
+    }
+
+    .is-closed &__glow {
+        left: 9px;
+    }
+
+    // Frosted icon tile.
+    &__icon {
+        position: relative;
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 15px;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.55) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06), inset 0 1px 0 var(--srkr-white); // --srkr-heading
+        color: var(--srkr-body-alt);
+        transition: transform 0.3s $sh-ease, background 0.3s, color 0.3s, box-shadow 0.3s;
+
+        svg {
+            width: 21px;
+            height: 21px;
+        }
+    }
+
+    &__text {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
+        white-space: nowrap;
+        opacity: 1;
+        transform: none;
+        transition: opacity 0.25s 0.12s, transform 0.32s $sh-ease;
+    }
+
+    .is-closed &__text {
+        opacity: 0;
+        transform: translateX(-8px);
+        transition-delay: 0s;
+    }
+
+    &__label {
+        font-family: var(--srkr-font-heading);
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    &__hint {
+        font-size: 11px;
+        color: var(--srkr-muted);
+    }
+}
+
+// Collapsed rail: the label follows the pointer as a tooltip (tablet and up).
+@media (min-width: $sh-md + 1) {
+    .cp-nav.is-closed .cp-nav__li::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: calc(100% + 16px);
+        top: 50%;
+        z-index: 5;
+        padding: 6px 11px;
+        border-radius: 10px;
+        white-space: nowrap;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--srkr-white);
+        background: var(--srkr-heading);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2); // --srkr-heading
+        opacity: 0;
+        transform: translateY(-50%) translateX(-6px);
+        transition: opacity 0.2s, transform 0.2s $sh-ease;
+        pointer-events: none;
+    }
+
+    .cp-nav.is-closed .cp-nav__li:hover::after,
+    .cp-nav.is-closed .cp-nav__li:focus-within::after {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+// Tablet: the icon rail stays put; expanding it lays the full rail over the page.
+// The open rail stays IN the grid (its 100px track is fixed) and simply overflows
+// it sideways — taking it out of flow with position: fixed would hand its track to
+// the content, which then collapses into the rail's column.
+@media (min-width: $sh-md + 1) and (max-width: $sh-lg) {
+    .cp-nav {
+        width: $sh-nav-closed - $sh-gutter;
+
+        &.is-open {
+            width: $sh-nav-open - $sh-gutter;
+            z-index: 85;
+            box-shadow: 0 30px 80px rgba(15, 23, 42, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.95); // --srkr-heading
+        }
+    }
+
+    .cp-nav__scrim {
+        position: fixed;
+        inset: 0;
+        z-index: 84;
+        background: rgba(3, 8, 25, 0.34); // --srkr-gallery-scrim family
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+    }
+}
+
+// Phone: a floating glass tab bar. Same markup, laid out in a row.
+@media (max-width: $sh-md) {
+    .cp-nav {
+        position: fixed;
+        top: auto;
+        bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(440px, calc(100% - 20px));
+        height: auto;
+        margin: 0;
+        padding: 6px;
+        gap: 4px;
+        flex-direction: row;
+        align-items: stretch;
+        border-radius: 24px;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.95); // --srkr-heading
+        transition: none;
+
+        &__head,
+        &__hint,
+        &__scrim {
+            display: none;
+        }
+
+        &__list {
+            flex: 1 1 auto;
+            flex-direction: row;
+            gap: 4px;
+        }
+
+        &__li {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        &__foot {
+            display: flex;
+            flex: 0 0 auto;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+    }
+
+    .cp-nav__item,
+    .cp-nav.is-closed .cp-nav__item {
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+        padding: 6px 4px 5px;
+        border-radius: 18px;
+    }
+
+    .cp-nav__foot .cp-nav__item {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .cp-nav__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 13px;
+
+        svg {
+            width: 19px;
+            height: 19px;
+        }
+    }
+
+    .cp-nav__glow,
+    .cp-nav.is-closed .cp-nav__glow {
+        left: 50%;
+        top: 6px;
+        width: 40px;
+        height: 40px;
+        margin-left: -20px;
+    }
+
+    .cp-nav__text,
+    .cp-nav.is-closed .cp-nav__text {
+        align-items: center;
+        opacity: 1;
+        transform: none;
+    }
+
+    .cp-nav__label {
+        font-size: 10.5px;
+    }
+}
+
+// ── Top bar ─────────────────────────────────────────────────────────────────
+
+.cp-topbar {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 22px;
+    @include glass(0.78, 0.58);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95); // --srkr-heading
+
+    @media (max-width: $sh-xs) {
+        padding: 10px 12px;
+        border-radius: 18px;
+    }
+
+    // The rail carries the mark from tablet up; the top bar shows it on phones and
+    // on paper, where there is no rail.
+    &__logo {
+        @media screen and (min-width: $sh-md + 1) {
+            display: none;
+        }
+    }
+
+    &__titles {
+        min-width: 0;
+    }
+}
+
+// Icon-only on phones, where three labelled buttons would not fit one row.
+.cp-btn--compact {
+    @media (max-width: $sh-sm) {
+        padding: 9px 12px;
+
+        .cp-btn__text {
+            display: none;
+        }
+    }
+}
+
+.cp-topbar__actions .cp-btn--compact {
+    @media (max-width: $sh-sm) {
+        flex: 0 0 auto;
+    }
+}
+
+// ── Segmented control ───────────────────────────────────────────────────────
+
+.cp-seg {
+    position: relative;
+    display: inline-flex;
+    align-items: stretch;
+    gap: 2px;
+    max-width: 100%;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.05); // --srkr-heading
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    &__btn {
+        position: relative;
+        isolation: isolate;
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 13px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--srkr-body-alt);
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 700;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: color 0.25s;
+
+        &:hover {
+            color: var(--srkr-heading);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+
+        &.is-active {
+            color: var(--srkr-heading);
+        }
+    }
+
+    &__pill {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: 999px;
+        background: var(--srkr-white);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.04); // --srkr-heading
+    }
+
+    &__count {
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--srkr-muted);
+        background: rgba(15, 23, 42, 0.06); // --srkr-heading
+    }
+
+    &__btn.is-active &__count {
+        color: var(--srkr-primary-hover);
+        background: var(--srkr-bg-coral-tint);
+    }
+
+    &--sm &__btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    // The coral pill: the leaderboard scope.
+    &--brand &__pill {
+        background: linear-gradient(135deg, var(--srkr-primary) 0%, var(--srkr-secondary) 100%);
+        box-shadow: 0 6px 16px rgba(226, 84, 76, 0.3); // --srkr-primary
+    }
+
+    &--brand &__btn.is-active {
+        color: var(--srkr-white);
+    }
+
+    &--brand &__btn.is-active &__count {
+        color: var(--srkr-white);
+        background: rgba(255, 255, 255, 0.22);
+    }
+}
+
+// ── Scope bar ───────────────────────────────────────────────────────────────
+
+.cp-scope {
+    position: sticky;
+    top: 10px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 10px 16px;
+    flex-wrap: wrap;
+    padding: 8px 14px 8px 16px;
+    border-radius: 18px;
+    @include glass(0.8, 0.62);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95); // --srkr-heading
+
+    &__label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--srkr-muted);
+
+        svg {
+            width: 18px;
+            height: 18px;
+            color: var(--srkr-primary);
+        }
+    }
+
+    &__note {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--srkr-body-alt);
+    }
+
+    @media (max-width: $sh-md) {
+        position: static;
+        padding: 8px;
+        border-radius: 16px;
+        gap: 6px;
+
+        &__label {
+            display: none;
+        }
+
+        .cp-seg {
+            width: 100%;
+        }
+
+        &__note {
+            width: 100%;
+            margin: 0;
+            padding: 0 6px 2px;
+            font-size: 11.5px;
+        }
+    }
+}
+
+// ── Platform badges ─────────────────────────────────────────────────────────
+// The four logos as glossy glass tiles: white gradient, inner highlight, a shadow
+// tinted by the platform's own colour, and a sheen that sweeps across when the
+// card, tab or link holding them is hovered.
+
+@keyframes cp-plogo-bob {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+.cp-plogo {
+    --cp-plogo-glow: rgba(226, 84, 76, 0.22); // --srkr-primary, overridden per platform
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    overflow: hidden;
+    border-radius: 8px;
+    background: linear-gradient(150deg, var(--srkr-white) 0%, rgba(255, 255, 255, 0.84) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.08), // --srkr-heading
+        0 4px 10px var(--cp-plogo-glow),
+        inset 0 1px 0 var(--srkr-white);
+    transition: transform 0.3s $sh-ease, box-shadow 0.3s;
+
+    img {
+        display: block;
+        width: 72%;
+        height: 72%;
+        object-fit: contain;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: -40% -60%;
+        background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.8) 50%, transparent 62%);
+        transform: translateX(-80%);
+        transition: transform 0.7s $sh-ease;
+        pointer-events: none;
+    }
+
+    &--xs {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+    }
+
+    &--sm {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+    }
+
+    &--md {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
+
+    &--lg {
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+    }
+
+    // A gentle, staggered float on the podium tiles.
+    &--bob {
+        animation: cp-plogo-bob 4.2s ease-in-out infinite;
+        animation-delay: var(--cp-bob-delay, 0s);
+    }
+}
+
+// Whatever holds the badge lights it up on hover: lift, stronger tinted glow, sheen.
+:is(button, a, .cp-card, .cp-pcard, .cp-rail-slot, .cp-seg__btn, .cp-block__title):hover > .cp-plogo,
+:is(button, a, .cp-card, .cp-pcard, .cp-rail-slot):hover .cp-plogo {
+    transform: translateY(-1px) scale(1.08);
+    box-shadow:
+        0 2px 4px rgba(15, 23, 42, 0.1), // --srkr-heading
+        0 8px 18px var(--cp-plogo-glow),
+        inset 0 1px 0 var(--srkr-white);
+
+    &::after {
+        transform: translateX(80%);
+    }
+}
+
+// Where the badges sit.
+.cp-rail-slot {
+    gap: 4px;
+    padding: 6px 2px 5px;
+}
+
+.cp-pcard__tile {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+}
+
+.cp-top__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cp-topbar__platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: 4px;
+
+    // The phone top bar has no room for a fourth line.
+    @media (max-width: $sh-sm) {
+        display: none;
+    }
+}
+
+.cp-topbar__platform {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cp-seg__icon {
+    display: inline-grid;
+    place-items: center;
+    margin-left: -3px;
+}
+
+.cp-detail__link {
+    gap: 8px;
+}
+
+// ── Directory: entries control on top, pager at the foot ────────────────────
+
+.cp-dir__size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+
+    &-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--srkr-muted);
+    }
+
+    @media (max-width: $sh-sm) {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+.cp-dir__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding: 10px 14px;
+    border-radius: 16px;
+    @include glass(0.8, 0.62);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95); // --srkr-heading
+
+    .cp-dir__count strong {
+        color: var(--srkr-heading);
+    }
+
+    .cp-dir__pager {
+        margin-left: auto;
+    }
+
+    @media (max-width: $sh-sm) {
+        .cp-dir__count {
+            width: 100%;
+        }
+
+        .cp-dir__pager {
+            width: 100%;
+            margin-left: 0;
+            justify-content: space-between;
+        }
+    }
+}
+
+// The old cards stay while the next page loads, dimmed — no blank flash.
+.cp-grid {
+    transition: opacity 0.25s;
+
+    &.is-loading {
+        opacity: 0.55;
+        pointer-events: none;
+    }
+}
+
+// ── Odds and ends ───────────────────────────────────────────────────────────
+
+.cp-hero__print {
+    display: none;
+}
+
+.cp-modal__history {
+    padding: 0 20px 18px;
+
+    .cp-history {
+        margin-top: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cp-shell,
+    .cp-nav,
+    .cp-nav__text,
+    .cp-nav__wordmark,
+    .cp-nav__icon,
+    .cp-nav__glow,
+    .cp-seg__btn {
+        transition: none !important;
+    }
+}
+
+// ── Print ───────────────────────────────────────────────────────────────────
+
+@media print {
+    .cp-shell::before,
+    .cp-nav,
+    .cp-nav__scrim,
+    .cp-scope,
+    .cp-dir__size,
+    .cp-dir__foot {
+        display: none !important;
+    }
+
+    .cp-plogo {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        box-shadow: none;
+        border-color: var(--srkr-border);
+
+        &::after {
+            display: none;
+        }
+    }
+
+    .cp-plogo--bob {
+        animation: none;
+    }
+
+    .cp-main {
+        padding: 0;
+    }
+
+    .cp-topbar {
+        border: 0;
+        border-bottom: 1px solid var(--srkr-border);
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    // The report's title block: what it covers and when it was made.
+    .cp-hero__print {
+        display: block;
+        margin: 10px 0 0;
+        font-size: 11px;
+        color: var(--srkr-body-alt);
+
+        strong {
+            color: var(--srkr-heading);
+        }
+    }
+}
