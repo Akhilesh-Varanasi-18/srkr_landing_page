@@ -122,6 +122,15 @@ export async function GET(request) {
                             { $match: { programCode: MOON.code } },
                             { $group: { _id: { $ifNull: ['$batch', 'Unknown'] }, n: { $sum: 1 } } }
                         ],
+                        // Class time slot choices, overall and per SkillUp batch.
+                        byTimeSlot: [
+                            { $match: { timeSlot: { $type: 'string' } } },
+                            { $group: { _id: '$timeSlot', n: { $sum: 1 } } }
+                        ],
+                        slotByBatch: [
+                            { $match: { programCode: MOON.code, timeSlot: { $type: 'string' } } },
+                            { $group: { _id: { batch: { $ifNull: ['$batch', 'Unknown'] }, slot: '$timeSlot' }, n: { $sum: 1 } } }
+                        ],
                         laptopByProgram: [
                             { $group: { _id: { program: '$programName', laptop: '$hasLaptop' }, n: { $sum: 1 } } }
                         ],
@@ -164,6 +173,7 @@ export async function GET(request) {
                                     cgpa: 1,
                                     activeBacklogs: 1,
                                     batch: 1,
+                                    timeSlot: 1,
                                     programName: 1,
                                     createdAt: 1
                                 }
@@ -263,12 +273,30 @@ export async function GET(request) {
         const batchKeys = [...new Set([...eligibleByBatch.keys(), ...registeredByBatch.keys()])].sort((a, b) =>
             a.localeCompare(b, undefined, { numeric: true })
         );
+        // Class time slots: catalogue order first, then any label no longer offered
+        // (so older rows still count), overall and per batch.
+        const slotLabels = (MOON.timeSlots || []).map((s) => s.label);
+        const slotCounts = new Map(clean(facet.byTimeSlot).map((r) => [r._id, r.n]));
+        const allSlotLabels = [...slotLabels, ...[...slotCounts.keys()].filter((l) => !slotLabels.includes(l))];
+        const byTimeSlot = allSlotLabels.map((name) => ({ name, value: slotCounts.get(name) || 0 }));
+        const slotByBatch = batchKeys.map((batch) => {
+            const row = { batch };
+            allSlotLabels.forEach((label) => { row[label] = 0; });
+            return row;
+        });
+        const slotRowByBatch = new Map(slotByBatch.map((row) => [row.batch, row]));
+        facet.slotByBatch.forEach((r) => {
+            const row = slotRowByBatch.get(r._id?.batch || 'Unknown');
+            if (row && r._id?.slot) row[r._id.slot] = (row[r._id.slot] || 0) + r.n;
+        });
+
         const moonCoder = {
             programName: MOON.programName,
             open: MOON.open,
             eligible: roster.length,
             registered: moonTotal,
             registeredInRange: facet.moonByBatch.reduce((s, r) => s + r.n, 0),
+            timeSlots: allSlotLabels,
             byBatch: batchKeys.map((batch) => ({
                 batch,
                 eligible: eligibleByBatch.get(batch) || 0,
@@ -292,6 +320,8 @@ export async function GET(request) {
             byCgpaBand,
             byBacklogs,
             academics,
+            byTimeSlot,
+            slotByBatch,
             moonCoder,
             byProgram: facet.byProgram
                 .filter((r) => r._id?.name)

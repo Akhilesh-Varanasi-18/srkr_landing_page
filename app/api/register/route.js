@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { getRegistrationsCollection } from '../../../lib/mongodb';
-import { validateRegistration, sanitizePrefill } from '../../../lib/registration-schema';
-import { eligibleEntry } from '../../../lib/registration-eligibility';
+import { validateRegistration, normalizeRoll, PROGRAM_BY_KEY } from '../../../lib/registration-schema';
+import { prefillFor } from '../../../lib/registration-eligibility';
 
 // Registrations must hit the database on every request — never cache or prerender.
 export const dynamic = 'force-dynamic';
@@ -22,6 +22,10 @@ function duplicateFieldFrom(error) {
     return null;
 }
 
+// What a roster-gated student actually types. Anything else in the body is
+// ignored for those intakes — the rest of the record comes from the server.
+const GATED_INPUTS = ['cgpa', 'activeBacklogs', 'timeSlot'];
+
 export async function POST(request) {
     // 1. Parse defensively — a malformed or oversized body must not reach the driver.
     let payload;
@@ -39,26 +43,26 @@ export async function POST(request) {
         return NextResponse.json({ success: false, message: 'Invalid request format.' }, { status: 400 });
     }
 
-    // 2. Authoritative validation. The client runs the same rules for instant
-    //    feedback, but this is the check that actually gates the write. The
-    //    program (and therefore the passout year, code and track) is derived
-    //    server-side from the key, so a tampered request can't register itself
-    //    into a program it didn't earn.
-    const { values, errors, program } = validateRegistration(payload);
-    if (Object.keys(errors).length > 0) {
-        return NextResponse.json(
-            { success: false, message: 'Please correct the highlighted fields.', errors },
-            { status: 422 }
-        );
-    }
+    // 2. Roster-gated intakes (Moon Coder): the browser sends only the roll number
+    //    the student picked plus the three things only they know (CGPA, backlogs,
+    //    time slot). Name, contact details, branch, gender, residence and laptop
+    //    are read from their SkillUp Coder registration here, so nothing in the
+    //    request can alter them — and the roll must be on the shortlist.
+    const program = PROGRAM_BY_KEY[typeof payload.programKey === 'string' ? payload.programKey : ''] || null;
+    const gated = Boolean(program?.open && program.eligibility === 'skillup-roster');
+    let identity = null;
+    let candidate = payload;
 
-    // 3. Roster-gated intakes: the roll number must be on the shortlist. This is
-    //    checked against the roster, not the form, so editing the roll number on
-    //    a pre-filled form cannot let a non-shortlisted student in.
-    let rosterEntry = null;
-    if (program.eligibility === 'skillup-roster') {
+    if (gated) {
+        const rollKey = normalizeRoll(payload.rollNumber);
+        if (!rollKey) {
+            return NextResponse.json(
+                { success: false, message: 'Please pick yourself from the SkillUp Coder shortlist first.', errors: { rollNumber: 'Pick your roll number from the shortlist' } },
+                { status: 422 }
+            );
+        }
         try {
-            rosterEntry = await eligibleEntry(values.rollNumber);
+            identity = await prefillFor(rollKey, program.key);
         } catch (error) {
             console.error('[register] eligibility lookup failed:', error);
             return NextResponse.json(
@@ -66,7 +70,7 @@ export async function POST(request) {
                 { status: 503 }
             );
         }
-        if (!rosterEntry) {
+        if (!identity) {
             return NextResponse.json(
                 {
                     success: false,
@@ -76,6 +80,40 @@ export async function POST(request) {
                 { status: 403 }
             );
         }
+        if (identity.alreadyRegistered) {
+            return NextResponse.json(
+                { success: false, message: `You have already registered for ${program.programName}.`, errors: { rollNumber: 'This roll number is already registered' } },
+                { status: 409 }
+            );
+        }
+        candidate = {
+            ...identity.student,
+            programKey: program.key,
+            ...Object.fromEntries(GATED_INPUTS.map((field) => [field, payload[field]]))
+        };
+    }
+
+    // 3. Authoritative validation. The client runs the same rules for instant
+    //    feedback, but this is the check that actually gates the write. The
+    //    program (and therefore the passout year, code and track) is derived
+    //    server-side from the key, so a tampered request can't register itself
+    //    into a program it didn't earn.
+    const { values, errors, program: validated } = validateRegistration(candidate);
+    if (Object.keys(errors).length > 0) {
+        // For a gated intake, an error on a field the student never typed means
+        // their SkillUp record is incomplete — say so instead of pointing at a
+        // field that is not on the screen.
+        const hidden = gated ? Object.keys(errors).filter((k) => !GATED_INPUTS.includes(k)) : [];
+        return NextResponse.json(
+            {
+                success: false,
+                message: hidden.length
+                    ? `Some details from your SkillUp Coder registration could not be used (${hidden.join(', ')}). Please contact the ToriiMinds team.`
+                    : 'Please correct the highlighted fields.',
+                errors
+            },
+            { status: 422 }
+        );
     }
 
     let collection;
@@ -94,7 +132,7 @@ export async function POST(request) {
     //    lets us name both fields at once.
     try {
         const existing = await collection.findOne(
-            { programCode: program.code, $or: [{ rollNumber: values.rollNumber }, { collegeEmail: values.collegeEmail }] },
+            { programCode: validated.code, $or: [{ rollNumber: values.rollNumber }, { collegeEmail: values.collegeEmail }] },
             { projection: { rollNumber: 1, collegeEmail: 1 } }
         );
         if (existing) {
@@ -106,7 +144,7 @@ export async function POST(request) {
                 duplicateErrors.collegeEmail = 'This email ID is already registered';
             }
             return NextResponse.json(
-                { success: false, message: `You have already registered for ${program.programName}.`, errors: duplicateErrors },
+                { success: false, message: `You have already registered for ${validated.programName}.`, errors: duplicateErrors },
                 { status: 409 }
             );
         }
@@ -119,19 +157,18 @@ export async function POST(request) {
     }
 
     // 5. Build the record. Academic fields are stored as numbers (they feed the
-    //    dashboard's CGPA bands and backlog split); the pre-fill block records
-    //    where the details came from and what the student changed.
-    const { cgpa, activeBacklogs, ...studentValues } = values;
-    const prefill = sanitizePrefill(payload.prefill);
+    //    dashboard's CGPA bands and backlog split); the time slot keeps its label
+    //    and key; the pre-fill block records where the details came from.
+    const { cgpa, activeBacklogs, timeSlot, timeSlotKey, ...studentValues } = values;
     const document = {
         ...studentValues,
-        ...(program.academics ? { cgpa, activeBacklogs } : {}),
-        ...(rosterEntry ? { batch: rosterEntry.batch } : {}),
-        ...(prefill ? { prefill } : {}),
-        programName: program.programName,
-        programCode: program.code,
-        programTrack: program.badge,
-        yearLabel: program.yearLabel,
+        ...(validated.academics ? { cgpa, activeBacklogs } : {}),
+        ...(validated.timeSlots ? { timeSlot, timeSlotKey } : {}),
+        ...(identity ? { batch: identity.student.batch, prefill: { source: 'skillup-roster', rollKey: identity.rollKey, editedFields: [] } } : {}),
+        programName: validated.programName,
+        programCode: validated.code,
+        programTrack: validated.badge,
+        yearLabel: validated.yearLabel,
         status: 'registered',
         source: 'srkr-landing-page',
         createdAt: new Date(),
@@ -149,9 +186,21 @@ export async function POST(request) {
                     success: true,
                     message: 'Registration successful.',
                     registrationId,
-                    programKey: program.key,
-                    programName: program.programName,
-                    programCode: program.code
+                    programKey: validated.key,
+                    programName: validated.programName,
+                    programCode: validated.code,
+                    // Echoed so the success screen can show what was saved for a
+                    // gated intake, where the browser never held these values.
+                    saved: {
+                        fullName: values.fullName,
+                        rollNumber: values.rollNumber,
+                        branch: values.branch,
+                        gender: values.gender,
+                        residenceType: values.residenceType,
+                        hasLaptop: values.hasLaptop,
+                        batch: identity?.student.batch || null,
+                        timeSlot: timeSlot || null
+                    }
                 },
                 { status: 201 }
             );
@@ -163,7 +212,7 @@ export async function POST(request) {
                     return NextResponse.json(
                         {
                             success: false,
-                            message: `You have already registered for ${program.programName}.`,
+                            message: `You have already registered for ${validated.programName}.`,
                             errors: { [duplicate.field]: duplicate.message }
                         },
                         { status: 409 }

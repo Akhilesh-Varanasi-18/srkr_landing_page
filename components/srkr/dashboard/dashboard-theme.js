@@ -67,6 +67,9 @@ export const LAPTOP_COLORS = {
     No: BRAND.muted
 };
 
+// Moon Coder class time slots, in catalogue order (slot 1, slot 2, …).
+export const SLOT_COLORS = [BRAND.blue, BRAND.amberSoft, BRAND.purple, BRAND.green];
+
 // CRT enrolment split retired from the dashboard — colours kept for easy restore.
 export const CRT_FEE_COLORS = {
     Yes: BRAND.primary,

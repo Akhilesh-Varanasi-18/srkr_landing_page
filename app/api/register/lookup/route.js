@@ -6,7 +6,8 @@ import { prefillFor, searchEligible } from '../../../../lib/registration-eligibi
 //
 //   GET /api/register/lookup?q=<name or roll>      → up to 8 shortlist matches
 //                                                    (name, roll, branch, batch)
-//   GET /api/register/lookup?roll=<exact roll>     → the full pre-fill record
+//   GET /api/register/lookup?roll=<exact roll>     → name, roll, branch, batch and
+//                                                    whether already registered
 //
 // The pre-fill answer carries the student's college email and mobile number, so
 // it is deliberately narrow: only while the intake is open, only for an exact
@@ -76,7 +77,17 @@ export async function GET(request) {
                     404
                 );
             }
-            return reply({ success: true, ...result });
+            // Only what the form shows. The student never sees or edits contact
+            // details here — the registration route reads them server-side — so
+            // they are not sent to the browser.
+            const { fullName, rollNumber, branch, batch } = result.student;
+            return reply({
+                success: true,
+                rollKey: result.rollKey,
+                alreadyRegistered: result.alreadyRegistered,
+                registeredAt: result.registeredAt,
+                student: { fullName, rollNumber, branch, batch }
+            });
         }
 
         if (!allow(`search:${ip}`, SEARCH_PER_MINUTE)) {

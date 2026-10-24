@@ -30,6 +30,7 @@ import {
     BACKLOG_ORDER,
     BACKLOG_COLORS,
     BRANCH_RAMP,
+    SLOT_COLORS,
     shortBranch,
     shortDay,
     pct
@@ -640,6 +641,82 @@ export function BacklogSplit({ data, span = 4 }) {
                             ))}
                         </div>
                     </>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ── Moon Coder: class time slots ───────────────────────────────────────────
+// Which of the offered slots registrants chose, overall and per SkillUp batch.
+// `data` rows are { name: <slot label>, value }; colours follow catalogue order.
+export function TimeSlotSplit({ data, span = 5 }) {
+    const rows = (data || []).map((d) => ({ name: d.name, value: d.value || 0 }));
+    const total = rows.reduce((s, r) => s + r.value, 0);
+    const colors = Object.fromEntries(rows.map((r, i) => [r.name, SLOT_COLORS[i % SLOT_COLORS.length]]));
+    return (
+        <div className={`dash-card dash-card--${span}`}>
+            <div className="dash-card-head">
+                <h3 className="dash-card-title">Class time slot</h3>
+                <p className="dash-card-sub">Which slot Moon Coder registrants chose</p>
+            </div>
+            <div className="dash-card-body">
+                {total === 0 ? <EmptyChart label="No slot choices yet" /> : (
+                    <>
+                        <SplitBar rows={rows} total={total} colors={colors} />
+                        <div className="dash-splitbar-labels">
+                            {rows.map((r, i) => (
+                                <div key={r.name} className={`dash-splitbar-label${rows.length > 1 && i === rows.length - 1 ? ' dash-splitbar-label--right' : ''}`}>
+                                    <strong>{r.value}</strong>
+                                    <span><span className="dash-legend-swatch" style={{ background: colors[r.name] }} /> {r.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// Slot choice per SkillUp batch (grouped bars) — tells the team how many seats
+// each slot needs from each batch. `slots` is the ordered list of slot labels,
+// which are also the row keys: { batch, '<slot label>': n, … }.
+export function SlotByBatch({ data, slots, span = 7 }) {
+    const rows = data || [];
+    const keys = slots || [];
+    const total = rows.reduce((s, r) => s + keys.reduce((t, k) => t + (r[k] || 0), 0), 0);
+    return (
+        <div className={`dash-card dash-card--${span}`}>
+            <div className="dash-card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+                <div>
+                    <h3 className="dash-card-title">Time slot by batch</h3>
+                    <p className="dash-card-sub">Slot choices per SkillUp batch</p>
+                </div>
+                <div className="dash-legend" style={{ marginTop: 0 }}>
+                    {keys.map((k, i) => (
+                        <div key={k} className="dash-legend-item">
+                            <span className="dash-legend-swatch" style={{ background: SLOT_COLORS[i % SLOT_COLORS.length] }} />
+                            <span>{k}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className="dash-card-body">
+                {total === 0 ? <EmptyChart label="No slot choices yet" /> : (
+                    <ResponsiveContainer width="100%" height={280}>
+                        <BarChart data={rows} margin={{ top: 20, right: 8, left: 0, bottom: 0 }} barGap={6} barCategoryGap="26%">
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="batch" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                            <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={34} tick={{ fontSize: 12 }} />
+                            <Tooltip cursor={{ fill: 'rgba(226,84,76,0.06)' }} content={<ChartTooltip />} />
+                            {keys.map((k, i) => (
+                                <Bar key={k} dataKey={k} name={k} fill={SLOT_COLORS[i % SLOT_COLORS.length]} radius={[6, 6, 0, 0]} maxBarSize={44}>
+                                    <LabelList dataKey={k} position="top" style={{ fontSize: 11, fontWeight: 700, fill: BRAND.ink }} />
+                                </Bar>
+                            ))}
+                        </BarChart>
+                    </ResponsiveContainer>
                 )}
             </div>
         </div>

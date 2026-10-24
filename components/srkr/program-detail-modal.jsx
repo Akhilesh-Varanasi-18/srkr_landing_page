@@ -16,6 +16,8 @@ const IconArrow = () => (<svg viewBox="0 0 24 24" width="16" height="16" {...ic}
 const IconFlag = () => (<svg viewBox="0 0 24 24" width="18" height="18" {...ic}><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1Z" /><path d="M4 22v-7" /></svg>);
 const IconSpark = () => (<svg viewBox="0 0 24 24" width="16" height="16" {...ic}><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" /></svg>);
 const IconChevron = () => (<svg viewBox="0 0 24 24" width="15" height="15" {...ic} strokeWidth="2.4"><polyline points="9 18 15 12 9 6" /></svg>);
+const IconTrophy = () => (<svg viewBox="0 0 24 24" width="16" height="16" {...ic}><path d="M8 21h8M12 17v4" /><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" /><path d="M17 6h2a2 2 0 0 1 2 2 4 4 0 0 1-4 4" /><path d="M7 6H5a2 2 0 0 0-2 2 4 4 0 0 0 4 4" /></svg>);
+const IconLoop = () => (<svg viewBox="0 0 24 24" width="16" height="16" {...ic}><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 3v6h-6" /></svg>);
 
 // Coding-themed header icon per program (replaces the old emoji), tinted in our
 // palette. Falls back to a generic </> for any unmapped program.
@@ -89,6 +91,9 @@ const ProgramDetailModal = ({
             // 'journey' is the certification/platform image pipeline — shown as "Roadmap".
             // 'roadmap' is the module/topic curriculum — shown as "Modules".
             currentCourse.journey?.length ? { id: 'journey', label: 'Roadmap', icon: <IconMap /> } : null,
+            // 'contest' is Moon Coder's weekly contest timeline — the track's specialty,
+            // so its tab is highlighted and sits ahead of the module list.
+            currentCourse.contest ? { id: 'contest', label: 'Contest Upsolving', icon: <IconTrophy />, highlight: true } : null,
             currentCourse.modules?.length ? { id: 'roadmap', label: 'Modules', icon: <IconLayers /> } : null,
         ].filter(Boolean);
     }, [currentCourse]);
@@ -134,6 +139,12 @@ const ProgramDetailModal = ({
     };
 
     const totalTopics = currentCourse.modules?.reduce((s, m) => s + (m.topics?.length || 0), 0) || 0;
+
+    // Contests per week for the overview stat: "3–4" when one of them is biweekly.
+    const contestWeek = currentCourse.contest?.week || [];
+    const weeklyContests = contestWeek.filter((d) => d.cadence === 'weekly').length;
+    const biweeklyContests = contestWeek.filter((d) => d.cadence === 'biweekly').length;
+    const contestsPerWeek = biweeklyContests ? `${weeklyContests}–${weeklyContests + biweeklyContests}` : String(weeklyContests);
 
     // Framer reveal preset — animates as it scrolls into the modal body.
     const reveal = (delay = 0, y = 18) => ({
@@ -257,7 +268,7 @@ const ProgramDetailModal = ({
                                     <button
                                         key={s.id}
                                         type="button"
-                                        className={`srkr-syll-rail-btn ${activeSection === s.id ? 'is-active' : ''}`}
+                                        className={`srkr-syll-rail-btn ${activeSection === s.id ? 'is-active' : ''}${s.highlight ? ' is-highlight' : ''}`}
                                         onClick={() => scrollToSection(s.id)}
                                     >
                                         {s.icon}<span>{s.label}</span>
@@ -290,6 +301,12 @@ const ProgramDetailModal = ({
                                             <div className="srkr-syll-stat">
                                                 <span className="srkr-syll-stat-ic"><IconRocket /></span>
                                                 <span className="srkr-syll-stat-body"><strong>{currentCourse.journey.length}</strong><span>Roadmap milestones</span></span>
+                                            </div>
+                                        )}
+                                        {currentCourse.contest && (
+                                            <div className="srkr-syll-stat">
+                                                <span className="srkr-syll-stat-ic"><IconTrophy /></span>
+                                                <span className="srkr-syll-stat-body"><strong>{contestsPerWeek}</strong><span>Contests every week</span></span>
                                             </div>
                                         )}
                                     </div>
@@ -354,6 +371,19 @@ const ProgramDetailModal = ({
                                     </div>
                                 </section>
                             )}
+                            {/* ── CONTEST UPSOLVING — weekly contest timeline (Moon Coder) ── */}
+                            {currentCourse.contest && (
+                                <section className="srkr-syll-section" data-section="contest" ref={setRef('contest')}>
+                                    <SectionHead
+                                        eyebrow="The Moon Coder specialty"
+                                        title="Contest Upsolving"
+                                        sub="Compete every week on CodeChef and LeetCode, upsolve what you missed in between, and close the month at the ToriiMinds Monthly Coding Contest"
+                                        icon={<IconTrophy />}
+                                    />
+                                    <ContestRoadmap contest={currentCourse.contest} reveal={reveal} />
+                                </section>
+                            )}
+
                             {/* ── MODULES — CURRICULUM LADDER ── */}
                             {currentCourse.modules?.length > 0 && (
                                 <section className="srkr-syll-section" data-section="roadmap" ref={setRef('roadmap')}>
@@ -545,6 +575,87 @@ function ModuleLadder({ modules, totalTopics, reduceMotion }) {
                     );
                 })}
             </div>
+        </div>
+    );
+}
+
+// ── Contest Upsolving — Moon Coder's weekly contest timeline ────────────
+// Seven day columns (Mon → Sun) on one track: contest days carry the platform
+// mark and its cadence, the quiet days are marked for upsolving. A short flow
+// connector leads into the month-end ToriiMinds contest, shown as the finale.
+// On narrow screens (.srkr-contest media rules) the strip becomes a vertical
+// timeline with the day on the left.
+const CADENCE_LABELS = { weekly: 'Every week', biweekly: 'Every other week', monthly: 'Every month' };
+
+function ContestRoadmap({ contest, reveal }) {
+    const { week, finale, logos } = contest;
+    return (
+        <div className="srkr-contest">
+            <div className="srkr-contest-legend" aria-label="Legend">
+                <span className="srkr-contest-key is-weekly">Weekly contest</span>
+                <span className="srkr-contest-key is-biweekly">Every other week</span>
+                <span className="srkr-contest-key is-upsolve">Upsolving day</span>
+                <span className="srkr-contest-key is-monthly">Monthly finale</span>
+            </div>
+
+            <div className="srkr-contest-week" role="list" aria-label="Weekly contest timeline, Monday to Sunday">
+                <span className="srkr-contest-track" aria-hidden="true" />
+                {week.map((d, i) => (
+                    <motion.div
+                        key={d.day}
+                        role="listitem"
+                        className={`srkr-contest-day ${d.upsolve ? 'is-upsolve' : `is-${d.cadence}`}`}
+                        {...reveal(Math.min(i * 0.05, 0.3), 14)}
+                    >
+                        <span className="srkr-contest-dayname" title={d.dayName}>{d.day}</span>
+                        <span className="srkr-contest-dot" aria-hidden="true" />
+                        {d.upsolve ? (
+                            <div className="srkr-contest-card is-quiet">
+                                <span className="srkr-contest-quiet-ic" aria-hidden="true"><IconLoop /></span>
+                                <span className="srkr-contest-card-body">
+                                    <strong className="srkr-contest-title">Upsolving</strong>
+                                    <span className="srkr-contest-note">Re-attempt what you missed</span>
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="srkr-contest-card">
+                                <span className={`srkr-contest-logo is-${d.platform}`}>
+                                    <img src={logos[d.platform]} alt={d.brand} loading="lazy" />
+                                </span>
+                                <span className="srkr-contest-card-body">
+                                    <strong className="srkr-contest-title">{d.title}</strong>
+                                    <span className={`srkr-contest-cadence is-${d.cadence}`}>{CADENCE_LABELS[d.cadence]}</span>
+                                </span>
+                            </div>
+                        )}
+                    </motion.div>
+                ))}
+            </div>
+
+            <div className="srkr-contest-flow" aria-hidden="true">
+                <span className="srkr-contest-flow-line" />
+                <span className="srkr-contest-flow-pill">Four weeks of contests lead to the month-end finale</span>
+                <span className="srkr-contest-flow-line" />
+            </div>
+
+            <motion.div className="srkr-contest-finale" {...reveal(0, 20)}>
+                <span className={`srkr-contest-finale-logo is-${finale.platform}`}>
+                    <img src={logos[finale.platform]} alt={finale.brand} loading="lazy" />
+                </span>
+                <div className="srkr-contest-finale-body">
+                    <span className="srkr-contest-finale-eyebrow">
+                        <span>Month end · by {finale.brand}</span>
+                        <span className="srkr-contest-cadence is-monthly">{CADENCE_LABELS[finale.cadence]}</span>
+                    </span>
+                    <h4 className="srkr-contest-finale-title">{finale.title}</h4>
+                    {finale.note && <p className="srkr-contest-finale-note">{finale.note}</p>}
+                    <div className="srkr-journey-tags">
+                        {finale.tags.map((t, ti) => (
+                            <span key={ti} className="srkr-journey-tag"><span className="srkr-journey-tag-dot" />{t}</span>
+                        ))}
+                    </div>
+                </div>
+            </motion.div>
         </div>
     );
 }

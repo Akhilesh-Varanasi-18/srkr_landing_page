@@ -28,6 +28,7 @@ const COLUMNS = [
     { header: 'Overall CGPA', key: 'cgpa', width: 13 },
     { header: 'Active Backlogs', key: 'activeBacklogs', width: 15 },
     { header: 'SkillUp Batch', key: 'batch', width: 14 },
+    { header: 'Time Slot', key: 'timeSlot', width: 20 },
     // Pre-fill audit: which roster entry the form was filled from and what the
     // student changed before confirming.
     { header: 'Prefilled From', key: 'prefilledFrom', width: 16 },
@@ -122,6 +123,7 @@ export async function GET(request) {
             cgpa: typeof doc.cgpa === 'number' ? doc.cgpa : '',
             activeBacklogs: typeof doc.activeBacklogs === 'number' ? doc.activeBacklogs : '',
             batch: doc.batch || '',
+            timeSlot: doc.timeSlot || '',
             prefilledFrom: doc.prefill?.rollKey ? `SkillUp (${doc.prefill.rollKey})` : '',
             editedFields: Array.isArray(doc.prefill?.editedFields) ? doc.prefill.editedFields.join(', ') : '',
             eapcetRank: doc.eapcetRank || '',

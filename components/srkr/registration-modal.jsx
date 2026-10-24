@@ -5,7 +5,6 @@ import {
     REGISTRATION_PROGRAMS,
     PROGRAM_BY_KEY,
     DEFAULT_PROGRAM_KEY,
-    PREFILLABLE_FIELDS,
     FIELD_LIMITS,
     validateRegistration
 } from '../../lib/registration-schema';
@@ -73,8 +72,13 @@ const EMPTY_FORM = {
     // paidCrtFee: '', // CRT enrolment retired
     programKey: DEFAULT_PROGRAM_KEY,
     cgpa: '',
-    activeBacklogs: ''
+    activeBacklogs: '',
+    timeSlot: ''
 };
+
+// What a shortlisted (roster-gated) student actually types; everything else in
+// their record comes from the SkillUp registration on the server.
+const QUICK_FIELDS = ['cgpa', 'activeBacklogs', 'timeSlot'];
 
 const initialsOf = (name) =>
     String(name || '')
@@ -84,7 +88,6 @@ const initialsOf = (name) =>
         .map((w) => w[0].toUpperCase())
         .join('') || '?';
 
-const sameValue = (a, b) => String(a ?? '').trim().toLowerCase() === String(b ?? '').trim().toLowerCase();
 
 const formatDay = (iso) => {
     if (!iso) return '';
@@ -437,10 +440,8 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
 
     const program = PROGRAM_BY_KEY[formData.programKey] || PROGRAM_BY_KEY[DEFAULT_PROGRAM_KEY];
     const gated = program.eligibility === 'skillup-roster';
-    // A gated intake shows only the finder until the student picks themselves.
-    const unlocked = !gated || Boolean(identity);
     const blocked = Boolean(identity?.alreadyRegistered);
-    const isEdited = (field) => Boolean(identity) && !sameValue(formData[field], identity.snapshot[field]);
+    const slotLabel = (key) => program.timeSlots?.find((s) => s.key === key)?.label || '';
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -467,19 +468,26 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
         if (submitError) setSubmitError('');
     };
 
-    // Step 1 done: copy the student's SkillUp details into the form and remember
-    // the originals so edits can be reported with the submission.
+    // Step 1 done: remember who was picked. Only name, roll, branch and batch come
+    // back from the lookup — the rest of the record stays on the server.
     const handlePick = (result) => {
-        const snapshot = {};
-        PREFILLABLE_FIELDS.forEach((field) => { snapshot[field] = result.student[field] || ''; });
+        const student = result.student || {};
         setIdentity({
             rollKey: result.rollKey,
-            batch: result.student.batch || '',
-            snapshot,
+            student,
+            batch: student.batch || '',
             alreadyRegistered: Boolean(result.alreadyRegistered),
             registeredAt: result.registeredAt || null
         });
-        setFormData((prev) => ({ ...prev, ...snapshot, cgpa: '', activeBacklogs: '' }));
+        setFormData((prev) => ({
+            ...prev,
+            fullName: student.fullName || '',
+            rollNumber: student.rollNumber || '',
+            branch: student.branch || '',
+            cgpa: '',
+            activeBacklogs: '',
+            timeSlot: ''
+        }));
         setErrors({});
         setSubmitError('');
     };
@@ -495,10 +503,15 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
         e.preventDefault();
         if (isSubmitting || blocked) return;
 
-        // Same rules the API enforces — this is purely for instant feedback.
+        // Same rules the API enforces — this is purely for instant feedback. For a
+        // gated intake only the three visible fields can be wrong here; the rest of
+        // the record is composed and checked on the server.
         const { values, errors: validationErrors } = validateRegistration(formData);
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
+        const visibleErrors = gated
+            ? Object.fromEntries(Object.entries(validationErrors).filter(([field]) => QUICK_FIELDS.includes(field)))
+            : validationErrors;
+        if (Object.keys(visibleErrors).length > 0) {
+            setErrors(visibleErrors);
             setSubmitError('');
             return;
         }
@@ -507,13 +520,15 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
         setSubmitError('');
         setIsSubmitting(true);
 
-        const body = { ...values };
-        if (identity) {
-            body.prefill = {
-                rollKey: identity.rollKey,
-                editedFields: PREFILLABLE_FIELDS.filter((field) => !sameValue(values[field], identity.snapshot[field]))
-            };
-        }
+        const body = gated
+            ? {
+                  programKey: program.key,
+                  rollNumber: identity.rollKey,
+                  cgpa: formData.cgpa.trim(),
+                  activeBacklogs: formData.activeBacklogs.trim(),
+                  timeSlot: formData.timeSlot
+              }
+            : { ...values };
 
         try {
             const response = await fetch('/api/register', {
@@ -533,8 +548,16 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                 // Field-level problems (invalid or already registered) go back onto
                 // the inputs; anything else becomes a single banner message.
                 if (result?.errors && Object.keys(result.errors).length > 0) {
-                    setErrors(result.errors);
-                    setSubmitError(result.message || 'Please correct the highlighted fields.');
+                    // Errors on fields that are not on the screen (a gated intake's
+                    // roll number or SkillUp details) are shown in the banner instead.
+                    const visible = gated
+                        ? Object.fromEntries(Object.entries(result.errors).filter(([field]) => QUICK_FIELDS.includes(field)))
+                        : result.errors;
+                    const hiddenMessages = gated
+                        ? Object.entries(result.errors).filter(([field]) => !QUICK_FIELDS.includes(field)).map(([, msg]) => msg)
+                        : [];
+                    setErrors(visible);
+                    setSubmitError([result.message, ...hiddenMessages].filter(Boolean).join(' ') || 'Please correct the highlighted fields.');
                 } else {
                     setSubmitError(result?.message || 'Registration failed. Please try again.');
                 }
@@ -542,6 +565,9 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
             }
 
             setRegId(result.registrationId);
+            // The server echoes what it saved, so the success card can show the
+            // details a gated student never typed.
+            if (result.saved) setFormData((prev) => ({ ...prev, ...Object.fromEntries(Object.entries(result.saved).filter(([, v]) => v)) }));
             setIsSuccess(true);
         } catch (error) {
             setSubmitError('Network error — please check your connection and try again.');
@@ -569,7 +595,120 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
     );
 
     // "edited" tag next to a label once a pre-filled value has been changed.
-    const editedTag = (field) => (isEdited(field) ? <span className="srkr-reg-edited-tag">edited</span> : null);
+    // The two numeric academic inputs — shared by the quick form and the full form.
+    const renderAcademicInputs = () => (
+        <div className="srkr-reg-row-2">
+            <div className="srkr-reg-field">
+                <label htmlFor="cgpa">Overall CGPA <span className="required">*</span></label>
+                <div className="srkr-reg-input-wrap">
+                    <span className="srkr-reg-input-icon">
+                        <svg {...ico}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
+                    </span>
+                    <input
+                        type="text" id="cgpa" name="cgpa"
+                        placeholder="e.g. 8.25 (out of 10)"
+                        value={formData.cgpa} onChange={handleChange}
+                        className={errors.cgpa ? 'has-error' : ''}
+                        maxLength={FIELD_LIMITS.cgpa}
+                        inputMode="decimal"
+                        autoComplete="off"
+                        aria-invalid={errors.cgpa ? 'true' : 'false'}
+                    />
+                </div>
+                {errors.cgpa && <span className="srkr-reg-error">{errors.cgpa}</span>}
+            </div>
+
+            <div className="srkr-reg-field">
+                <label htmlFor="activeBacklogs">
+                    Number of active backlogs <span className="required">*</span>
+                    <small className="srkr-reg-hint"> (0 if none)</small>
+                </label>
+                <div className="srkr-reg-input-wrap">
+                    <span className="srkr-reg-input-icon">
+                        <svg {...ico}><path d="M9 11.5 11 13.5l4-4" /><rect x="4" y="4" width="16" height="16" rx="2" /></svg>
+                    </span>
+                    <input
+                        type="text" id="activeBacklogs" name="activeBacklogs"
+                        placeholder="0"
+                        value={formData.activeBacklogs} onChange={handleChange}
+                        className={errors.activeBacklogs ? 'has-error' : ''}
+                        maxLength={FIELD_LIMITS.activeBacklogs}
+                        inputMode="numeric"
+                        autoComplete="off"
+                        aria-invalid={errors.activeBacklogs ? 'true' : 'false'}
+                    />
+                </div>
+                {errors.activeBacklogs && <span className="srkr-reg-error">{errors.activeBacklogs}</span>}
+            </div>
+        </div>
+    );
+
+    // The class time slot — exactly one of the offered slots must be chosen.
+    const renderTimeSlots = () => (
+        <div className={`srkr-reg-field srkr-reg-slots ${errors.timeSlot ? 'has-error' : ''}`}>
+            <label id="srkr-reg-slot-label">
+                Choose your class time slot <span className="required">*</span>
+                <small className="srkr-reg-hint"> (Pick one)</small>
+            </label>
+            <div className="srkr-reg-slot-grid" role="radiogroup" aria-labelledby="srkr-reg-slot-label">
+                {program.timeSlots.map((slot, i) => {
+                    const active = formData.timeSlot === slot.key;
+                    return (
+                        <button
+                            key={slot.key}
+                            type="button"
+                            role="radio"
+                            aria-checked={active}
+                            className={`srkr-reg-slot ${active ? 'active' : ''}`}
+                            onClick={() => selectValue('timeSlot', slot.key)}
+                        >
+                            <span className="srkr-reg-slot-ic" aria-hidden="true">
+                                <svg {...ico}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                            </span>
+                            <span className="srkr-reg-slot-body">
+                                <small>Slot {i + 1}</small>
+                                <strong>{slot.label}</strong>
+                            </span>
+                            <span className="srkr-reg-slot-dot" aria-hidden="true" />
+                        </button>
+                    );
+                })}
+            </div>
+            {errors.timeSlot && <span className="srkr-reg-error">{errors.timeSlot}</span>}
+        </div>
+    );
+
+    const renderSubmitError = () => (
+        submitError ? (
+            <div className="srkr-reg-alert" role="alert">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" />
+                </svg>
+                <span>{submitError}</span>
+            </div>
+        ) : null
+    );
+
+    const renderSubmit = (label, note) => (
+        <div className="srkr-reg-submit-wrap">
+            <button type="submit" className="srkr-reg-submit-btn" disabled={isSubmitting}>
+                {isSubmitting ? (
+                    <>
+                        <span className="srkr-reg-spinner" />
+                        <span>Processing Registration...</span>
+                    </>
+                ) : (
+                    <>
+                        <span>{label}</span>
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                    </>
+                )}
+            </button>
+            {note && <span className="srkr-reg-terms-text">{note}</span>}
+        </div>
+    );
 
     return (
         <div className="srkr-reg-modal-overlay" onClick={(e) => e.stopPropagation()}>
@@ -613,11 +752,11 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
 
                         {gated && identity && (
                             <div className="srkr-reg-picked" role="status">
-                                <span className="srkr-reg-picked-avatar" aria-hidden="true">{initialsOf(formData.fullName || identity.snapshot.fullName)}</span>
+                                <span className="srkr-reg-picked-avatar" aria-hidden="true">{initialsOf(formData.fullName || identity.student.fullName)}</span>
                                 <div className="srkr-reg-picked-main">
-                                    <strong>{identity.snapshot.fullName}</strong>
+                                    <strong>{identity.student.fullName}</strong>
                                     <small>
-                                        {identity.snapshot.rollNumber}
+                                        {identity.student.rollNumber}
                                         {identity.batch ? ` · ${identity.batch}` : ''}
                                         {' · '}
                                         <span className="srkr-reg-picked-ok">
@@ -637,7 +776,7 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                                 <svg {...ico} width="18" height="18" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
                                 <div>
                                     <strong>Your form is ready to auto-fill.</strong>
-                                    <span>Pick yourself above and your name, roll number, email, mobile, branch and the rest fill in from your SkillUp registration. You only add your CGPA and active backlogs.</span>
+                                    <span>Pick yourself above — your name, roll number, branch and contact details are already with us from your SkillUp registration. You only add your overall CGPA, active backlogs and class time slot.</span>
                                 </div>
                             </div>
                         )}
@@ -658,23 +797,45 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                             </div>
                         )}
 
-                        {/* Form — for gated intakes, only after step 1 */}
-                        {unlocked && !blocked && (
-                        <form onSubmit={handleSubmit} className="srkr-reg-form" noValidate>
-                            {identity && (
-                                <div className="srkr-reg-prefill-banner" role="status">
-                                    <span className="srkr-reg-step-no is-done" aria-hidden="true">2</span>
-                                    <div>
-                                        <strong>Details filled from your SkillUp Coder registration</strong>
-                                        <span>Check them below and edit anything that has changed — edits are saved with your {program.programName} registration. Then add your overall CGPA and active backlogs to confirm.</span>
-                                    </div>
+                        {/* Step 2 (roster-gated intakes): the three things only the student knows.
+                            Everything else is taken from their SkillUp Coder registration on the
+                            server, so there is no form to re-check or edit. */}
+                        {gated && identity && !blocked && (
+                        <form onSubmit={handleSubmit} className="srkr-reg-form srkr-reg-form--quick" noValidate>
+                            <div className="srkr-reg-quick-head" role="status">
+                                <span className="srkr-reg-step-no" aria-hidden="true">2</span>
+                                <div>
+                                    <strong>Three quick details and you’re registered</strong>
+                                    <span>Your name, roll number, branch and contact details are already with us from your SkillUp Coder registration — nothing to re-enter.</span>
                                 </div>
-                            )}
+                            </div>
 
+                            <div className="srkr-reg-field srkr-reg-academics">
+                                <label>
+                                    Academic Details <span className="required">*</span>
+                                    <small className="srkr-reg-hint"> (Both fields are mandatory)</small>
+                                </label>
+                                {renderAcademicInputs()}
+                            </div>
+
+                            {program.timeSlots && renderTimeSlots()}
+
+                            {renderSubmitError()}
+
+                            {renderSubmit(
+                                'Confirm Registration',
+                                `Confirming registers ${identity.student.fullName} for ${program.programName} with the details from your SkillUp Coder registration.`
+                            )}
+                        </form>
+                        )}
+
+                        {/* Open-to-all intakes: the full form (every such intake is closed right now). */}
+                        {!gated && (
+                        <form onSubmit={handleSubmit} className="srkr-reg-form" noValidate>
                             {/* Row 1: Full Name & Roll Number */}
                             <div className="srkr-reg-row-2">
                                 <div className="srkr-reg-field">
-                                    <label htmlFor="fullName">Student Full Name <span className="required">*</span>{editedTag('fullName')}</label>
+                                    <label htmlFor="fullName">Student Full Name <span className="required">*</span></label>
                                     <div className="srkr-reg-input-wrap">
                                         <span className="srkr-reg-input-icon">
                                             <svg {...ico}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
@@ -693,7 +854,7 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                                 </div>
 
                                 <div className="srkr-reg-field">
-                                    <label htmlFor="rollNumber">Roll Number / Reg. ID <span className="required">*</span>{editedTag('rollNumber')}</label>
+                                    <label htmlFor="rollNumber">Roll Number / Reg. ID <span className="required">*</span></label>
                                     <div className="srkr-reg-input-wrap">
                                         <span className="srkr-reg-input-icon">
                                             <svg {...ico}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="2" /><path d="M15 9h3M15 13h3M7 16h10" /></svg>
@@ -715,7 +876,7 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                             {/* Row 2: College Email & Mobile Number */}
                             <div className="srkr-reg-row-2">
                                 <div className="srkr-reg-field">
-                                    <label htmlFor="collegeEmail">College / Institutional Email ID <span className="required">*</span>{editedTag('collegeEmail')}</label>
+                                    <label htmlFor="collegeEmail">College / Institutional Email ID <span className="required">*</span></label>
                                     <div className="srkr-reg-input-wrap">
                                         <span className="srkr-reg-input-icon">
                                             <svg {...ico}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
@@ -734,7 +895,7 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                                 </div>
 
                                 <div className="srkr-reg-field">
-                                    <label htmlFor="mobileNumber">WhatsApp / Mobile Number <span className="required">*</span>{editedTag('mobileNumber')}</label>
+                                    <label htmlFor="mobileNumber">WhatsApp / Mobile Number <span className="required">*</span></label>
                                     <div className="srkr-reg-input-wrap has-prefix">
                                         <span className="srkr-reg-input-prefix">+91</span>
                                         <input
@@ -754,7 +915,7 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
 
                             {/* Row 3: Branch */}
                             <div className="srkr-reg-field">
-                                <label>Engineering Branch / Department <span className="required">*</span>{editedTag('branch')}</label>
+                                <label>Engineering Branch / Department <span className="required">*</span></label>
                                 <BranchSelect
                                     groups={BRANCH_GROUPS}
                                     value={formData.branch}
@@ -767,13 +928,13 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                             {/* Row 4: Gender & Residence Type */}
                             <div className="srkr-reg-row-2">
                                 <div className="srkr-reg-field">
-                                    <label>Gender <span className="required">*</span>{editedTag('gender')}</label>
+                                    <label>Gender <span className="required">*</span></label>
                                     {renderSegment('gender', GENDER_OPTIONS)}
                                     {errors.gender && <span className="srkr-reg-error">{errors.gender}</span>}
                                 </div>
 
                                 <div className="srkr-reg-field">
-                                    <label>Residence <span className="required">*</span>{editedTag('residenceType')}</label>
+                                    <label>Residence <span className="required">*</span></label>
                                     {renderSegment('residenceType', RESIDENCE_OPTIONS)}
                                     {errors.residenceType && <span className="srkr-reg-error">{errors.residenceType}</span>}
                                 </div>
@@ -782,7 +943,7 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                             {/* Row 5: Laptop availability (CRT enrolment question retired) */}
                             <div className="srkr-reg-field">
                                 <label>
-                                    Do you have a Laptop? <span className="required">*</span>{editedTag('hasLaptop')}
+                                    Do you have a Laptop? <span className="required">*</span>
                                 </label>
                                 {renderSegment('hasLaptop', LAPTOP_OPTIONS)}
                                 {errors.hasLaptop && <span className="srkr-reg-error">{errors.hasLaptop}</span>}
@@ -848,52 +1009,12 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                                         Academic Details <span className="required">*</span>
                                         <small className="srkr-reg-hint"> (Both fields are mandatory)</small>
                                     </label>
-                                    <div className="srkr-reg-row-2">
-                                        <div className="srkr-reg-field">
-                                            <label htmlFor="cgpa">Overall CGPA <span className="required">*</span></label>
-                                            <div className="srkr-reg-input-wrap">
-                                                <span className="srkr-reg-input-icon">
-                                                    <svg {...ico}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
-                                                </span>
-                                                <input
-                                                    type="text" id="cgpa" name="cgpa"
-                                                    placeholder="e.g. 8.25 (out of 10)"
-                                                    value={formData.cgpa} onChange={handleChange}
-                                                    className={errors.cgpa ? 'has-error' : ''}
-                                                    maxLength={FIELD_LIMITS.cgpa}
-                                                    inputMode="decimal"
-                                                    autoComplete="off"
-                                                    aria-invalid={errors.cgpa ? 'true' : 'false'}
-                                                />
-                                            </div>
-                                            {errors.cgpa && <span className="srkr-reg-error">{errors.cgpa}</span>}
-                                        </div>
-
-                                        <div className="srkr-reg-field">
-                                            <label htmlFor="activeBacklogs">
-                                                Number of active backlogs <span className="required">*</span>
-                                                <small className="srkr-reg-hint"> (0 if none)</small>
-                                            </label>
-                                            <div className="srkr-reg-input-wrap">
-                                                <span className="srkr-reg-input-icon">
-                                                    <svg {...ico}><path d="M9 11.5 11 13.5l4-4" /><rect x="4" y="4" width="16" height="16" rx="2" /></svg>
-                                                </span>
-                                                <input
-                                                    type="text" id="activeBacklogs" name="activeBacklogs"
-                                                    placeholder="0"
-                                                    value={formData.activeBacklogs} onChange={handleChange}
-                                                    className={errors.activeBacklogs ? 'has-error' : ''}
-                                                    maxLength={FIELD_LIMITS.activeBacklogs}
-                                                    inputMode="numeric"
-                                                    autoComplete="off"
-                                                    aria-invalid={errors.activeBacklogs ? 'true' : 'false'}
-                                                />
-                                            </div>
-                                            {errors.activeBacklogs && <span className="srkr-reg-error">{errors.activeBacklogs}</span>}
-                                        </div>
-                                    </div>
+                                    {renderAcademicInputs()}
                                 </div>
                             )}
+
+                            {/* Row 8: Class time slot — for programs that offer them */}
+                            {program.timeSlots && renderTimeSlots()}
 
                             {/* Mapped program live preview */}
                             <div
@@ -921,39 +1042,9 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                                 <p className="srkr-reg-program-desc">{program.description}</p>
                             </div>
 
-                            {/* Server / network failure message */}
-                            {submitError && (
-                                <div className="srkr-reg-alert" role="alert">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" />
-                                    </svg>
-                                    <span>{submitError}</span>
-                                </div>
-                            )}
+                            {renderSubmitError()}
 
-                            {/* Submit */}
-                            <div className="srkr-reg-submit-wrap">
-                                <button type="submit" className="srkr-reg-submit-btn" disabled={isSubmitting}>
-                                    {isSubmitting ? (
-                                        <>
-                                            <span className="srkr-reg-spinner" />
-                                            <span>Processing Registration...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span>{identity ? 'Confirm Registration' : 'Complete Registration'}</span>
-                                            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M5 12h14M13 6l6 6-6 6" />
-                                            </svg>
-                                        </>
-                                    )}
-                                </button>
-                                {identity && (
-                                    <span className="srkr-reg-terms-text">
-                                        Confirming saves the details exactly as shown above to your {program.programName} registration.
-                                    </span>
-                                )}
-                            </div>
+                            {renderSubmit('Complete Registration', null)}
                         </form>
                         )}
                     </>
@@ -1002,16 +1093,23 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                         )}
 
                         <div className="srkr-reg-success-details">
-                            <div className="srkr-reg-success-row"><span>Roll Number</span><strong>{formData.rollNumber.toUpperCase()}</strong></div>
-                            <div className="srkr-reg-success-row"><span>Branch</span><strong>{formData.branch}</strong></div>
-                            <div className="srkr-reg-success-row"><span>Gender</span><strong>{formData.gender}</strong></div>
-                            <div className="srkr-reg-success-row"><span>Residence</span><strong>{formData.residenceType}</strong></div>
-                            <div className="srkr-reg-success-row"><span>Has Laptop</span><strong>{formData.hasLaptop}</strong></div>
-                            {program.academics && <div className="srkr-reg-success-row"><span>Overall CGPA</span><strong>{formData.cgpa}</strong></div>}
-                            {program.academics && <div className="srkr-reg-success-row"><span>Active Backlogs</span><strong>{formData.activeBacklogs}</strong></div>}
-                            {identity?.batch && <div className="srkr-reg-success-row"><span>SkillUp Batch</span><strong>{identity.batch}</strong></div>}
-                            <div className="srkr-reg-success-row"><span>Passout Year</span><strong>{program.passoutYear}</strong></div>
-                            <div className="srkr-reg-success-row"><span>Assigned Program</span><strong>{program.programName}</strong></div>
+                            {[
+                                ['Roll Number', (formData.rollNumber || '').toUpperCase()],
+                                ['Branch', formData.branch],
+                                ['Gender', formData.gender],
+                                ['Residence', formData.residenceType],
+                                ['Has Laptop', formData.hasLaptop],
+                                program.academics ? ['Overall CGPA', formData.cgpa] : null,
+                                program.academics ? ['Active Backlogs', formData.activeBacklogs] : null,
+                                ['SkillUp Batch', formData.batch || identity?.batch],
+                                program.timeSlots ? ['Class Time Slot', slotLabel(formData.timeSlot) || formData.timeSlot] : null,
+                                ['Passout Year', program.passoutYear],
+                                ['Assigned Program', program.programName]
+                            ]
+                                .filter((row) => row && row[1] !== undefined && row[1] !== null && row[1] !== '')
+                                .map(([label, value]) => (
+                                    <div key={label} className="srkr-reg-success-row"><span>{label}</span><strong>{value}</strong></div>
+                                ))}
                         </div>
 
                         <div className="srkr-reg-success-actions">

@@ -114,6 +114,43 @@ const buildRoadmap = (cert, hackerRank) => [cert, hackerRank, ...SHARED_ROADMAP]
 const BAMBOO_ROADMAP = buildRoadmap(CISCO_C_CERT, HACKERRANK_C_BADGE);
 const SKILLUP_ROADMAP = buildRoadmap(CISCO_CPP_CERT, HACKERRANK_CPP_BADGE);
 
+// Moon Coder's specialty — "Contest Upsolving". Instead of the certificate
+// pipeline above, this track runs a standing weekly contest timeline: CodeChef
+// on Monday and Wednesday, LeetCode's Biweekly on Saturday (every other week)
+// and its Weekly on Sunday, with the days between kept for upsolving the
+// problems that got away. Four such weeks lead into the month-end ToriiMinds
+// Monthly Coding Contest. Rendered by ContestRoadmap in program-detail-modal.jsx:
+// a seven-column strip on desktop, a vertical timeline on narrow screens.
+//
+//   day       Mon … Sun label; `upsolve: true` marks a quiet (practice) day
+//   cadence   'weekly' | 'biweekly' — the finale is 'monthly'
+//   platform  key into `logos`; the brand marks are the same square PNGs the
+//             roadmap uses, plus the Torii mark for the house contest.
+const MOON_CONTEST = {
+    logos: {
+        codechef: `${JOURNEY_DIR}/codechef_logo_square.png`,
+        leetcode: `${JOURNEY_DIR}/leetcode_logo_square.png`,
+        torii: '/assets/images/srkr/project-images/torii-mark.svg'
+    },
+    week: [
+        { day: 'Mon', dayName: 'Monday', platform: 'codechef', brand: 'CodeChef', title: 'CodeChef Coding Contest', cadence: 'weekly' },
+        { day: 'Tue', dayName: 'Tuesday', upsolve: true },
+        { day: 'Wed', dayName: 'Wednesday', platform: 'codechef', brand: 'CodeChef', title: 'CodeChef Coding Contest', cadence: 'weekly' },
+        { day: 'Thu', dayName: 'Thursday', upsolve: true },
+        { day: 'Fri', dayName: 'Friday', upsolve: true },
+        { day: 'Sat', dayName: 'Saturday', platform: 'leetcode', brand: 'LeetCode', title: 'LeetCode Biweekly Contest', cadence: 'biweekly' },
+        { day: 'Sun', dayName: 'Sunday', platform: 'leetcode', brand: 'LeetCode', title: 'LeetCode Weekly Contest', cadence: 'weekly' }
+    ],
+    finale: {
+        platform: 'torii',
+        brand: 'ToriiMinds',
+        title: 'Monthly Coding Contest',
+        cadence: 'monthly',
+        note: 'Four weeks of contests build up to one full-length contest set by ToriiMinds — the month’s scoreboard, upsolved together afterwards.',
+        tags: ['Monthly Coding Contest', 'Post-Contest Upsolving', 'Prizes for Winners']
+    }
+};
+
 export const programsData = [
     {
         id: 'bamboo',
@@ -1347,7 +1384,7 @@ export const programsData = [
         year: 'Exclusive For 2029 Passouts',
         banner: '/assets/images/srkr/project-images/Torii_Program_banners/Moon_coder.png',
         tagline: 'Core Problem Solving & DSA Readiness',
-        description: 'Comprehensive 15-module core problem-solving curriculum taking learners from programming fundamentals through Linear Data Structures, Two Pointers, and Backtracking.',
+        description: 'Comprehensive 14-module core problem-solving curriculum taking learners from Arrays and Strings through Linear Data Structures, Two Pointers, and Backtracking — with weekly contest upsolving.',
         badge: 'Master Problem Solving Track',
         themeColor: 'var(--srkr-secondary)',
         accentBg: 'var(--srkr-bg-warm-tint)',
@@ -1363,9 +1400,11 @@ export const programsData = [
                 title: 'Core Problem Solving & DSA Readiness',
                 level: '',
                 prerequisites: 'Beginner Friendly — Designed for BTech Coursework Pace',
-                overview: 'Sequential 15-module coverage from programming fundamentals through Arrays, Strings, Hashing, Linked Lists, Stacks, Queues, Two Pointers, and Backtracking.',
+                overview: 'Sequential 14-module coverage from Arrays and Strings through Math, Sorting, Searching, Hashing, Linked Lists, Stacks, Queues, Two Pointers, and Backtracking — paired with weekly contest upsolving on CodeChef and LeetCode.',
+                // The program's specialty — rendered as the highlighted "Contest Upsolving" tab.
+                contest: MOON_CONTEST,
                 outcomes: [
-                    'Master programming fundamentals, syntax, control flow, loops, and functions',
+                    'Compete every week on CodeChef and LeetCode, then upsolve what you missed',
                     'Solve standard problems in Arrays, Strings, Math, Sorting, and Searching',
                     'Implement core data structures: HashMaps, Linked Lists, Stacks, and Queues',
                     'Apply algorithmic patterns: Two Pointers, Sliding Window, Prefix Sum, and Backtracking',
@@ -1374,21 +1413,6 @@ export const programsData = [
                 modules: [
                     {
                         moduleNumber: 'Module 1',
-                        title: 'Programming Fundamentals',
-                        duration: 'Core',
-                        topics: [
-                            'IDE & Compiler Setup',
-                            'Variables & Data Types',
-                            'Input / Output Operations',
-                            'Operators & Expressions',
-                            'Conditional Statements (if-else, switch)',
-                            'Loops & Iteration (for, while, do-while)',
-                            'Pattern Printing (Star & Number Patterns)',
-                            'Functions & Methods'
-                        ]
-                    },
-                    {
-                        moduleNumber: 'Module 2',
                         title: 'Arrays',
                         duration: 'Core',
                         topics: [
@@ -1398,7 +1422,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 3',
+                        moduleNumber: 'Module 2',
                         title: 'Strings',
                         duration: 'Core',
                         topics: [
@@ -1408,7 +1432,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 4',
+                        moduleNumber: 'Module 3',
                         title: 'Math & Number Problems',
                         duration: 'Core',
                         topics: [
@@ -1417,7 +1441,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 5',
+                        moduleNumber: 'Module 4',
                         title: 'Time & Space Complexity',
                         duration: 'Core',
                         topics: [
@@ -1426,7 +1450,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 6',
+                        moduleNumber: 'Module 5',
                         title: 'Recursion',
                         duration: 'Core',
                         topics: [
@@ -1436,7 +1460,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 7',
+                        moduleNumber: 'Module 6',
                         title: 'Bit Manipulation (Basic)',
                         duration: 'Core',
                         topics: [
@@ -1445,7 +1469,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 8',
+                        moduleNumber: 'Module 7',
                         title: 'Sorting',
                         duration: 'Core',
                         topics: [
@@ -1455,7 +1479,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 9',
+                        moduleNumber: 'Module 8',
                         title: 'Searching',
                         duration: 'Core',
                         topics: [
@@ -1464,7 +1488,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 10',
+                        moduleNumber: 'Module 9',
                         title: 'Hashing',
                         duration: 'Core',
                         topics: [
@@ -1473,7 +1497,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 11',
+                        moduleNumber: 'Module 10',
                         title: 'Linked List',
                         duration: 'Core',
                         topics: [
@@ -1483,7 +1507,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 12',
+                        moduleNumber: 'Module 11',
                         title: 'Stack',
                         duration: 'Core',
                         topics: [
@@ -1492,7 +1516,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 13',
+                        moduleNumber: 'Module 12',
                         title: 'Queue',
                         duration: 'Core',
                         topics: [
@@ -1501,7 +1525,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 14',
+                        moduleNumber: 'Module 13',
                         title: 'Two Pointer & Sliding Window',
                         duration: 'Core',
                         topics: [
@@ -1511,7 +1535,7 @@ export const programsData = [
                         ]
                     },
                     {
-                        moduleNumber: 'Module 15',
+                        moduleNumber: 'Module 14',
                         title: 'Backtracking',
                         duration: 'Core',
                         topics: [

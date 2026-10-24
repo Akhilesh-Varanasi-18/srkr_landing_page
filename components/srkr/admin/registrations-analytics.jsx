@@ -17,7 +17,9 @@ import {
     BranchYearStacked,
     MoonUptake,
     CgpaBands,
-    BacklogSplit
+    BacklogSplit,
+    TimeSlotSplit,
+    SlotByBatch
 } from '../dashboard/dashboard-charts';
 import { RANGES, RANGE_LABELS, formatDateTime } from '../dashboard/dashboard-theme';
 import { IconDownload, IconRefresh, IconAlert } from '../dashboard/dashboard-icons';
@@ -378,6 +380,8 @@ export default function RegistrationsAnalytics() {
                                 <MoonUptake data={data.moonCoder} span={4} />
                                 <CgpaBands data={data.byCgpaBand || []} academics={data.academics} span={4} />
                                 <BacklogSplit data={data.byBacklogs || []} span={4} />
+                                <TimeSlotSplit data={data.byTimeSlot || []} span={5} />
+                                <SlotByBatch data={data.slotByBatch || []} slots={data.moonCoder.timeSlots || []} span={7} />
                             </div>
                         </>
                     )}

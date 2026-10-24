@@ -48,6 +48,7 @@ export default function RecentTable({ rows }) {
                             <th>Batch</th>
                             <th>CGPA</th>
                             <th>Backlogs</th>
+                            <th>Slot</th>
                             <th>Gender</th>
                             <th>Residence</th>
                             <th>Registered</th>
@@ -56,7 +57,7 @@ export default function RecentTable({ rows }) {
                     <tbody>
                         {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan={12} className="dash-table-empty">
+                                <td colSpan={13} className="dash-table-empty">
                                     {rows.length === 0 ? 'No registrations yet.' : 'No matches for your search.'}
                                 </td>
                             </tr>
@@ -75,6 +76,7 @@ export default function RecentTable({ rows }) {
                                         ? <span className={`dash-pill ${r.activeBacklogs === 0 ? 'dash-pill--ok' : 'dash-pill--warn'}`}>{r.activeBacklogs}</span>
                                         : '—'}
                                 </td>
+                                <td style={{ whiteSpace: 'nowrap' }}>{r.timeSlot || '—'}</td>
                                 <td><span className={`dash-pill ${r.gender === 'Female' ? 'dash-pill--f' : 'dash-pill--m'}`}>{r.gender}</span></td>
                                 <td>{r.residenceType}</td>
                                 <td>{formatDateTime(r.createdAt)}</td>

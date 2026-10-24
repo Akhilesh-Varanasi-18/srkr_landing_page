@@ -5024,6 +5024,138 @@
   }
 }
 
+// Quick form (roster-gated intakes): after the student picks themselves there is
+// no form to re-check — just the step-2 note, the two academic fields and the
+// class time slot. The slot picker is a pair of radio cards.
+.srkr-reg-quick-head {
+  @extend %srkr-reg-note;
+  background: rgba(16, 185, 129, 0.08); // --srkr-success tint
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  color: #065f46;
+  animation: srkrClosedNoticeIn 0.25s ease;
+
+  strong { color: #065f46; }
+}
+
+.srkr-reg-slot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  @media (max-width: 575px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.srkr-reg-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--srkr-border);
+  background: var(--srkr-bg-section);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--srkr-font-primary);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .srkr-reg-slot-ic {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--srkr-border);
+    color: var(--srkr-muted);
+    transition: all 0.2s ease;
+
+    svg { width: 20px; height: 20px; }
+  }
+
+  .srkr-reg-slot-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    small {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--srkr-muted);
+    }
+
+    strong {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--srkr-heading);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+  }
+
+  .srkr-reg-slot-dot {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--srkr-border);
+    background: #fff;
+    display: grid;
+    place-items: center;
+    transition: border-color 0.2s ease;
+
+    &::after {
+      content: '';
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--srkr-gradient-primary);
+      transform: scale(0);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  }
+
+  &:hover {
+    border-color: rgba(226, 84, 76, 0.4);
+    background: var(--srkr-bg-coral-tint);
+  }
+
+  &.active {
+    border-color: var(--srkr-primary);
+    background: var(--srkr-bg-coral-tint);
+    box-shadow: 0 6px 16px rgba(226, 84, 76, 0.14);
+
+    .srkr-reg-slot-ic {
+      background: var(--srkr-gradient-primary);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .srkr-reg-slot-body strong { color: var(--srkr-primary); }
+
+    .srkr-reg-slot-dot {
+      border-color: var(--srkr-primary);
+      &::after { transform: scale(1); }
+    }
+  }
+
+  @media (max-width: 575px) {
+    padding: 11px 12px;
+    .srkr-reg-slot-ic { width: 36px; height: 36px; }
+  }
+}
+
+.srkr-reg-slots.has-error .srkr-reg-slot {
+  border-color: rgba(239, 68, 68, 0.55);
+}
+
 // Program Preview Box
 .srkr-reg-program-preview {
   padding: 12px 14px;
@@ -6008,6 +6140,26 @@
   }
 }
 
+// The track's specialty tab (Moon Coder's "Contest Upsolving"): a gradient
+// outline with a slow glow until it becomes the active (filled) pill.
+.srkr-syll-rail-btn.is-highlight:not(.is-active) {
+  color: var(--srkr-primary);
+  border-color: transparent;
+  background:
+    linear-gradient(var(--srkr-bg-section), var(--srkr-bg-section)) padding-box,
+    var(--srkr-gradient-primary) border-box;
+  animation: srkrRailGlow 2.4s ease-in-out infinite;
+  svg { opacity: 1; }
+  &:hover { background: linear-gradient(var(--srkr-bg-coral-tint), var(--srkr-bg-coral-tint)) padding-box, var(--srkr-gradient-primary) border-box; }
+}
+@keyframes srkrRailGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(226, 84, 76, 0.3); }
+  60% { box-shadow: 0 0 0 7px rgba(226, 84, 76, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .srkr-syll-rail-btn.is-highlight:not(.is-active) { animation: none; }
+}
+
 /* ---- Section shell + heading ---- */
 .srkr-syll-section { scroll-margin-top: 72px; padding: 8px 0 10px; }
 
@@ -6702,6 +6854,187 @@
   .srkr-modlad-marker,
   .srkr-modlad-chevron,
   .srkr-modlad-toggleall { transition: none; }
+}
+
+/* =========================================================================
+   Contest Upsolving — Moon Coder's weekly contest timeline
+   Desktop: seven day columns on one horizontal track (the dot of every column
+   sits on the track at 37px: a 22px day label + 8px gap + half a 15px dot).
+   <=1024px: a vertical timeline, day label left, track at 51px, cards right.
+   The month-end ToriiMinds contest follows as the finale card.
+   ========================================================================= */
+.srkr-contest { padding: 2px 0 6px; }
+
+.srkr-contest-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.srkr-contest-key {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 11px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; color: var(--srkr-body-alt);
+  background: var(--srkr-bg-section); border: 1px solid var(--srkr-border);
+  &::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--srkr-primary); }
+  &.is-biweekly::before { background: var(--srkr-tertiary); }
+  &.is-upsolve::before { background: transparent; border: 2px dashed var(--srkr-muted); }
+  &.is-monthly::before { background: var(--srkr-gradient-primary); }
+}
+
+.srkr-contest-week {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+.srkr-contest-track {
+  position: absolute;
+  left: 7.14%; right: 7.14%; /* half a column in — from the first dot to the last */
+  top: 37px; height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--srkr-primary), var(--srkr-secondary), var(--srkr-tertiary));
+  opacity: 0.45;
+}
+.srkr-contest-day {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 0;
+}
+.srkr-contest-dayname {
+  height: 22px; line-height: 22px;
+  font-family: var(--srkr-font-primary);
+  font-size: 11.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
+  color: var(--srkr-muted);
+  .is-weekly &, .is-biweekly & { color: var(--srkr-heading); }
+}
+.srkr-contest-dot {
+  position: relative; z-index: 2;
+  width: 15px; height: 15px; margin: 8px 0 12px;
+  border-radius: 50%;
+  background: var(--srkr-gradient-primary);
+  border: 3px solid var(--srkr-bg-body);
+  box-shadow: 0 0 0 3px rgba(226, 84, 76, 0.18);
+  .is-biweekly & { background: linear-gradient(135deg, var(--srkr-secondary), var(--srkr-tertiary)); box-shadow: 0 0 0 3px rgba(242, 166, 59, 0.24); }
+  .is-upsolve & { background: var(--srkr-bg-body); border: 2px dashed var(--srkr-muted); box-shadow: none; }
+}
+
+.srkr-contest-card {
+  width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  padding: 14px 10px 13px;
+  border-radius: 16px;
+  border: 1px solid var(--srkr-border);
+  background: var(--srkr-bg-body);
+  box-shadow: var(--srkr-shadow-card);
+  text-align: center;
+  transition: var(--srkr-transition);
+  &:hover { transform: translateY(-3px); box-shadow: var(--srkr-shadow-hover); border-color: rgba(226, 84, 76, 0.34); }
+  &.is-quiet {
+    border-style: dashed; background: var(--srkr-bg-section); box-shadow: none;
+    &:hover { transform: none; box-shadow: none; border-color: var(--srkr-border); }
+  }
+}
+.srkr-contest-card-body { display: flex; flex-direction: column; align-items: center; gap: 7px; min-width: 0; }
+.srkr-contest-logo {
+  width: 54px; height: 54px; flex-shrink: 0;
+  padding: 3px; border-radius: 15px;
+  background: linear-gradient(135deg, var(--srkr-primary), var(--srkr-tertiary));
+  box-shadow: 0 6px 14px rgba(226, 84, 76, 0.2);
+  img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 12px; background: #fff; }
+}
+.srkr-contest-quiet-ic {
+  width: 40px; height: 40px; flex-shrink: 0;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  color: var(--srkr-muted);
+  background: var(--srkr-bg-body);
+  border: 1px solid var(--srkr-border);
+  svg { width: 18px; height: 18px; }
+}
+.srkr-contest-title {
+  font-family: var(--srkr-font-primary);
+  font-size: 12.5px; font-weight: 800; line-height: 1.3;
+  color: var(--srkr-heading);
+  .is-quiet & { color: var(--srkr-body-alt); }
+}
+.srkr-contest-note { font-size: 11px; line-height: 1.4; color: var(--srkr-muted); }
+.srkr-contest-cadence {
+  display: inline-flex; align-items: center;
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
+  color: var(--srkr-primary); background: var(--srkr-bg-coral-tint);
+  white-space: nowrap;
+  &.is-biweekly { color: #B45309; background: rgba(242, 166, 59, 0.18); } // amber text on --srkr-tertiary tint
+  &.is-monthly { color: #fff; background: var(--srkr-gradient-primary); }
+}
+
+.srkr-contest-flow { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 14px 0; }
+.srkr-contest-flow-line {
+  width: 3px; height: 22px; border-radius: 999px;
+  background: linear-gradient(180deg, var(--srkr-primary), var(--srkr-tertiary));
+  opacity: 0.45;
+}
+.srkr-contest-flow-pill {
+  display: inline-flex; align-items: center;
+  padding: 6px 14px; border-radius: 999px;
+  border: 1px dashed var(--srkr-border); background: var(--srkr-bg-section);
+  font-family: var(--srkr-font-primary);
+  font-size: 12px; font-weight: 800; color: var(--srkr-muted);
+  text-align: center;
+}
+
+.srkr-contest-finale {
+  display: flex; align-items: center; gap: 18px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--srkr-bg-body), var(--srkr-bg-body)) padding-box,
+    var(--srkr-gradient-primary) border-box;
+  box-shadow: 0 10px 30px rgba(226, 84, 76, 0.2);
+}
+.srkr-contest-finale-logo {
+  flex-shrink: 0;
+  width: 84px; height: 84px;
+  display: grid; place-items: center;
+  border-radius: 20px;
+  background: var(--srkr-bg-warm-tint);
+  border: 1px solid rgba(237, 114, 54, 0.25); // --srkr-secondary
+  img { display: block; width: 54px; height: 54px; object-fit: contain; }
+}
+.srkr-contest-finale-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.srkr-contest-finale-eyebrow {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
+  color: var(--srkr-secondary);
+}
+.srkr-contest-finale-title { margin: 0; font-family: var(--srkr-font-primary); font-size: 20px; font-weight: 800; line-height: 1.2; color: var(--srkr-heading); }
+.srkr-contest-finale-note { margin: 0; font-size: 13px; line-height: 1.55; color: var(--srkr-body-alt); max-width: 62ch; }
+
+/* ---- Narrow: the strip becomes a vertical timeline ---- */
+@media (max-width: 1024px) {
+  .srkr-contest-week { display: flex; flex-direction: column; gap: 10px; }
+  .srkr-contest-track {
+    left: 51px; right: auto; top: 18px; bottom: 18px;
+    width: 3px; height: auto;
+    background: linear-gradient(180deg, var(--srkr-primary), var(--srkr-secondary), var(--srkr-tertiary));
+  }
+  .srkr-contest-day { flex-direction: row; align-items: flex-start; padding-left: 72px; }
+  .srkr-contest-dayname { position: absolute; left: 0; top: 10px; width: 40px; height: auto; line-height: 1.2; text-align: right; }
+  .srkr-contest-dot { position: absolute; left: 44px; top: 11px; margin: 0; }
+  .srkr-contest-card { flex-direction: row; align-items: center; gap: 12px; padding: 10px 12px; text-align: left; }
+  .srkr-contest-card-body { flex: 1; align-items: flex-start; gap: 5px; }
+  .srkr-contest-logo { width: 46px; height: 46px; border-radius: 13px; img { border-radius: 10px; } }
+  .srkr-contest-quiet-ic { width: 38px; height: 38px; }
+  .srkr-contest-title { font-size: 13px; }
+}
+
+/* ---- Phone: tighter gutter, stacked finale ---- */
+@media (max-width: 480px) {
+  .srkr-contest-track { left: 43px; }
+  .srkr-contest-day { padding-left: 62px; }
+  .srkr-contest-dayname { width: 32px; font-size: 10.5px; }
+  .srkr-contest-dot { left: 36px; }
+  .srkr-contest-finale { flex-direction: column; align-items: flex-start; gap: 14px; padding: 16px; }
+  .srkr-contest-finale-logo { width: 64px; height: 64px; border-radius: 16px; img { width: 42px; height: 42px; } }
+  .srkr-contest-finale-title { font-size: 18px; }
+  .srkr-contest-flow-pill { font-size: 11.5px; padding: 6px 12px; }
 }
 
 /* ---- Tablet ---- */
