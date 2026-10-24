@@ -48,7 +48,7 @@ const getSlidesToShow = (width) => {
     return 3;
 };
 
-const Programs = () => {
+const Programs = ({ onOpenRegister }) => {
     const [selectedProgram, setSelectedProgram] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     // Drive slidesToShow from the real viewport width ourselves.
@@ -73,6 +73,11 @@ const Programs = () => {
     const handleCloseProgram = () => {
         setIsModalOpen(false);
         setSelectedProgram(null);
+    };
+
+    // Open the registration form straight onto this program's intake.
+    const handleRegister = (program) => {
+        if (onOpenRegister) onOpenRegister(program.registrationKey || program.id);
     };
 
     // Slick Carousel settings — slidesToShow is computed above, not via `responsive`.
@@ -115,7 +120,7 @@ const Programs = () => {
                     <Slider key={slidesToShow} {...sliderSettings}>
                         {programsData.map((program) => (
                             <div key={program.id} className="srkr-program-slide-item">
-                                <div className={`srkr-program-card ${program.id}`}>
+                                <div className={`srkr-program-card ${program.id} ${program.registrationsOpen ? 'is-open' : ''}`}>
                                     {/* Full-width Top Logo Banner */}
                                     <div className="srkr-program-banner-wrapper">
                                         <img 
@@ -133,6 +138,22 @@ const Programs = () => {
                                                 Registrations Closed
                                             </span>
                                         )}
+                                        {/* Live intake: a green badge-button on the banner that opens
+                                            the form directly on this program (mirrors the closed badge). */}
+                                        {program.registrationsOpen && (
+                                            <button
+                                                type="button"
+                                                className="srkr-program-open-badge"
+                                                onClick={() => handleRegister(program)}
+                                                aria-label={`Registrations are open now for ${program.name} — register`}
+                                            >
+                                                <span className="srkr-program-open-dot" aria-hidden="true" />
+                                                <span className="srkr-program-open-text">Registrations are open now</span>
+                                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                    <path d="M5 12h14M13 6l6 6-6 6" />
+                                                </svg>
+                                            </button>
+                                        )}
                                     </div>
 
                                     {/* Card Content Body */}
@@ -142,8 +163,17 @@ const Programs = () => {
                                         )}
                                         <p className="srkr-program-desc">{program.description}</p>
 
-                                        {/* Action Button */}
-                                        <div className="srkr-program-card-footer">
+                                        {/* Action Buttons — an open intake gets a Register CTA beside the syllabus link */}
+                                        <div className={`srkr-program-card-footer ${program.registrationsOpen ? 'is-dual' : ''}`}>
+                                            {program.registrationsOpen && (
+                                                <button
+                                                    type="button"
+                                                    className="srkr-program-btn srkr-program-btn--register"
+                                                    onClick={() => handleRegister(program)}
+                                                >
+                                                    Register Now <span>→</span>
+                                                </button>
+                                            )}
                                             <button
                                                 type="button"
                                                 className="srkr-program-btn"

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { getRegistrationsCollection } from '../../../lib/mongodb';
-import { validateRegistration, PASSOUT_YEAR_PROGRAM_MAP } from '../../../lib/registration-schema';
+import { validateRegistration, sanitizePrefill } from '../../../lib/registration-schema';
+import { eligibleEntry } from '../../../lib/registration-eligibility';
 
 // Registrations must hit the database on every request — never cache or prerender.
 export const dynamic = 'force-dynamic';
@@ -13,7 +14,9 @@ const buildRegistrationId = () => `TM-SRKR-${100000 + crypto.randomInt(900000)}`
 
 /** Maps a MongoDB duplicate-key error onto the field the student needs to fix. */
 function duplicateFieldFrom(error) {
-    const key = error?.keyPattern ? Object.keys(error.keyPattern)[0] : null;
+    // The unique indexes are compound ({ programCode, rollNumber } etc.) — the
+    // student-facing field is whichever key is not the program.
+    const key = error?.keyPattern ? Object.keys(error.keyPattern).find((k) => k !== 'programCode') : null;
     if (key === 'rollNumber') return { field: 'rollNumber', message: 'This roll number is already registered' };
     if (key === 'collegeEmail') return { field: 'collegeEmail', message: 'This email ID is already registered' };
     return null;
@@ -37,8 +40,11 @@ export async function POST(request) {
     }
 
     // 2. Authoritative validation. The client runs the same rules for instant
-    //    feedback, but this is the check that actually gates the write.
-    const { values, errors } = validateRegistration(payload);
+    //    feedback, but this is the check that actually gates the write. The
+    //    program (and therefore the passout year, code and track) is derived
+    //    server-side from the key, so a tampered request can't register itself
+    //    into a program it didn't earn.
+    const { values, errors, program } = validateRegistration(payload);
     if (Object.keys(errors).length > 0) {
         return NextResponse.json(
             { success: false, message: 'Please correct the highlighted fields.', errors },
@@ -46,9 +52,31 @@ export async function POST(request) {
         );
     }
 
-    // 3. Derive the program server-side. The client sends only passoutYear, so a
-    //    tampered request can't register itself into a program it didn't earn.
-    const program = PASSOUT_YEAR_PROGRAM_MAP[values.passoutYear];
+    // 3. Roster-gated intakes: the roll number must be on the shortlist. This is
+    //    checked against the roster, not the form, so editing the roll number on
+    //    a pre-filled form cannot let a non-shortlisted student in.
+    let rosterEntry = null;
+    if (program.eligibility === 'skillup-roster') {
+        try {
+            rosterEntry = await eligibleEntry(values.rollNumber);
+        } catch (error) {
+            console.error('[register] eligibility lookup failed:', error);
+            return NextResponse.json(
+                { success: false, message: 'We could not verify your eligibility right now. Please try again in a moment.' },
+                { status: 503 }
+            );
+        }
+        if (!rosterEntry) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: `${program.programName} registrations are open only for the SkillUp Coder shortlist.`,
+                    errors: { rollNumber: 'This roll number is not on the SkillUp Coder shortlist' }
+                },
+                { status: 403 }
+            );
+        }
+    }
 
     let collection;
     try {
@@ -61,11 +89,12 @@ export async function POST(request) {
         );
     }
 
-    // 4. Friendly pre-check for duplicates. The unique indexes are the real
-    //    guarantee (this lookup can race), but it lets us name both fields at once.
+    // 4. Friendly pre-check for duplicates WITHIN this program. The compound
+    //    unique indexes are the real guarantee (this lookup can race), but it
+    //    lets us name both fields at once.
     try {
         const existing = await collection.findOne(
-            { $or: [{ rollNumber: values.rollNumber }, { collegeEmail: values.collegeEmail }] },
+            { programCode: program.code, $or: [{ rollNumber: values.rollNumber }, { collegeEmail: values.collegeEmail }] },
             { projection: { rollNumber: 1, collegeEmail: 1 } }
         );
         if (existing) {
@@ -77,7 +106,7 @@ export async function POST(request) {
                 duplicateErrors.collegeEmail = 'This email ID is already registered';
             }
             return NextResponse.json(
-                { success: false, message: 'You have already registered.', errors: duplicateErrors },
+                { success: false, message: `You have already registered for ${program.programName}.`, errors: duplicateErrors },
                 { status: 409 }
             );
         }
@@ -89,10 +118,16 @@ export async function POST(request) {
         );
     }
 
-    // 5. Insert, retrying only on a registrationId collision so a random-ID clash
-    //    never surfaces to the student as an error.
+    // 5. Build the record. Academic fields are stored as numbers (they feed the
+    //    dashboard's CGPA bands and backlog split); the pre-fill block records
+    //    where the details came from and what the student changed.
+    const { cgpa, activeBacklogs, ...studentValues } = values;
+    const prefill = sanitizePrefill(payload.prefill);
     const document = {
-        ...values,
+        ...studentValues,
+        ...(program.academics ? { cgpa, activeBacklogs } : {}),
+        ...(rosterEntry ? { batch: rosterEntry.batch } : {}),
+        ...(prefill ? { prefill } : {}),
         programName: program.programName,
         programCode: program.code,
         programTrack: program.badge,
@@ -103,6 +138,8 @@ export async function POST(request) {
         updatedAt: new Date()
     };
 
+    // Insert, retrying only on a registrationId collision so a random-ID clash
+    // never surfaces to the student as an error.
     for (let attempt = 0; attempt < 5; attempt += 1) {
         const registrationId = buildRegistrationId();
         try {
@@ -112,6 +149,7 @@ export async function POST(request) {
                     success: true,
                     message: 'Registration successful.',
                     registrationId,
+                    programKey: program.key,
                     programName: program.programName,
                     programCode: program.code
                 },
@@ -123,7 +161,11 @@ export async function POST(request) {
                 if (duplicate) {
                     // Lost the race against a concurrent identical submission.
                     return NextResponse.json(
-                        { success: false, message: 'You have already registered.', errors: { [duplicate.field]: duplicate.message } },
+                        {
+                            success: false,
+                            message: `You have already registered for ${program.programName}.`,
+                            errors: { [duplicate.field]: duplicate.message }
+                        },
                         { status: 409 }
                     );
                 }

@@ -1351,6 +1351,12 @@ export const programsData = [
         badge: 'Master Problem Solving Track',
         themeColor: 'var(--srkr-secondary)',
         accentBg: 'var(--srkr-bg-warm-tint)',
+        // Intake open (from 2026-10-24) for the SkillUp Coder shortlist — shows the
+        // green "Registrations Open" button on the card and a Register CTA in the
+        // footer. `registrationKey` is the REGISTRATION_PROGRAMS key the form
+        // opens on (lib/registration-schema.js), where the matching `open` flag lives.
+        registrationsOpen: true,
+        registrationKey: 'mooncoder',
         courses: [
             {
                 id: 'moon-dsa-mastery',

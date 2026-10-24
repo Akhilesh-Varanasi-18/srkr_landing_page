@@ -1039,6 +1039,92 @@
     }
   }
 
+  // "Registrations are open now" — a real button on the banner (top-left, where the
+  // closed badge sits for closed intakes). Green so it reads as "go" against the
+  // coral palette; the dot pulses so the card signals "live" even at a glance.
+  .srkr-program-open-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px 5px 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    font-family: var(--srkr-font-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #fff;
+    background: linear-gradient(135deg, #059669, #10b981); // --srkr-success family
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, filter 0.22s ease;
+
+    svg {
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .srkr-program-open-dot {
+      position: relative;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fff;
+      flex-shrink: 0;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        animation: srkrOpenPulse 1.8s ease-out infinite;
+      }
+    }
+
+    &:hover,
+    &:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      filter: brightness(1.05);
+      outline: none;
+
+      svg { transform: translateX(3px); }
+    }
+
+    &:active { transform: translateY(0); }
+
+    @media (max-width: 767px) {
+      top: 8px;
+      left: 8px;
+      font-size: 9.5px;
+      padding: 4px 10px 4px 9px;
+      gap: 6px;
+    }
+  }
+
+  @keyframes srkrOpenPulse {
+    0%   { transform: scale(0.6); opacity: 0.9; }
+    100% { transform: scale(1.9); opacity: 0; }
+  }
+
+  // An open card carries both the green button (top-left) and the year pill; the
+  // two would collide on a 3-up desktop card and on phones, so the pill drops to
+  // the banner's bottom-right corner for open intakes.
+  &.is-open .srkr-program-year-pill {
+    top: auto;
+    bottom: 10px;
+
+    @media (max-width: 767px) {
+      bottom: 8px;
+    }
+  }
+
   .srkr-program-card-body {
     padding: 18px 20px 20px;
     display: flex;
@@ -1082,6 +1168,32 @@
   .srkr-program-card-footer {
     margin-top: auto;
     padding-top: 4px;
+
+    // Open intake: Register + Explore side by side; stack on narrow cards.
+    &.is-dual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+
+      @media (max-width: 399px) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  // Compound selector so this outranks the base .srkr-program-btn rule below it.
+  .srkr-program-btn.srkr-program-btn--register {
+    background: linear-gradient(135deg, #059669, #10b981); // --srkr-success family
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
+
+    &:hover {
+      background: linear-gradient(135deg, #047857, #059669);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
   }
 
   .srkr-program-btn {
@@ -4387,6 +4499,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    // Keep the title clear of the Open / Closed tag in the top-right corner.
+    padding-right: 50px;
 
     .srkr-radio-dot {
       width: 13px;
@@ -4466,7 +4580,7 @@
 
 .srkr-reg-year-closed-tag {
   position: absolute;
-  bottom: 6px;
+  top: 6px;
   right: 6px;
   font-size: 8.5px;
   font-weight: 800;
@@ -4506,6 +4620,408 @@
 @keyframes srkrClosedNoticeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+// Open intake tag on a program card (counterpart of the "Closed" tag).
+.srkr-reg-year-open-tag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, #059669, #10b981); // --srkr-success family
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+// ── Roster-gated intake (Moon Coder): step 1 "find yourself" ─────────────
+.srkr-reg-step-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  strong {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--srkr-heading);
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--srkr-body);
+  }
+}
+
+.srkr-reg-step-no {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--srkr-gradient-primary);
+  box-shadow: 0 4px 10px rgba(226, 84, 76, 0.3);
+  margin-top: 1px;
+
+  &.is-done {
+    background: linear-gradient(135deg, #059669, #10b981); // --srkr-success family
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+  }
+}
+
+.srkr-reg-finder {
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  background: var(--srkr-bg-coral-tint);
+  border: 1.5px solid rgba(226, 84, 76, 0.22);
+  margin-bottom: 14px;
+
+  .srkr-reg-input-wrap input {
+    height: 46px;
+    font-size: 13.5px;
+    font-weight: 600;
+    background: var(--srkr-bg-body);
+    letter-spacing: 0.2px;
+    padding-right: 40px;
+
+    &::placeholder {
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+  }
+
+  @media (max-width: 575px) {
+    padding: 12px 11px 10px;
+  }
+}
+
+.srkr-reg-finder-box {
+  position: relative;
+}
+
+.srkr-reg-finder-spinner {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 2px solid rgba(226, 84, 76, 0.2);
+  border-top-color: var(--srkr-primary);
+  border-radius: 50%;
+  animation: srkrSpin 0.7s linear infinite;
+}
+
+// Suggestion list — same visual language as the branch listbox, but laid out in
+// normal flow rather than as a popover: the modal scrolls internally, so an
+// absolutely positioned list would be clipped at the modal's bottom edge while the
+// form is still short. In flow, the modal simply grows with the list.
+.srkr-reg-suggest {
+  position: relative;
+  z-index: 70;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 6px;
+  max-height: 296px;
+  overflow-y: auto;
+  background: var(--srkr-bg-body);
+  border: 1.5px solid var(--srkr-border);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px -14px rgba(15, 23, 42, 0.30), 0 4px 12px rgba(15, 23, 42, 0.07);
+  animation: srkrSelectIn 0.16s ease;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--srkr-border) transparent;
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-thumb { background: var(--srkr-border); border-radius: 999px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+}
+
+.srkr-reg-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  & + & { margin-top: 2px; }
+
+  .srkr-reg-suggest-avatar {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--srkr-primary);
+    background: var(--srkr-bg-coral-tint);
+    border: 1px solid rgba(226, 84, 76, 0.2);
+  }
+
+  .srkr-reg-suggest-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    strong {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--srkr-heading);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    small {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--srkr-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0.2px;
+    }
+
+    mark {
+      background: rgba(242, 166, 59, 0.28); // --srkr-tertiary tint
+      color: inherit;
+      border-radius: 3px;
+      padding: 0 1px;
+    }
+  }
+
+  .srkr-reg-suggest-go {
+    flex: 0 0 auto;
+    color: var(--srkr-muted);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+  }
+
+  &.is-active,
+  &:hover {
+    background: var(--srkr-bg-coral-tint);
+
+    .srkr-reg-suggest-go {
+      opacity: 1;
+      transform: translateX(0);
+      color: var(--srkr-primary);
+    }
+  }
+}
+
+.srkr-reg-finder-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 9px 2px 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--srkr-body);
+
+  svg { flex-shrink: 0; margin-top: 2px; color: var(--srkr-secondary); }
+
+  &.is-empty,
+  &.is-error { color: #B91C1C; font-weight: 600; }
+  &.is-ready { color: #047857; font-weight: 600; }
+}
+
+// The picked student — replaces the finder once step 1 is done.
+.srkr-reg-picked {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--srkr-bg-section);
+  border: 1.5px solid var(--srkr-border);
+  margin-bottom: 14px;
+  animation: srkrClosedNoticeIn 0.25s ease;
+
+  .srkr-reg-picked-avatar {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    background: var(--srkr-gradient-primary);
+    box-shadow: 0 4px 10px rgba(226, 84, 76, 0.28);
+  }
+
+  .srkr-reg-picked-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--srkr-heading);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    small {
+      font-size: 11.5px;
+      color: var(--srkr-muted);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .srkr-reg-picked-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: #047857;
+      font-weight: 700;
+    }
+  }
+
+  .srkr-reg-picked-reset {
+    flex: 0 0 auto;
+    background: transparent;
+    border: 1px solid var(--srkr-border);
+    color: var(--srkr-body);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    font-family: var(--srkr-font-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      border-color: var(--srkr-primary);
+      color: var(--srkr-primary);
+      background: var(--srkr-bg-coral-tint);
+    }
+  }
+
+  @media (max-width: 575px) {
+    flex-wrap: wrap;
+
+    .srkr-reg-picked-reset {
+      flex-basis: 100%;
+      text-align: center;
+    }
+  }
+}
+
+// Shared layout for the three message cards below (locked / prefilled / already).
+%srkr-reg-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+
+  > svg { flex-shrink: 0; margin-top: 2px; }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  strong { font-size: 12.5px; font-weight: 800; }
+}
+
+.srkr-reg-locked {
+  @extend %srkr-reg-note;
+  background: var(--srkr-bg-section);
+  border: 1.5px dashed var(--srkr-border);
+  color: var(--srkr-body);
+
+  > svg { color: var(--srkr-muted); }
+  strong { color: var(--srkr-heading); }
+}
+
+.srkr-reg-prefill-banner {
+  @extend %srkr-reg-note;
+  background: rgba(16, 185, 129, 0.08); // --srkr-success tint
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  color: #065f46;
+  animation: srkrClosedNoticeIn 0.25s ease;
+
+  strong { color: #065f46; }
+}
+
+.srkr-reg-already {
+  @extend %srkr-reg-note;
+  background: var(--srkr-bg-coral-tint);
+  border: 1.5px solid rgba(226, 84, 76, 0.3);
+  color: var(--srkr-body);
+
+  > svg { color: var(--srkr-primary); }
+  strong { color: var(--srkr-primary); }
+}
+
+// "edited" tag beside a label whose pre-filled value was changed.
+.srkr-reg-edited-tag {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #92400e;
+  background: rgba(242, 166, 59, 0.22); // --srkr-tertiary tint
+  animation: srkrClosedNoticeIn 0.2s ease;
+}
+
+// Academic details group — the two mandatory numeric fields sit in a soft panel so
+// they read as "the new bit" of a pre-filled form.
+.srkr-reg-academics {
+  padding: 12px 12px 10px;
+  border-radius: 12px;
+  background: var(--srkr-bg-warm-tint);
+  border: 1.5px solid rgba(237, 114, 54, 0.22); // --srkr-secondary
+
+  > label { margin-bottom: 4px; }
+
+  .srkr-reg-row-2 {
+    @media (max-width: 575px) {
+      gap: 10px;
+    }
+  }
+
+  .srkr-reg-field label {
+    flex-wrap: wrap;
+  }
 }
 
 // Program Preview Box
@@ -4714,6 +5230,95 @@
     }
   }
 
+  // The program's own WhatsApp group — the one step left after registering, so
+  // it sits right under the ID and is the loudest thing on the card.
+  .srkr-reg-group-cta {
+    max-width: 440px;
+    margin: 0 auto 20px;
+    padding: 16px 18px 18px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(37, 211, 102, 0.13), rgba(37, 211, 102, 0.05)); // --srkr-whatsapp
+    border: 1.5px solid rgba(37, 211, 102, 0.42); // --srkr-whatsapp
+    text-align: center;
+
+    &__title {
+      margin: 0 0 4px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--srkr-whatsapp-hover);
+    }
+
+    &__text {
+      margin: 0 0 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--srkr-body);
+
+      strong {
+        color: var(--srkr-heading);
+      }
+    }
+
+    &__btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 20px;
+      border-radius: 13px;
+      background: var(--srkr-whatsapp);
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      box-shadow: 0 10px 24px rgba(37, 211, 102, 0.3); // --srkr-whatsapp
+      animation: srkrJoinPulse 2.2s ease-in-out infinite;
+      transition: transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+
+      svg {
+        flex: none;
+      }
+
+      &:hover,
+      &:focus-visible {
+        background: var(--srkr-whatsapp-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(37, 211, 102, 0.36); // --srkr-whatsapp
+        animation: none;
+
+        .srkr-reg-group-cta__arrow {
+          transform: translateX(3px);
+        }
+      }
+    }
+
+    &__arrow {
+      transition: transform 0.22s ease;
+    }
+
+    @media (max-width: 480px) {
+      padding: 14px 14px 16px;
+
+      &__text {
+        font-size: 12.5px;
+        margin-bottom: 12px;
+      }
+
+      &__btn {
+        font-size: 14px;
+        min-height: 48px;
+        padding: 11px 14px;
+        gap: 8px;
+      }
+    }
+  }
+
   .srkr-reg-success-details {
     background: var(--srkr-bg-section);
     border-radius: 12px;
@@ -4771,6 +5376,22 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 18px rgba(37, 211, 102, 0.3);
       }
+
+      // Outlined when the program's own group button is shown above it.
+      &--ghost {
+        background: transparent;
+        color: var(--srkr-whatsapp-hover);
+        border: 1.5px solid rgba(37, 211, 102, 0.45); // --srkr-whatsapp
+        padding: 9px 22px;
+        font-size: 13px;
+
+        &:hover {
+          background: rgba(37, 211, 102, 0.08); // --srkr-whatsapp
+          color: var(--srkr-whatsapp-hover);
+          transform: none;
+          box-shadow: none;
+        }
+      }
     }
 
     .srkr-btn-done {
@@ -4791,6 +5412,15 @@
       }
     }
   }
+}
+
+// Soft ring that breathes around the program-group join button.
+@keyframes srkrJoinPulse {
+  0%, 100% { box-shadow: 0 10px 24px rgba(37, 211, 102, 0.3), 0 0 0 0 rgba(37, 211, 102, 0.38); } // --srkr-whatsapp
+  60% { box-shadow: 0 10px 24px rgba(37, 211, 102, 0.3), 0 0 0 11px rgba(37, 211, 102, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .srkr-reg-success-card .srkr-reg-group-cta__btn { animation: none; }
 }
 
 // Mobile Register button in header

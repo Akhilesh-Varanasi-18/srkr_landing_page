@@ -12,6 +12,9 @@ import WhatsAppCommunityModal from './whatsapp-community-modal';
 
 const SrkrMain = () => {
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+    // Which intake the form should open on. A program card passes its key; the
+    // header / hero buttons pass nothing (or a click event) and get the default.
+    const [registerProgram, setRegisterProgram] = useState(null);
     const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false);
     const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
     // The live announcement now comes from the admin dashboard, not a hardcoded
@@ -54,7 +57,10 @@ const SrkrMain = () => {
         return () => { cancelled = true; };
     }, []);
 
-    const handleOpenRegister = () => setIsRegisterOpen(true);
+    const handleOpenRegister = (programKey) => {
+        setRegisterProgram(typeof programKey === 'string' ? programKey : null);
+        setIsRegisterOpen(true);
+    };
     const handleCloseRegister = () => setIsRegisterOpen(false);
 
     const handleOpenAnnouncement = () => setIsAnnouncementOpen(true);
@@ -95,6 +101,7 @@ const SrkrMain = () => {
             <RegistrationModal
                 isOpen={isRegisterOpen}
                 onClose={handleCloseRegister}
+                initialProgramKey={registerProgram}
             />
 
             {/* Announcement Pop-up (auto-opens once; reopen via header bell) */}
