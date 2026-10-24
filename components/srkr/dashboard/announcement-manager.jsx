@@ -79,8 +79,10 @@ function posterUrl(ann, variant) {
     return `${base}?variant=mobile&v=${v}`;
 }
 
-export default function AnnouncementManager({ isOpen, onClose }) {
-    const [tab, setTab] = useState('create'); // 'create' | 'history'
+// `embedded` renders the manager inline as a page section (the /admin/announcements
+// module) instead of as a modal; `initialTab` lets a deep link open on History.
+export default function AnnouncementManager({ isOpen = true, onClose, embedded = false, initialTab = 'create' }) {
+    const [tab, setTab] = useState(initialTab === 'history' ? 'history' : 'create'); // 'create' | 'history'
     const [posterTab, setPosterTab] = useState('web'); // which poster slot is being edited
 
     // One entry per poster slot: { file, previewUrl }.
@@ -111,7 +113,7 @@ export default function AnnouncementManager({ isOpen, onClose }) {
     const loadHistory = useCallback(async () => {
         setLoadingHistory(true);
         try {
-            const res = await fetch('/api/dashboard/announcements', { cache: 'no-store' });
+            const res = await fetch('/api/admin/announcements', { cache: 'no-store' });
             const json = await res.json();
             if (json.success) setHistory(json.announcements || []);
         } catch { /* silent — history is secondary to the create flow */ }
@@ -145,10 +147,11 @@ export default function AnnouncementManager({ isOpen, onClose }) {
     }, []);
 
     useEffect(() => {
-        const onKey = (e) => { if (e.key === 'Escape' && isOpen) onClose(); };
+        if (embedded) return undefined; // a page section has nothing to dismiss
+        const onKey = (e) => { if (e.key === 'Escape' && isOpen) onClose?.(); };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, embedded]);
 
     if (!isOpen) return null;
 
@@ -211,7 +214,7 @@ export default function AnnouncementManager({ isOpen, onClose }) {
             if (title.trim()) fd.append('title', title.trim());
             if (note.trim()) fd.append('note', note.trim());
 
-            const res = await fetch('/api/dashboard/announcements', { method: 'POST', body: fd });
+            const res = await fetch('/api/admin/announcements', { method: 'POST', body: fd });
             const json = await res.json().catch(() => null);
 
             if (!res.ok || !json?.success) {
@@ -247,9 +250,9 @@ export default function AnnouncementManager({ isOpen, onClose }) {
         setBusyId(id);
         try {
             if (action === 'delete') {
-                await fetch(`/api/dashboard/announcements/${id}`, { method: 'DELETE' });
+                await fetch(`/api/admin/announcements/${id}`, { method: 'DELETE' });
             } else {
-                await fetch(`/api/dashboard/announcements/${id}`, {
+                await fetch(`/api/admin/announcements/${id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action })
@@ -272,7 +275,7 @@ export default function AnnouncementManager({ isOpen, onClose }) {
         try {
             const fd = new FormData();
             fd.append('mobileImage', f);
-            const res = await fetch(`/api/dashboard/announcements/${id}`, { method: 'PATCH', body: fd });
+            const res = await fetch(`/api/admin/announcements/${id}`, { method: 'PATCH', body: fd });
             const json = await res.json().catch(() => null);
             if (!res.ok || !json?.success) {
                 setBanner({ type: 'error', text: json?.message || 'Could not save the mobile poster.' });
@@ -296,9 +299,14 @@ export default function AnnouncementManager({ isOpen, onClose }) {
     const current = posters[posterTab];
     const slotError = errors[activeSlot.field];
 
-    return (
-        <div className="ann-mgr-overlay" onClick={onClose}>
-            <div className="ann-mgr-panel" role="dialog" aria-modal="true" aria-label="Manage announcements" onClick={(e) => e.stopPropagation()}>
+    const panel = (
+            <div
+                className={`ann-mgr-panel${embedded ? ' is-page' : ''}`}
+                role={embedded ? 'region' : 'dialog'}
+                aria-modal={embedded ? undefined : 'true'}
+                aria-label="Manage announcements"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="ann-mgr-head">
                     <div className="ann-mgr-head-title">
                         <span className="ann-mgr-head-icon"><IconMegaphone /></span>
@@ -307,7 +315,9 @@ export default function AnnouncementManager({ isOpen, onClose }) {
                             <p>Create what students see the moment they visit — no code push needed.</p>
                         </div>
                     </div>
-                    <button type="button" className="ann-mgr-close" onClick={onClose} aria-label="Close"><IconClose /></button>
+                    {!embedded && (
+                        <button type="button" className="ann-mgr-close" onClick={onClose} aria-label="Close"><IconClose /></button>
+                    )}
                 </div>
 
                 <div className="ann-mgr-tabs" role="tablist">
@@ -566,6 +576,12 @@ export default function AnnouncementManager({ isOpen, onClose }) {
                     )}
                 </div>
             </div>
+    );
+
+    if (embedded) return panel;
+    return (
+        <div className="ann-mgr-overlay" onClick={onClose}>
+            {panel}
         </div>
     );
 }

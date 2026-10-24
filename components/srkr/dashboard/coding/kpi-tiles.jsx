@@ -10,39 +10,41 @@ import { formatDate, daysSince } from './coding-theme';
 // "Active" is counted over MEASURED students, not the roster: 9 students have no
 // scraped row at all and cannot be called either active or inactive. The tile says
 // which denominator it used, every time, so 274/308 and 274/317 are never confused.
+// Under a date period "active" means "solved something inside the period".
 
-export default function KpiTiles({ summary, batches, snapshot }) {
+export default function KpiTiles({ summary, batches, snapshot, periodLabel = null, groupLabel = 'Batch' }) {
     const measured = summary?.captured || 0;
     const started = summary?.started || 0;
     const notStarted = summary?.notStarted || 0;
     const total = summary?.total || 0;
     const pct = (n, d) => (d ? Math.round((n / d) * 1000) / 10 : 0);
     const age = daysSince(snapshot?.capturedAt);
+    const inPeriod = periodLabel ? ` in ${periodLabel}` : '';
 
     const tiles = [
         {
             key: 'total',
             label: 'Total Students',
             value: total,
-            sub: `Batches: ${batches.length}${summary?.notCaptured ? ` · ${summary.notCaptured} not captured` : ''}`,
+            sub: `${groupLabel === 'Batch' ? 'Batches' : `${groupLabel}s`}: ${batches.length}${summary?.notCaptured ? ` · ${summary.notCaptured} not captured` : ''}`,
             tone: 'coral',
             Icon: IconPeople,
             fill: total ? measured / total : 0
         },
         {
             key: 'active',
-            label: 'Active Students',
+            label: periodLabel ? 'Active in period' : 'Active Students',
             value: started,
-            sub: `${pct(started, measured)}% of ${measured} measured`,
+            sub: `${pct(started, measured)}% of ${measured} measured solved something${inPeriod}`,
             tone: 'green',
             Icon: IconPulse,
             fill: measured ? started / measured : 0
         },
         {
             key: 'quiet',
-            label: 'Not Started',
+            label: periodLabel ? 'No progress' : 'Not Started',
             value: notStarted,
-            sub: `${pct(notStarted, measured)}% of measured`,
+            sub: `${pct(notStarted, measured)}% of measured${periodLabel ? ` added nothing${inPeriod}` : ''}`,
             tone: 'warn',
             Icon: IconMoon,
             fill: measured ? notStarted / measured : 0

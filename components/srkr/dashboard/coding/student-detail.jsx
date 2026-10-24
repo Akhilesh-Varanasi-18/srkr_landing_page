@@ -39,6 +39,7 @@ export default function StudentDetail({
     coverage,
     summary,
     batchSummary,
+    periodLabel = null,
     onClose,
     onPrev,
     onNext,
@@ -230,7 +231,7 @@ export default function StudentDetail({
                         </div>
                     ) : (
                         <>
-                            <TotalCard student={student} summary={summary} batchSummary={batchSummary} />
+                            <TotalCard student={student} summary={summary} batchSummary={batchSummary} periodLabel={periodLabel} />
 
                             <div className="cp-pf-grid">
                                 {/* ── LeetCode. 186 of 308 students have zero solves, so the
@@ -374,21 +375,27 @@ export default function StudentDetail({
  * with a cohort median around 12 and 34 students on zero, "above average" is nearly
  * meaningless, whereas a plain count of people behind you is both true and legible.
  */
-function TotalCard({ student, summary, batchSummary }) {
+function TotalCard({ student, summary, batchSummary, periodLabel }) {
     const scores = summary?.scores || [];
     const behind = scores.filter((s) => s < student.score).length;
     const counts = PLATFORMS.map((p) => ({ ...p, value: num(student.metrics?.[p.metricKey]) }));
     const total = counts.reduce((t, p) => t + p.value, 0);
     const summaryText = counts.map((p) => `${p.name} ${p.value}`).join(', ');
+    const title = periodLabel ? `Solved in ${periodLabel}` : 'Total solved';
+    const hasAllTime = periodLabel && student.allTimeScore !== null && student.allTimeScore !== undefined;
 
     return (
-        <section className="cp-prof-total" aria-label={`Total solved ${formatNumber(student.score)}: ${summaryText}`}>
+        <section className="cp-prof-total" aria-label={`${title}: ${formatNumber(student.score)}. ${summaryText}`}>
             <div className="cp-prof-total__head">
                 <div className="cp-prof-total__figure">
                     <span className="cp-prof-total__value">{formatNumber(student.score)}</span>
                     <span className="cp-prof-total__label">
-                        Total solved
-                        <small>LeetCode + CodeChef + HackerRank stars + GeeksforGeeks</small>
+                        {title}
+                        <small>
+                            LeetCode + CodeChef + HackerRank stars + GeeksforGeeks
+                            {hasAllTime && <> · all-time total {formatNumber(student.allTimeScore)}</>}
+                            {student.newInPeriod && <> · first captured in this period, counted from zero</>}
+                        </small>
                     </span>
                 </div>
                 {typeof student.delta === 'number' && (

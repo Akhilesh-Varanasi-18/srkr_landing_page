@@ -26,9 +26,9 @@ import { PAGE_SIZES } from '../../../../lib/coding-profiles/cohort';
 
 const SIZE_OPTIONS = PAGE_SIZES.map((n) => ({ key: n, label: String(n) }));
 
-function statusOf(student) {
+function statusOf(student, periodMode) {
     if (!student.dataCaptured) return { key: 'none', label: 'No profile', tone: 'ghost' };
-    if (!student.platformsTouched) return { key: 'quiet', label: 'Not started', tone: 'warn' };
+    if (!student.platformsTouched) return { key: 'quiet', label: periodMode ? 'No progress' : 'Not started', tone: 'warn' };
     if (student.tier === 'podium' || student.tier === 'top10') return { key: 'top', label: 'Top 10', tone: 'coral' };
     return { key: 'active', label: 'Active', tone: 'green' };
 }
@@ -45,6 +45,7 @@ export default function Directory({
     onPageSize,
     showAll = false,
     loading = false,
+    periodMode = false,
     onSelect,
     selectedRollKey
 }) {
@@ -89,6 +90,7 @@ export default function Directory({
                         <StudentCard
                             key={student.rollKey}
                             student={student}
+                            periodMode={periodMode}
                             onSelect={onSelect}
                             isSelected={student.rollKey === selectedRollKey}
                         />
@@ -132,8 +134,8 @@ export default function Directory({
     );
 }
 
-function StudentCard({ student, onSelect, isSelected }) {
-    const status = statusOf(student);
+function StudentCard({ student, periodMode, onSelect, isSelected }) {
+    const status = statusOf(student, periodMode);
     const uncaptured = !student.dataCaptured;
 
     return (
@@ -185,7 +187,8 @@ function StudentCard({ student, onSelect, isSelected }) {
                             {uncaptured || student.score === null ? '—' : formatNumber(student.score)}
                         </span>
                         <span className="cp-card__score-label">
-                            {student.rank ? `#${student.rank} · ` : ''}Total solved
+                            {student.rank ? `#${student.rank} · ` : ''}
+                            {periodMode ? 'Solved in period' : 'Total solved'}
                             {typeof student.delta === 'number' && student.delta !== 0 && (
                                 <span className={`cp-delta cp-delta--${student.delta > 0 ? 'up' : 'down'}`}>
                                     {student.delta > 0 ? '▲' : '▼'} {Math.abs(student.delta)}

@@ -14,7 +14,7 @@ import { formatDate } from './coding-theme';
 // On paper the hero doubles as the report's title block, so it states what the
 // report covers — the scope bar that chose it does not print.
 
-export default function HeroBanner({ program, scopeLabel, scopeCount, snapshot }) {
+export default function HeroBanner({ program, scopeLabel, scopeCount, snapshot, periodLabel = null, periodCaption = null }) {
     const generated = useMemo(() => formatDate(new Date().toISOString()), []);
 
     return (
@@ -27,8 +27,9 @@ export default function HeroBanner({ program, scopeLabel, scopeCount, snapshot }
                 <p className="cp-hero__tag">Track. Learn. Grow.</p>
                 <p className="cp-hero__body">{program.tagline}.</p>
                 <p className="cp-hero__print">
-                    Leaderboard report · <strong>{scopeLabel}</strong> · {scopeCount} students · data captured{' '}
-                    {formatDate(snapshot?.capturedAt)} · generated {generated}
+                    Leaderboard report · <strong>{scopeLabel}</strong> · {scopeCount} students ·{' '}
+                    <strong>{periodLabel || 'All time'}</strong> ·{' '}
+                    {periodCaption || `data captured ${formatDate(snapshot?.capturedAt)}`} · generated {generated}
                 </p>
             </div>
             <div className="cp-hero__art" aria-hidden="true">

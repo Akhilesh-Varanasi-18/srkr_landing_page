@@ -21,7 +21,7 @@ export default function RecentTable({ rows }) {
             <div className="dash-table-toolbar">
                 <div>
                     <h3 className="dash-card-title">Recent registrations</h3>
-                    <p className="dash-card-sub">Latest {rows.length} shown · search by name, roll, email or branch</p>
+                    <p className="dash-card-sub">Latest {rows.length} shown · search by name, roll, email, branch or program</p>
                 </div>
                 <div className="dash-search">
                     <IconSearch />
@@ -45,8 +45,9 @@ export default function RecentTable({ rows }) {
                             <th>Branch</th>
                             <th>Year</th>
                             <th>Program</th>
-                            <th>EAPCET</th>
-                            <th>JEE</th>
+                            <th>Batch</th>
+                            <th>CGPA</th>
+                            <th>Backlogs</th>
                             <th>Gender</th>
                             <th>Residence</th>
                             <th>Registered</th>
@@ -55,7 +56,7 @@ export default function RecentTable({ rows }) {
                     <tbody>
                         {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan={11} className="dash-table-empty">
+                                <td colSpan={12} className="dash-table-empty">
                                     {rows.length === 0 ? 'No registrations yet.' : 'No matches for your search.'}
                                 </td>
                             </tr>
@@ -67,8 +68,13 @@ export default function RecentTable({ rows }) {
                                 <td title={r.branch}>{shortBranch(r.branch)}</td>
                                 <td>{r.passoutYear}</td>
                                 <td>{r.programName}</td>
-                                <td>{r.eapcetRank || '—'}</td>
-                                <td>{r.jeeRank || '—'}</td>
+                                <td>{r.batch || '—'}</td>
+                                <td>{typeof r.cgpa === 'number' ? r.cgpa.toFixed(2) : '—'}</td>
+                                <td>
+                                    {typeof r.activeBacklogs === 'number'
+                                        ? <span className={`dash-pill ${r.activeBacklogs === 0 ? 'dash-pill--ok' : 'dash-pill--warn'}`}>{r.activeBacklogs}</span>
+                                        : '—'}
+                                </td>
                                 <td><span className={`dash-pill ${r.gender === 'Female' ? 'dash-pill--f' : 'dash-pill--m'}`}>{r.gender}</span></td>
                                 <td>{r.residenceType}</td>
                                 <td>{formatDateTime(r.createdAt)}</td>

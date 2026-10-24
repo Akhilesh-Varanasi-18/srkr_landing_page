@@ -663,7 +663,7 @@ $sh-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 }
 
-// ── Scope bar ───────────────────────────────────────────────────────────────
+// ── Scope bar (scope · period · report) ─────────────────────────────────────
 
 .cp-scope {
     position: sticky;
@@ -671,9 +671,9 @@ $sh-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
     z-index: 40;
     display: flex;
     align-items: center;
-    gap: 10px 16px;
+    gap: 10px 14px;
     flex-wrap: wrap;
-    padding: 8px 14px 8px 16px;
+    padding: 8px 10px 8px 16px;
     border-radius: 18px;
     @include glass(0.8, 0.62);
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95); // --srkr-heading
@@ -695,17 +695,46 @@ $sh-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
         }
     }
 
-    &__note {
+    &__tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         margin-left: auto;
+    }
+
+    &__note {
+        flex: 1 1 100%;
+        padding: 0 6px;
         font-size: 12px;
         color: var(--srkr-body-alt);
     }
 
+    // Analytics: no scope pills, so the tools sit at the left and the note at the
+    // right — and the period popover must then open to the RIGHT of its button,
+    // or it runs off under the rail.
+    &--period {
+        padding-left: 10px;
+
+        .cp-scope__tools {
+            margin-left: 0;
+        }
+
+        .cp-scope__note {
+            flex: 1 1 auto;
+            text-align: right;
+        }
+
+        .cp-period__pop {
+            left: 0;
+            right: auto;
+        }
+    }
+
     @media (max-width: $sh-md) {
-        position: static;
+        top: 8px;
         padding: 8px;
         border-radius: 16px;
-        gap: 6px;
+        gap: 8px;
 
         &__label {
             display: none;
@@ -715,12 +744,425 @@ $sh-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
             width: 100%;
         }
 
-        &__note {
+        &__tools {
             width: 100%;
-            margin: 0;
-            padding: 0 6px 2px;
-            font-size: 11.5px;
+            margin-left: 0;
+
+            .cp-period {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
         }
+
+        &__note,
+        &--period .cp-scope__note {
+            flex: 1 1 100%;
+            padding: 0 4px 2px;
+            font-size: 11.5px;
+            text-align: left;
+        }
+    }
+}
+
+// ── Period picker ───────────────────────────────────────────────────────────
+
+.cp-period {
+    position: relative;
+
+    &__btn {
+        appearance: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+        padding: 7px 10px 7px 12px;
+        border: 1px solid rgba(15, 23, 42, 0.08); // --srkr-heading
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.85);
+        color: var(--srkr-heading);
+        font-family: inherit;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+        transition: border-color 0.25s, box-shadow 0.25s;
+
+        > svg {
+            width: 16px;
+            height: 16px;
+            flex: none;
+            color: var(--srkr-primary);
+        }
+
+        &:hover {
+            border-color: rgba(226, 84, 76, 0.45); // --srkr-primary
+            box-shadow: 0 6px 16px rgba(226, 84, 76, 0.12);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+
+        &.has-value {
+            border-color: rgba(226, 84, 76, 0.5);
+            background: var(--srkr-bg-coral-tint);
+        }
+    }
+
+    &__eyebrow {
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--srkr-muted);
+    }
+
+    &__value {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__chev {
+        display: grid;
+        place-items: center;
+        flex: none;
+        color: var(--srkr-muted);
+        transition: transform 0.25s $sh-ease;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    &.is-open &__chev {
+        transform: rotate(90deg);
+    }
+
+    &__pop {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 60;
+        width: min(400px, calc(100vw - 24px));
+        padding: 10px;
+        border-radius: 18px;
+        // Near-opaque: it can open over the dark podium panel, where a translucent
+        // sheet turns muddy.
+        @include glass(0.99, 0.97);
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18), inset 0 1px 0 var(--srkr-white); // --srkr-heading
+
+        @media (max-width: $sh-md) {
+            right: auto;
+            left: 0;
+            width: min(400px, calc(100vw - 36px));
+        }
+    }
+
+    &__tabs {
+        display: flex;
+        gap: 2px;
+        padding: 3px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.05); // --srkr-heading
+    }
+
+    &__tab {
+        appearance: none;
+        flex: 1;
+        padding: 6px 4px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--srkr-body-alt);
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.25s, color 0.25s;
+
+        &.is-active {
+            background: var(--srkr-white);
+            color: var(--srkr-heading);
+            box-shadow: 0 3px 10px rgba(15, 23, 42, 0.1);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 1px;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        gap: 6px;
+        margin-top: 10px;
+
+        &--quick,
+        &--weeks {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        &--years {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        &--months {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+
+    &__opt {
+        appearance: none;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        min-width: 0;
+        padding: 8px 10px;
+        border: 1px solid rgba(15, 23, 42, 0.06); // --srkr-heading
+        border-radius: 12px;
+        background: var(--srkr-white);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.25s, background 0.25s, transform 0.25s $sh-ease;
+
+        strong {
+            font-size: 12.5px;
+            color: var(--srkr-heading);
+        }
+
+        span {
+            font-size: 10.5px;
+            color: var(--srkr-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        &--center {
+            align-items: center;
+        }
+
+        &:hover:not(:disabled) {
+            border-color: rgba(226, 84, 76, 0.45); // --srkr-primary
+            transform: translateY(-1px);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        &.is-active {
+            border-color: var(--srkr-primary);
+            background: var(--srkr-bg-coral-tint);
+
+            strong {
+                color: var(--srkr-primary-hover);
+            }
+        }
+    }
+
+    &__stepper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 10px;
+
+        strong {
+            font-family: var(--srkr-font-heading);
+            font-size: 14px;
+            color: var(--srkr-heading);
+        }
+
+        button {
+            appearance: none;
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--srkr-border);
+            border-radius: 10px;
+            background: var(--srkr-white);
+            color: var(--srkr-body);
+            cursor: pointer;
+
+            svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            &:hover:not(:disabled) {
+                border-color: var(--srkr-primary);
+                color: var(--srkr-primary);
+            }
+
+            &:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--srkr-primary);
+                outline-offset: 2px;
+            }
+        }
+    }
+
+    &__custom {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: end;
+        margin-top: 10px;
+
+        label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+
+            span {
+                font-size: 10.5px;
+                font-weight: 800;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--srkr-muted);
+            }
+
+            input {
+                width: 100%;
+                min-width: 0;
+                padding: 8px 10px;
+                border: 1px solid var(--srkr-border);
+                border-radius: 10px;
+                font: inherit;
+                font-size: 12.5px;
+                color: var(--srkr-heading);
+                background: var(--srkr-white);
+
+                &:focus-visible {
+                    outline: 2px solid var(--srkr-primary);
+                    outline-offset: -1px;
+                }
+            }
+        }
+
+        @media (max-width: $sh-xs) {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+            .cp-btn {
+                grid-column: 1 / -1;
+                justify-content: center;
+            }
+        }
+    }
+
+    &__foot {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(15, 23, 42, 0.06); // --srkr-heading
+    }
+
+    &__foot-label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--srkr-muted);
+    }
+
+    &__captures {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    &__capture {
+        appearance: none;
+        padding: 5px 10px;
+        border: 1px solid var(--srkr-border);
+        border-radius: 999px;
+        background: var(--srkr-white);
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--srkr-body);
+        cursor: pointer;
+
+        &:hover {
+            border-color: var(--srkr-primary);
+        }
+
+        &.is-active {
+            border-color: var(--srkr-primary);
+            background: var(--srkr-bg-coral-tint);
+            color: var(--srkr-primary-hover);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--srkr-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    &__none {
+        font-size: 12px;
+        color: var(--srkr-muted);
+    }
+
+    &__hint {
+        margin: 8px 0 0;
+        font-size: 11px;
+        line-height: 1.45;
+        color: var(--srkr-muted);
+    }
+}
+
+// Print-only line under a view heading: what the printed analytics cover.
+.cp-viewhead__print {
+    display: none;
+}
+
+// An empty period: no capture inside it.
+.cp-period-empty {
+    padding: 36px 24px;
+    text-align: center;
+    border-radius: 20px;
+    border: 1px dashed rgba(226, 84, 76, 0.4); // --srkr-primary
+    background: rgba(255, 255, 255, 0.7);
+
+    h2 {
+        margin: 0 0 6px;
+        font-size: 19px;
+    }
+
+    p {
+        margin: 0 auto;
+        max-width: 56ch;
+        font-size: 13.5px;
+        color: var(--srkr-body-alt);
+    }
+
+    &__captures {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 14px;
     }
 }
 
@@ -996,7 +1438,8 @@ $sh-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
     // The report's title block: what it covers and when it was made.
-    .cp-hero__print {
+    .cp-hero__print,
+    .cp-viewhead__print {
         display: block;
         margin: 10px 0 0;
         font-size: 11px;
@@ -1005,5 +1448,10 @@ $sh-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
         strong {
             color: var(--srkr-heading);
         }
+    }
+
+    .cp-period-empty {
+        border-color: var(--srkr-border);
+        background: none;
     }
 }

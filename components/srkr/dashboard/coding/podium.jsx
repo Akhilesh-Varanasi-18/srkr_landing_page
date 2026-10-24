@@ -27,12 +27,17 @@ export { BOARDS };
 
 const RANK_WORDS = ['First', 'Second', 'Third'];
 
-export default function Podium({ boards, scopeLabel, mode = 'baseline', board, onBoard, onSelect }) {
+export default function Podium({ boards, scopeLabel, mode = 'baseline', periodLabel = null, board, onBoard, onSelect }) {
     const reduce = useReducedMotion();
     const active = BOARDS.find((b) => b.key === board) || BOARDS[0];
     const top = boards?.[active.key] || [];
 
     const headline = (s) => (active.key === 'overall' ? s.score : Number(s.metrics?.[active.metric]) || 0);
+    const lede = periodLabel
+        ? `Most solved in ${scopeLabel} during ${periodLabel}`
+        : mode === 'baseline'
+          ? `Strongest profiles at launch in ${scopeLabel} — the real story starts with the next capture`
+          : `Most problems solved in ${scopeLabel}`;
 
     return (
         <section className="cp-top" aria-labelledby="cp-top-title">
@@ -41,11 +46,7 @@ export default function Podium({ boards, scopeLabel, mode = 'baseline', board, o
                     <h2 id="cp-top-title" className="cp-top__title">
                         Top Performers
                     </h2>
-                    <p className="cp-top__lede">
-                        {mode === 'baseline'
-                            ? `Strongest profiles at launch in ${scopeLabel} — the real story starts with the next capture`
-                            : `Most problems solved in ${scopeLabel}`}
-                    </p>
+                    <p className="cp-top__lede">{lede}</p>
                 </div>
 
                 <div className="cp-top__tabs" role="tablist" aria-label="Leaderboard">
@@ -68,7 +69,7 @@ export default function Podium({ boards, scopeLabel, mode = 'baseline', board, o
             {!top.length ? (
                 <p className="cp-top__empty">
                     Nobody in {scopeLabel} has recorded {active.key === 'overall' ? 'any activity' : `${active.label} activity`}{' '}
-                    in this capture yet.
+                    {periodLabel ? `during ${periodLabel}` : 'in this capture yet'}.
                 </p>
             ) : (
                 // DOM order stays 1-2-3 so reading and tab order match the ranking;

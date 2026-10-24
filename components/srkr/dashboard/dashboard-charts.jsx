@@ -25,6 +25,10 @@ import {
     LAPTOP_COLORS,
     CRT_FEE_COLORS,
     ADMISSION_COLORS,
+    CGPA_BAND_ORDER,
+    CGPA_BAND_COLORS,
+    BACKLOG_ORDER,
+    BACKLOG_COLORS,
     BRANCH_RAMP,
     shortBranch,
     shortDay,
@@ -51,12 +55,12 @@ function ChartTooltip({ active, payload, label, labelFormatter, valueSuffix = ''
 }
 
 // ── 1. Registrations over time ──────────────
-export function RegistrationsTrend({ data }) {
+export function RegistrationsTrend({ data, span = 8 }) {
     const [mode, setMode] = useState('cumulative');
     const hasData = data && data.length > 0;
 
     return (
-        <div className="dash-card dash-card--8">
+        <div className={`dash-card dash-card--${span}`}>
             <div className="dash-card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
                 <div>
                     <h3 className="dash-card-title">Registrations over time</h3>
@@ -109,10 +113,10 @@ export function RegistrationsTrend({ data }) {
 }
 
 // ── 2. Gender donut ─────────────────────────
-export function GenderDonut({ data }) {
+export function GenderDonut({ data, span = 4 }) {
     const total = data.reduce((s, d) => s + d.value, 0);
     return (
-        <div className="dash-card dash-card--4">
+        <div className={`dash-card dash-card--${span}`}>
             <div className="dash-card-head">
                 <h3 className="dash-card-title">Gender split</h3>
                 <p className="dash-card-sub">Male vs female registrations</p>
@@ -186,11 +190,11 @@ export function ProgramDonut({ data }) {
 }
 
 // ── 4. Branch horizontal bar ────────────────
-export function BranchBar({ data }) {
+export function BranchBar({ data, span = 7 }) {
     const sorted = useMemo(() => [...data].sort((a, b) => b.value - a.value), [data]);
     const height = Math.max(220, sorted.length * 38);
     return (
-        <div className="dash-card dash-card--7">
+        <div className={`dash-card dash-card--${span}`}>
             <div className="dash-card-head">
                 <h3 className="dash-card-title">Registrations by branch</h3>
                 <p className="dash-card-sub">Ranked highest to lowest</p>
@@ -215,13 +219,41 @@ export function BranchBar({ data }) {
     );
 }
 
-// ── 5. Residence 100% split bar (pure CSS) ──
-export function ResidenceSplit({ data }) {
+// ── Shared 100% split bar (pure CSS) ────────
+// Segments are sized by an explicit percentage width, and every segment is always
+// rendered — a zero collapses to width 0 in place — so a change of data never adds
+// or removes an element mid-transition. A real-but-tiny share is floored at
+// MIN_SHARE so it stays visible. (The previous flex-grow layout, with segments
+// mounting and unmounting as values crossed zero, is what left a bar painted a
+// single colour while the browser interpolated between two programs' figures.)
+const MIN_SHARE = 7;
+function SplitBar({ rows, total, colors }) {
+    const floored = rows.map((r) => (total > 0 && r.value > 0 ? Math.max((r.value / total) * 100, MIN_SHARE) : 0));
+    const sum = floored.reduce((s, v) => s + v, 0) || 1;
+    const shares = floored.map((v) => (v / sum) * 100);
+    return (
+        <div className="dash-splitbar" role="img" aria-label={rows.map((r) => `${r.name}: ${r.value}`).join(', ')}>
+            {rows.map((r, i) => (
+                <div
+                    key={r.name}
+                    className={`dash-splitbar-seg${r.value > 0 ? '' : ' is-empty'}`}
+                    style={{ width: `${shares[i]}%`, background: colors[r.name] }}
+                    title={`${r.name}: ${r.value}`}
+                >
+                    {shares[i] >= 12 ? `${pct(r.value, total)}%` : null}
+                </div>
+            ))}
+        </div>
+    );
+}
+
+// ── 5. Residence ────────────────────────────
+export function ResidenceSplit({ data, span = 6 }) {
     const total = data.reduce((s, d) => s + d.value, 0);
     const order = ['Hosteler', 'Day Scholar'];
     const rows = order.map((name) => ({ name, value: data.find((d) => d.name === name)?.value || 0 }));
     return (
-        <div className="dash-card dash-card--6">
+        <div className={`dash-card dash-card--${span}`}>
             <div className="dash-card-head">
                 <h3 className="dash-card-title">Residence</h3>
                 <p className="dash-card-sub">Hostelers vs day scholars</p>
@@ -229,18 +261,7 @@ export function ResidenceSplit({ data }) {
             <div className="dash-card-body">
                 {total === 0 ? <EmptyChart label="No data yet" /> : (
                     <>
-                        <div className="dash-splitbar">
-                            {rows.map((r) => r.value > 0 && (
-                                <div
-                                    key={r.name}
-                                    className="dash-splitbar-seg"
-                                    style={{ flexGrow: r.value, background: RESIDENCE_COLORS[r.name] }}
-                                    title={`${r.name}: ${r.value}`}
-                                >
-                                    {pct(r.value, total) >= 10 ? `${pct(r.value, total)}%` : ''}
-                                </div>
-                            ))}
-                        </div>
+                        <SplitBar rows={rows} total={total} colors={RESIDENCE_COLORS} />
                         <div className="dash-splitbar-labels">
                             <div className="dash-splitbar-label">
                                 <strong>{rows[0].value}</strong>
@@ -259,12 +280,12 @@ export function ResidenceSplit({ data }) {
 }
 
 // ── 5b. Laptop availability 100% split bar ──
-export function LaptopSplit({ data }) {
+export function LaptopSplit({ data, span = 6 }) {
     const total = data.reduce((s, d) => s + d.value, 0);
     const order = ['Yes', 'No'];
     const rows = order.map((name) => ({ name, value: data.find((d) => d.name === name)?.value || 0 }));
     return (
-        <div className="dash-card dash-card--6">
+        <div className={`dash-card dash-card--${span}`}>
             <div className="dash-card-head">
                 <h3 className="dash-card-title">Laptop availability</h3>
                 <p className="dash-card-sub">Students with vs without a laptop</p>
@@ -272,18 +293,7 @@ export function LaptopSplit({ data }) {
             <div className="dash-card-body">
                 {total === 0 ? <EmptyChart label="No data yet" /> : (
                     <>
-                        <div className="dash-splitbar">
-                            {rows.map((r) => r.value > 0 && (
-                                <div
-                                    key={r.name}
-                                    className="dash-splitbar-seg"
-                                    style={{ flexGrow: r.value, background: LAPTOP_COLORS[r.name] }}
-                                    title={`${r.name}: ${r.value}`}
-                                >
-                                    {pct(r.value, total) >= 10 ? `${pct(r.value, total)}%` : ''}
-                                </div>
-                            ))}
-                        </div>
+                        <SplitBar rows={rows} total={total} colors={LAPTOP_COLORS} />
                         <div className="dash-splitbar-labels">
                             <div className="dash-splitbar-label">
                                 <strong>{rows[0].value}</strong>
@@ -315,18 +325,7 @@ export function CrtFeeSplit({ data }) {
             <div className="dash-card-body">
                 {total === 0 ? <EmptyChart label="No data yet" /> : (
                     <>
-                        <div className="dash-splitbar">
-                            {rows.map((r) => r.value > 0 && (
-                                <div
-                                    key={r.name}
-                                    className="dash-splitbar-seg"
-                                    style={{ flexGrow: r.value, background: CRT_FEE_COLORS[r.name] }}
-                                    title={`${r.name}: ${r.value}`}
-                                >
-                                    {pct(r.value, total) >= 10 ? `${pct(r.value, total)}%` : ''}
-                                </div>
-                            ))}
-                        </div>
+                        <SplitBar rows={rows} total={total} colors={CRT_FEE_COLORS} />
                         <div className="dash-splitbar-labels">
                             <div className="dash-splitbar-label">
                                 <strong>{rows[0].value}</strong>
@@ -345,12 +344,12 @@ export function CrtFeeSplit({ data }) {
 }
 
 // ── 5c-ii. Admission basis: rank-based vs management (100% split bar) ──
-export function AdmissionSplit({ data }) {
+export function AdmissionSplit({ data, span = 6 }) {
     const total = data.reduce((s, d) => s + d.value, 0);
     const order = ['Rank-based', 'Management'];
     const rows = order.map((name) => ({ name, value: data.find((d) => d.name === name)?.value || 0 }));
     return (
-        <div className="dash-card dash-card--6">
+        <div className={`dash-card dash-card--${span}`}>
             <div className="dash-card-head">
                 <h3 className="dash-card-title">Admission basis</h3>
                 <p className="dash-card-sub">Rank-based (EAPCET / JEE) vs management quota</p>
@@ -358,18 +357,7 @@ export function AdmissionSplit({ data }) {
             <div className="dash-card-body">
                 {total === 0 ? <EmptyChart label="No rank data yet" /> : (
                     <>
-                        <div className="dash-splitbar">
-                            {rows.map((r) => r.value > 0 && (
-                                <div
-                                    key={r.name}
-                                    className="dash-splitbar-seg"
-                                    style={{ flexGrow: r.value, background: ADMISSION_COLORS[r.name] }}
-                                    title={`${r.name}: ${r.value}`}
-                                >
-                                    {pct(r.value, total) >= 10 ? `${pct(r.value, total)}%` : ''}
-                                </div>
-                            ))}
-                        </div>
+                        <SplitBar rows={rows} total={total} colors={ADMISSION_COLORS} />
                         <div className="dash-splitbar-labels">
                             <div className="dash-splitbar-label">
                                 <strong>{rows[0].value}</strong>
@@ -388,11 +376,11 @@ export function AdmissionSplit({ data }) {
 }
 
 // ── 5d. Laptop Yes/No by program (grouped bars) ──
-export function LaptopByProgram({ data }) {
+export function LaptopByProgram({ data, span = 6 }) {
     const rows = data || [];
     const total = rows.reduce((s, d) => s + (d.Yes || 0) + (d.No || 0), 0);
     return (
-        <div className="dash-card dash-card--6">
+        <div className={`dash-card dash-card--${span}`}>
             <div className="dash-card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
                 <div>
                     <h3 className="dash-card-title">Laptop by program</h3>
@@ -503,6 +491,157 @@ function EmptyChart({ label }) {
     return (
         <div style={{ height: 200, display: 'grid', placeItems: 'center', color: BRAND.muted, fontSize: 13 }}>
             {label}
+        </div>
+    );
+}
+
+// ── Moon Coder: uptake against the SkillUp shortlist ───────────────────────
+// One progress bar per SkillUp batch (registered / eligible) with the overall
+// figure as the headline. Eligible counts come from the coding-profiles roster.
+export function MoonUptake({ data, span = 4 }) {
+    const info = data || { eligible: 0, registered: 0, registeredInRange: 0, byBatch: [] };
+    const overall = pct(info.registered, info.eligible);
+    const rows = info.byBatch || [];
+    const remaining = Math.max(0, info.eligible - info.registered);
+    return (
+        <div className={`dash-card dash-card--${span}`}>
+            <div className="dash-card-head">
+                <h3 className="dash-card-title">{info.programName || 'Moon Coder'} uptake</h3>
+                <p className="dash-card-sub">Registered out of the {info.eligible || 0} shortlisted SkillUp Coder students, per batch</p>
+            </div>
+            <div className="dash-card-body">
+                {!info.eligible ? <EmptyChart label="Shortlist roster not loaded yet" /> : (
+                    <div className="dash-uptake">
+                        <div className="dash-uptake-head">
+                            <div className="dash-uptake-headline">
+                                <strong>{info.registered.toLocaleString('en-IN')}</strong>
+                                <span>of {info.eligible.toLocaleString('en-IN')} registered</span>
+                            </div>
+                            <div className="dash-uptake-ring" style={{ '--p': overall }} role="img" aria-label={`${overall}% registered`}>
+                                <span>{overall}%</span>
+                            </div>
+                        </div>
+                        <div className="dash-uptake-rows">
+                            {rows.map((r) => {
+                                const p = pct(r.registered, r.eligible);
+                                return (
+                                    <div className="dash-uptake-row" key={r.batch}>
+                                        <div className="dash-uptake-row-head">
+                                            <span className="dash-uptake-batch">{r.batch}</span>
+                                            <span className="dash-uptake-count"><b>{r.registered}</b> / {r.eligible} · {p}%</span>
+                                        </div>
+                                        <div className="dash-uptake-track">
+                                            <div className="dash-uptake-fill" style={{ width: `${Math.min(100, p)}%`, background: PROGRAM_COLORS['Moon Coder'] }} />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className="dash-uptake-foot">
+                            {remaining > 0
+                                ? `${remaining.toLocaleString('en-IN')} shortlisted students still to register`
+                                : 'Every shortlisted student has registered'}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ── Moon Coder: CGPA bands ─────────────────────────────────────────────────
+export function CgpaBands({ data, academics, span = 4 }) {
+    const rows = CGPA_BAND_ORDER.map((name) => ({ name, value: data?.find((d) => d.name === name)?.value || 0 }));
+    const total = rows.reduce((s, d) => s + d.value, 0);
+    return (
+        <div className={`dash-card dash-card--${span}`}>
+            <div className="dash-card-head dash-card-head--split">
+                <div>
+                    <h3 className="dash-card-title">Overall CGPA</h3>
+                    <p className="dash-card-sub">Moon Coder registrations by CGPA band</p>
+                </div>
+                {academics?.avgCgpa != null && (
+                    <div className="dash-stat-chip">
+                        <strong>{academics.avgCgpa.toFixed(2)}</strong>
+                        <span>average CGPA</span>
+                    </div>
+                )}
+            </div>
+            <div className="dash-card-body">
+                {total === 0 ? <EmptyChart label="No CGPA data yet" /> : (
+                    <ResponsiveContainer width="100%" height={260}>
+                        <BarChart data={rows} margin={{ top: 22, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                            <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={34} tick={{ fontSize: 12 }} />
+                            <Tooltip cursor={{ fill: 'rgba(142,86,255,0.06)' }} content={<ChartTooltip valueSuffix=" students" />} />
+                            <Bar dataKey="value" name="Students" radius={[8, 8, 0, 0]} maxBarSize={56}>
+                                {rows.map((d) => <Cell key={d.name} fill={CGPA_BAND_COLORS[d.name] || BRAND.muted} />)}
+                                <LabelList dataKey="value" position="top" style={{ fontSize: 11, fontWeight: 700, fill: BRAND.ink }} />
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ── Moon Coder: active backlogs ────────────────────────────────────────────
+const backlogLabel = (name) => {
+    if (name === 'None') return 'No backlogs';
+    if (name === '1') return '1 backlog';
+    return `${name} backlogs`;
+};
+
+export function BacklogSplit({ data, span = 4 }) {
+    const rows = BACKLOG_ORDER.map((name) => ({ name, value: data?.find((d) => d.name === name)?.value || 0 }));
+    const total = rows.reduce((s, d) => s + d.value, 0);
+    const clear = rows[0].value;
+    const nonEmpty = rows.filter((d) => d.value > 0);
+    return (
+        <div className={`dash-card dash-card--${span}`}>
+            <div className="dash-card-head dash-card-head--split">
+                <div>
+                    <h3 className="dash-card-title">Active backlogs</h3>
+                    <p className="dash-card-sub">Moon Coder registrations by number of active backlogs</p>
+                </div>
+                {total > 0 && (
+                    <div className="dash-stat-chip">
+                        <strong>{pct(clear, total)}%</strong>
+                        <span>backlog-free</span>
+                    </div>
+                )}
+            </div>
+            <div className="dash-card-body">
+                {total === 0 ? <EmptyChart label="No backlog data yet" /> : (
+                    <>
+                        <div className="dash-donut-wrap">
+                            <ResponsiveContainer width="100%" height={200}>
+                                <PieChart>
+                                    <Pie data={nonEmpty} dataKey="value" nameKey="name" innerRadius={62} outerRadius={90} paddingAngle={2} stroke="none">
+                                        {nonEmpty.map((d) => <Cell key={d.name} fill={BACKLOG_COLORS[d.name] || BRAND.muted} />)}
+                                    </Pie>
+                                    <Tooltip content={<ChartTooltip valueSuffix=" students" />} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div className="dash-donut-center">
+                                <strong>{clear}</strong>
+                                <span>No backlogs</span>
+                            </div>
+                        </div>
+                        <div className="dash-legend">
+                            {rows.map((d) => (
+                                <div className="dash-legend-item" key={d.name}>
+                                    <span className="dash-legend-swatch" style={{ background: BACKLOG_COLORS[d.name] || BRAND.muted }} />
+                                    <span>{backlogLabel(d.name)}</span>
+                                    <span className="dash-legend-val">{d.value} · {pct(d.value, total)}%</span>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
     );
 }

@@ -10,17 +10,40 @@ export const BRAND = {
     amberSoft: '#ED9035',
     blue: '#5866EB',
     pink: '#F92596',
+    purple: '#8E56FF',
+    green: '#10B981',
     sky: '#39C0FA',
     ink: '#0F172A',
     muted: '#64748B',
     border: '#E2E8F0'
 };
 
-// Passout year → the program it maps to (mirrors PASSOUT_YEAR_PROGRAM_MAP).
+// One colour per program track (mirrors REGISTRATION_PROGRAMS). Moon Coder is
+// the 2029 cohort's second intake, so it gets a hue outside the coral→amber ramp
+// to stay distinguishable from SkillUp Coder in the same charts.
 export const PROGRAM_COLORS = {
     'Bamboo Coder': BRAND.primary,
     'SkillUp Coder': BRAND.secondary,
-    'AI Ready Engineers': BRAND.tertiary
+    'AI Ready Engineers': BRAND.tertiary,
+    'Moon Coder': BRAND.purple
+};
+
+// Moon Coder academics: CGPA bands run cool→warm with the grade, backlog counts
+// go green (clear) → slate (several).
+export const CGPA_BAND_ORDER = ['< 6', '6 – 7', '7 – 8', '8 – 9', '9 – 10'];
+export const CGPA_BAND_COLORS = {
+    '< 6': BRAND.muted,
+    '6 – 7': BRAND.tertiary,
+    '7 – 8': BRAND.secondary,
+    '8 – 9': BRAND.primary,
+    '9 – 10': BRAND.purple
+};
+export const BACKLOG_ORDER = ['None', '1', '2', '3+'];
+export const BACKLOG_COLORS = {
+    None: BRAND.green,
+    1: BRAND.tertiary,
+    2: BRAND.secondary,
+    '3+': BRAND.primary
 };
 
 export const YEAR_COLORS = {

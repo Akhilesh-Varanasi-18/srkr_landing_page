@@ -158,8 +158,8 @@ function FileField({ accept, file, onPick, disabled }) {
     );
 }
 
-function CaptureUpload({ program, onCommitted }) {
-    const u = useTwoPhaseUpload('/api/dashboard/coding/upload', program, onCommitted);
+export function CaptureUpload({ program, onCommitted }) {
+    const u = useTwoPhaseUpload('/api/admin/coding/upload', program, onCommitted);
 
     if (u.done) {
         return (
@@ -275,8 +275,8 @@ function CaptureUpload({ program, onCommitted }) {
     );
 }
 
-function RosterUpload({ program, onCommitted }) {
-    const u = useTwoPhaseUpload('/api/dashboard/coding/roster', program, onCommitted);
+export function RosterUpload({ program, onCommitted }) {
+    const u = useTwoPhaseUpload('/api/admin/coding/roster', program, onCommitted);
     const [prune, setPrune] = useState(false);
 
     if (u.done) {

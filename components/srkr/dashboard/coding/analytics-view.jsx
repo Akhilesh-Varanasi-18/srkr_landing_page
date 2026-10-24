@@ -83,8 +83,8 @@ const rowOf = (s, rank, value) => ({
 // never refetches 300 records. A new snapshot id means a new upload, and a fresh key.
 let cohortCache = { key: null, students: null };
 
-function useCohort(programCode, snapshotId) {
-    const key = `${programCode}:${snapshotId || 'none'}`;
+function useCohort(programCode, snapshotId, period) {
+    const key = `${programCode}:${snapshotId || 'none'}:${period ? `${period.from}..${period.to}` : 'all'}`;
     const cached = cohortCache.key === key ? cohortCache.students : null;
     const [students, setStudents] = useState(cached);
     const [error, setError] = useState('');
@@ -97,7 +97,8 @@ function useCohort(programCode, snapshotId) {
         let live = true;
         setStudents(null);
         setError('');
-        fetch(`/api/dashboard/coding/students?program=${encodeURIComponent(programCode)}&batch=all&limit=all`, { cache: 'no-store' })
+        const qs = new URLSearchParams({ program: programCode, batch: 'all', limit: 'all', ...(period ? { from: period.from, to: period.to } : {}) });
+        fetch(`/api/admin/coding/students?${qs}`, { cache: 'no-store' })
             .then(async (res) => {
                 const json = await res.json().catch(() => ({}));
                 if (!res.ok || !json.success) throw new Error(json.message || 'Could not load the cohort.');
@@ -113,19 +114,23 @@ function useCohort(programCode, snapshotId) {
         return () => {
             live = false;
         };
+        // `key` already encodes the period.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [key, programCode]);
 
     return { students, error };
 }
 
 export default function AnalyticsView({
-    program, batches = [], coverage, mode = 'baseline', previousSnapshot, snapshotId, onSelect, onInspect
+    program, batches = [], coverage, mode = 'baseline', previousSnapshot, snapshotId, period = null, periodInfo = null, groupLabel = 'Batch',
+    onSelect, onInspect
 }) {
     const reduce = useReducedMotion();
     const narrow = useMedia('(max-width: 560px)');
-    const { students, error } = useCohort(program.code, snapshotId);
+    const { students, error } = useCohort(program.code, snapshotId, period);
     const measured = useMemo(() => measuredOf(students || []), [students]);
     const chart = { narrow, reduce, onSelect };
+    const periodLabel = periodInfo?.label || null;
 
     if (error) {
         return (
@@ -139,26 +144,28 @@ export default function AnalyticsView({
     if (!measured.length) {
         return (
             <div className="cp-an-empty">
-                <h3>No captured profiles yet</h3>
+                <h3>No captured profiles{periodLabel ? ` in ${periodLabel}` : ' yet'}</h3>
                 <p>Charts need at least one scraped row. Upload a capture to see who leads.</p>
             </div>
         );
     }
 
     return (
-        <section className="cp-an" aria-label={`${program?.name || 'Program'} analytics`}>
+        <section className="cp-an" aria-label={`${program?.name || 'Program'} analytics${periodLabel ? ` for ${periodLabel}` : ''}`}>
             <div className="cp-an-grid">
-                <TopOverall students={students} measured={measured} chart={chart} />
-                <TopByBatch students={students} batches={batches} chart={chart} />
-                <TopByPlatform students={students} batches={batches} coverage={coverage} chart={chart} />
+                <TopOverall students={students} measured={measured} chart={chart} periodLabel={periodLabel} />
+                <TopByBatch students={students} batches={batches} chart={chart} periodLabel={periodLabel} groupLabel={groupLabel} />
+                <TopByPlatform students={students} batches={batches} coverage={coverage} chart={chart} periodLabel={periodLabel} groupLabel={groupLabel} />
                 <InactiveCard
                     students={students}
                     batches={batches}
+                    groupLabel={groupLabel}
                     mode={mode}
                     previousAt={previousSnapshot?.capturedAt}
+                    periodInfo={periodInfo}
                     onInspect={onInspect}
                 />
-                <NoSubmissionsCard students={students} batches={batches} coverage={coverage} onInspect={onInspect} />
+                <NoSubmissionsCard students={students} batches={batches} coverage={coverage} periodLabel={periodLabel} onInspect={onInspect} groupLabel={groupLabel} />
             </div>
         </section>
     );
@@ -308,7 +315,7 @@ function Nobody({ children }) {
 
 // ── Top contenders ──────────────────────────────────────────────────────────
 
-function TopOverall({ students, measured, chart }) {
+function TopOverall({ students, measured, chart, periodLabel }) {
     const [limit, setLimit] = useState(10);
     // The API returns students in overall rank order.
     const rows = useMemo(
@@ -317,6 +324,7 @@ function TopOverall({ students, measured, chart }) {
     );
     const leader = rows[0];
     const active = measured.filter((s) => n(s.platformsTouched) > 0).length;
+    const inPeriod = periodLabel ? ` in ${periodLabel}` : '';
 
     return (
         <Card
@@ -324,8 +332,8 @@ function TopOverall({ students, measured, chart }) {
             icon={IconTrophy}
             sub={
                 leader
-                    ? `By total solved across all ${formatNumber(active)} active students. ${leader.name} leads with ${leader.valueLabel}.`
-                    : 'By total solved across the whole cohort.'
+                    ? `By total solved${inPeriod} across all ${formatNumber(active)} active students. ${leader.name} leads with ${leader.valueLabel}.`
+                    : `By total solved${inPeriod} across the whole cohort.`
             }
             filters={<Segmented id="an-overall-n" size="sm" label="How many" value={limit} onChange={setLimit} options={TOP_N} />}
         >
@@ -334,7 +342,7 @@ function TopOverall({ students, measured, chart }) {
     );
 }
 
-function TopByBatch({ students, batches, chart }) {
+function TopByBatch({ students, batches, chart, periodLabel, groupLabel = 'Batch' }) {
     const [batch, setBatch] = useState(batches[0]?.label || ALL_BATCHES);
     const [limit, setLimit] = useState(10);
     const rows = useMemo(
@@ -346,19 +354,20 @@ function TopByBatch({ students, batches, chart }) {
         [students, batch, limit]
     );
     const leader = rows[0];
+    const inPeriod = periodLabel ? ` in ${periodLabel}` : '';
 
     return (
         <Card
-            title="Top contenders · by batch"
+            title={`Top contenders · by ${groupLabel.toLowerCase()}`}
             icon={IconPeople}
             sub={
                 leader
-                    ? `Total solved, ranked within ${batch} only. ${leader.name} leads the batch with ${leader.valueLabel}.`
-                    : `Total solved, ranked within ${batch} only.`
+                    ? `Total solved${inPeriod}, ranked within ${batch} only. ${leader.name} leads the ${groupLabel.toLowerCase()} with ${leader.valueLabel}.`
+                    : `Total solved${inPeriod}, ranked within ${batch} only.`
             }
             filters={
                 <>
-                    <Segmented id="an-batch-pick" size="sm" label="Batch" value={batch} onChange={setBatch} options={batchOptions(batches, false)} />
+                    <Segmented id="an-batch-pick" size="sm" label={groupLabel} value={batch} onChange={setBatch} options={batchOptions(batches, false)} />
                     <Segmented id="an-batch-n" size="sm" label="How many" value={limit} onChange={setLimit} options={TOP_N} />
                 </>
             }
@@ -368,7 +377,7 @@ function TopByBatch({ students, batches, chart }) {
     );
 }
 
-function TopByPlatform({ students, batches, coverage, chart }) {
+function TopByPlatform({ students, batches, coverage, chart, periodLabel, groupLabel = 'Batch' }) {
     const platforms = useMemo(
         () => PLATFORMS.filter((p) => hasSignal(coverage, students, ACTIVITY[p.key].keys)),
         [coverage, students]
@@ -404,8 +413,8 @@ function TopByPlatform({ students, batches, coverage, chart }) {
             icon={IconChart}
             sub={
                 leader
-                    ? `${platform.name} ${platform.unit} in ${scopeName(batch)}. ${leader.name} leads with ${leader.valueLabel}.`
-                    : `${platform.name} ${platform.unit} in ${scopeName(batch)}.`
+                    ? `${platform.name} ${platform.unit} in ${scopeName(batch)}${periodLabel ? ` during ${periodLabel}` : ''}. ${leader.name} leads with ${leader.valueLabel}.`
+                    : `${platform.name} ${platform.unit} in ${scopeName(batch)}${periodLabel ? ` during ${periodLabel}` : ''}.`
             }
             filters={
                 <>
@@ -417,7 +426,7 @@ function TopByPlatform({ students, batches, coverage, chart }) {
                         onChange={setPlatformKey}
                         options={platforms.map((p) => ({ key: p.key, label: p.name, icon: <PlatformLogo platform={p} size="xs" /> }))}
                     />
-                    <Segmented id="an-platform-batch" size="sm" label="Batch" value={batch} onChange={setBatch} options={batchOptions(batches, true)} />
+                    <Segmented id="an-platform-batch" size="sm" label={groupLabel} value={batch} onChange={setBatch} options={batchOptions(batches, true)} />
                     <Segmented id="an-platform-n" size="sm" label="How many" value={limit} onChange={setLimit} options={TOP_N} />
                 </>
             }
@@ -440,9 +449,12 @@ function TopByPlatform({ students, batches, coverage, chart }) {
  * platform"; from the second capture on it becomes the stronger "no score movement
  * since the previous capture", which is what a weekly check actually wants.
  */
-function InactiveCard({ students, batches, mode, previousAt, onInspect }) {
+function InactiveCard({ students, batches, mode, previousAt, periodInfo, onInspect, groupLabel = 'Batch' }) {
     const [batch, setBatch] = useState(ALL_BATCHES);
     const progress = mode === 'progress';
+    const inPeriod = Boolean(periodInfo);
+    // Under a period every count is already "what was added inside it", so no
+    // activity on any platform IS no progress in the period.
     const isInactive = progress
         ? (s) => s.previousScore !== null && s.previousScore !== undefined && s.delta === 0
         : (s) => !n(s.platformsTouched);
@@ -460,16 +472,18 @@ function InactiveCard({ students, batches, mode, previousAt, onInspect }) {
 
     return (
         <Card
-            title="Inactive"
+            title={inPeriod ? 'No progress' : 'Inactive'}
             icon={IconMoon}
             span="third"
-            ariaLabel={`Inactive students: ${count} of ${scope.length} measured in ${scopeName(batch)}. By batch: ${summaryText}.`}
+            ariaLabel={`${inPeriod ? 'No progress' : 'Inactive'}: ${count} of ${scope.length} measured in ${scopeName(batch)}. By batch: ${summaryText}.`}
             sub={
-                progress
-                    ? `Nothing new solved since the previous capture (${formatDate(previousAt)}).`
-                    : 'Profile captured, but nothing on any of the four platforms yet.'
+                inPeriod
+                    ? `Nothing solved on any platform in ${periodInfo.label}.`
+                    : progress
+                      ? `Nothing new solved since the previous capture (${formatDate(previousAt)}).`
+                      : 'Profile captured, but nothing on any of the four platforms yet.'
             }
-            filters={<Segmented id="an-inactive-batch" size="sm" label="Batch" value={batch} onChange={setBatch} options={batchOptions(batches, true, true)} />}
+            filters={<Segmented id="an-inactive-batch" size="sm" label={groupLabel} value={batch} onChange={setBatch} options={batchOptions(batches, true, true)} />}
         >
             <div className="cp-an-num">
                 <div className="cp-an-ring" style={{ '--cp-share': `${share}%` }} aria-hidden="true">
@@ -498,11 +512,13 @@ function InactiveCard({ students, batches, mode, previousAt, onInspect }) {
             </ol>
 
             <p className="cp-an-card__foot">
-                {progress
-                    ? firstTimers > 0
-                        ? `${firstTimers} captured for the first time this run and not counted.`
-                        : 'Students captured for the first time this run are not counted.'
-                    : 'From the second capture on, this tracks who made no progress between captures.'}
+                {inPeriod
+                    ? periodInfo.caption
+                    : progress
+                      ? firstTimers > 0
+                          ? `${firstTimers} captured for the first time this run and not counted.`
+                          : 'Students captured for the first time this run are not counted.'
+                      : 'From the second capture on, this tracks who made no progress between captures.'}
             </p>
             <button type="button" className="cp-an-link" onClick={() => onInspect?.(batch, progress ? 'stalled' : 'quiet')}>
                 See who in the leaderboard
@@ -513,7 +529,7 @@ function InactiveCard({ students, batches, mode, previousAt, onInspect }) {
 }
 
 /** No submissions yet — overall, and then where the gaps are, platform by platform. */
-function NoSubmissionsCard({ students, batches, coverage, onInspect }) {
+function NoSubmissionsCard({ students, batches, coverage, periodLabel, onInspect, groupLabel = 'Batch' }) {
     const [batch, setBatch] = useState(ALL_BATCHES);
     const scope = measuredOf(inBatch(students, batch));
     const none = scope.filter((s) => !n(s.platformsTouched)).length;
@@ -525,12 +541,16 @@ function NoSubmissionsCard({ students, batches, coverage, onInspect }) {
 
     return (
         <Card
-            title="No submissions yet"
+            title={periodLabel ? `No submissions in ${periodLabel}` : 'No submissions yet'}
             icon={IconPulse}
             span="third"
-            ariaLabel={`No submissions in ${scopeName(batch)}: ${none} of ${scope.length} have nothing on any platform. By platform: ${summaryText}.`}
-            sub="Who has not solved anything on each platform. A student counts on every platform they have left untouched."
-            filters={<Segmented id="an-nosub-batch" size="sm" label="Batch" value={batch} onChange={setBatch} options={batchOptions(batches, true, true)} />}
+            ariaLabel={`No submissions in ${scopeName(batch)}${periodLabel ? ` during ${periodLabel}` : ''}: ${none} of ${scope.length} have nothing on any platform. By platform: ${summaryText}.`}
+            sub={
+                periodLabel
+                    ? `Who solved nothing on each platform during ${periodLabel}. A student counts on every platform they left untouched.`
+                    : 'Who has not solved anything on each platform. A student counts on every platform they have left untouched.'
+            }
+            filters={<Segmented id="an-nosub-batch" size="sm" label={groupLabel} value={batch} onChange={setBatch} options={batchOptions(batches, true, true)} />}
         >
             <div className="cp-an-num cp-an-num--inline">
                 <strong className="cp-an-num__value">{formatNumber(none)}</strong>
