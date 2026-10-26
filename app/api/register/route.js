@@ -26,6 +26,22 @@ function duplicateFieldFrom(error) {
 // ignored for those intakes — the rest of the record comes from the server.
 const GATED_INPUTS = ['cgpa', 'activeBacklogs', 'timeSlot'];
 
+/**
+ * A closed intake is refused outright rather than reported as a bad field: a
+ * stale tab, a cached page or a hand-made request must get the real reason, not
+ * a list of inputs to "correct" on a form that no longer accepts entries.
+ */
+const closedIntakeResponse = (program) =>
+    NextResponse.json(
+        {
+            success: false,
+            message: `Registrations for ${program.programName} are now closed.`,
+            closed: true,
+            errors: { programKey: `Registrations for ${program.programName} are now closed` }
+        },
+        { status: 403 }
+    );
+
 export async function POST(request) {
     // 1. Parse defensively — a malformed or oversized body must not reach the driver.
     let payload;
@@ -49,6 +65,7 @@ export async function POST(request) {
     //    are read from their SkillUp Coder registration here, so nothing in the
     //    request can alter them — and the roll must be on the shortlist.
     const program = PROGRAM_BY_KEY[typeof payload.programKey === 'string' ? payload.programKey : ''] || null;
+    if (program && !program.open) return closedIntakeResponse(program);
     const gated = Boolean(program?.open && program.eligibility === 'skillup-roster');
     let identity = null;
     let candidate = payload;
@@ -99,6 +116,9 @@ export async function POST(request) {
     //    server-side from the key, so a tampered request can't register itself
     //    into a program it didn't earn.
     const { values, errors, program: validated } = validateRegistration(candidate);
+    // Second gate: catches a request that named its intake through the legacy
+    // `passoutYear` field, which only the validator resolves to a program.
+    if (validated && !validated.open) return closedIntakeResponse(validated);
     if (Object.keys(errors).length > 0) {
         // For a gated intake, an error on a field the student never typed means
         // their SkillUp record is incomplete — say so instead of pointing at a

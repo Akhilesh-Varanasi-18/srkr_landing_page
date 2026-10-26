@@ -1388,11 +1388,13 @@ export const programsData = [
         badge: 'Master Problem Solving Track',
         themeColor: 'var(--srkr-secondary)',
         accentBg: 'var(--srkr-bg-warm-tint)',
-        // Intake open (from 2026-10-24) for the SkillUp Coder shortlist — shows the
-        // green "Registrations Open" button on the card and a Register CTA in the
-        // footer. `registrationKey` is the REGISTRATION_PROGRAMS key the form
-        // opens on (lib/registration-schema.js), where the matching `open` flag lives.
-        registrationsOpen: true,
+        // Intake ran 2026-10-24 → 2026-10-26 for the SkillUp Coder shortlist and is
+        // now closed — the card carries the red badge and loses its Register CTA.
+        // Flip back to `registrationsOpen: true` to reopen, together with the
+        // matching `open` flag in lib/registration-schema.js, which is what the
+        // form and the API actually enforce. `registrationKey` is the
+        // REGISTRATION_PROGRAMS key the form opens on.
+        registrationsClosed: true,
         registrationKey: 'mooncoder',
         courses: [
             {

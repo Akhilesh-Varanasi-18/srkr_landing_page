@@ -983,10 +983,36 @@
     transition: transform 0.4s ease;
   }
 
-  .srkr-program-year-pill {
+  // One row across the top of the banner: status badge on the left, year pill on
+  // the right. Laying them out instead of absolutely positioning both means a long
+  // year label ("Exclusive For 2029 Passouts") wraps rather than running under the
+  // badge on a 3-up desktop card or a phone.
+  .srkr-program-banner-top {
     position: absolute;
     top: 10px;
+    left: 10px;
     right: 10px;
+    z-index: 3;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    pointer-events: none; // the banner image stays inert — only the chips react
+
+    > * { pointer-events: auto; }
+
+    @media (max-width: 767px) {
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      gap: 6px;
+    }
+  }
+
+  .srkr-program-year-pill {
+    margin-left: auto; // stays right even when there is no badge beside it
+    min-width: 0;
+    text-align: right;
     padding: 4px 11px;
     border-radius: 999px;
     font-size: 10.5px;
@@ -1001,8 +1027,6 @@
     border: 1px solid rgba(255, 255, 255, 0.7);
 
     @media (max-width: 767px) {
-      top: 8px;
-      right: 8px;
       font-size: 10px;
       padding: 3px 9px;
     }
@@ -1011,10 +1035,7 @@
   // "Registrations Closed" badge — top-left of the banner, so a browser knows the
   // batch is closed before opening the form. Distinct from the year pill (top-right).
   .srkr-program-closed-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 3;
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -1032,8 +1053,6 @@
     svg { flex-shrink: 0; }
 
     @media (max-width: 767px) {
-      top: 8px;
-      left: 8px;
       font-size: 9.5px;
       padding: 3px 9px;
     }
@@ -1043,10 +1062,7 @@
   // closed badge sits for closed intakes). Green so it reads as "go" against the
   // coral palette; the dot pulses so the card signals "live" even at a glance.
   .srkr-program-open-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 3;
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -1100,8 +1116,6 @@
     &:active { transform: translateY(0); }
 
     @media (max-width: 767px) {
-      top: 8px;
-      left: 8px;
       font-size: 9.5px;
       padding: 4px 10px 4px 9px;
       gap: 6px;
@@ -1111,18 +1125,6 @@
   @keyframes srkrOpenPulse {
     0%   { transform: scale(0.6); opacity: 0.9; }
     100% { transform: scale(1.9); opacity: 0; }
-  }
-
-  // An open card carries both the green button (top-left) and the year pill; the
-  // two would collide on a 3-up desktop card and on phones, so the pill drops to
-  // the banner's bottom-right corner for open intakes.
-  &.is-open .srkr-program-year-pill {
-    top: auto;
-    bottom: 10px;
-
-    @media (max-width: 767px) {
-      bottom: 8px;
-    }
   }
 
   .srkr-program-card-body {
@@ -5297,6 +5299,233 @@
 }
 
 // SUCCESS STATE
+// ============================================
+// REGISTRATION MODAL — CLOSED INTAKE PANEL
+// What the modal shows instead of a form once an intake stops accepting
+// entries. Centred like the success card, muted instead of celebratory.
+// ============================================
+.srkr-reg-closed-card {
+  text-align: center;
+  padding: 2px 4px;
+  animation: srkrClosedNoticeIn 0.28s ease;
+
+  .srkr-reg-closed-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    color: var(--srkr-primary);
+    background: var(--srkr-bg-coral-tint);
+    border: 2px solid rgba(226, 84, 76, 0.22); // --srkr-primary
+    box-shadow: 0 8px 20px rgba(226, 84, 76, 0.12);
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--srkr-heading);
+    line-height: 1.3;
+    margin-bottom: 7px;
+  }
+
+  .srkr-reg-closed-sub {
+    font-size: 13px;
+    color: var(--srkr-body);
+    line-height: 1.55;
+    max-width: 440px;
+    margin: 0 auto 18px;
+
+    strong { color: var(--srkr-heading); font-weight: 700; }
+  }
+
+  // Status of every intake, so the answer to "what about the others?" is on
+  // screen rather than one more message to the team.
+  .srkr-reg-closed-list {
+    list-style: none;
+    margin: 0 auto 16px;
+    padding: 6px;
+    max-width: 440px;
+    border-radius: 12px;
+    background: var(--srkr-bg-section);
+    border: 1px solid var(--srkr-border);
+    text-align: left;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+
+      + li { margin-top: 2px; }
+
+      &.is-current {
+        background: var(--srkr-bg-body);
+        box-shadow: inset 0 0 0 1.5px rgba(226, 84, 76, 0.28); // --srkr-primary
+      }
+    }
+  }
+
+  .srkr-reg-closed-list__main {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    flex: 1;
+
+    strong {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--srkr-heading);
+      line-height: 1.3;
+    }
+
+    small {
+      font-size: 11px;
+      color: var(--srkr-muted);
+      line-height: 1.35;
+    }
+  }
+
+  .srkr-reg-closed-list__tag {
+    flex-shrink: 0;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--srkr-muted);
+
+    &.is-open {
+      background: rgba(16, 185, 129, 0.14); // --srkr-success
+      color: #047857;
+      box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.4);
+    }
+  }
+
+  // Shown only while another intake is live — a one-tap way across to it.
+  .srkr-reg-closed-switch {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .srkr-reg-closed-switch__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 10px;
+    background: var(--srkr-gradient-primary);
+    color: #fff;
+    font-family: var(--srkr-font-primary);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--srkr-shadow-coral-glow);
+    }
+  }
+
+  .srkr-reg-closed-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    .srkr-btn-whatsapp-join {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 24px;
+      border-radius: 10px;
+      background: var(--srkr-whatsapp);
+      color: #FFFFFF;
+      font-size: 13.5px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.22s ease;
+      width: 100%;
+      max-width: 380px;
+
+      &:hover {
+        background: var(--srkr-whatsapp-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(37, 211, 102, 0.3); // --srkr-whatsapp
+      }
+    }
+
+    .srkr-btn-done {
+      background: transparent;
+      border: 1px solid var(--srkr-border);
+      color: var(--srkr-body);
+      padding: 8px 24px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--srkr-font-primary);
+
+      &:hover {
+        background: var(--srkr-bg-section);
+        color: var(--srkr-heading);
+      }
+    }
+  }
+
+  .srkr-reg-closed-foot {
+    margin: 14px auto 0;
+    max-width: 380px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--srkr-muted);
+  }
+
+  @media (max-width: 575px) {
+    .srkr-reg-closed-icon {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 12px;
+
+      svg { width: 25px; height: 25px; }
+    }
+
+    h3 { font-size: 17.5px; }
+    .srkr-reg-closed-sub { font-size: 12.5px; margin-bottom: 15px; }
+
+    .srkr-reg-closed-list li { padding: 8px; gap: 8px; }
+    .srkr-reg-closed-list__main strong { font-size: 12px; }
+    .srkr-reg-closed-list__main small { font-size: 10.5px; }
+    .srkr-reg-closed-list__tag { padding: 3px 8px; font-size: 9px; }
+
+    .srkr-reg-closed-switch__btn,
+    .srkr-reg-closed-actions .srkr-btn-whatsapp-join,
+    .srkr-reg-closed-actions .srkr-btn-done { width: 100%; justify-content: center; }
+
+    .srkr-reg-closed-foot { font-size: 11px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+
+    .srkr-reg-closed-switch__btn:hover,
+    .srkr-reg-closed-actions .srkr-btn-whatsapp-join:hover { transform: none; }
+  }
+}
+
 .srkr-reg-success-card {
   text-align: center;
   padding: 10px 6px;

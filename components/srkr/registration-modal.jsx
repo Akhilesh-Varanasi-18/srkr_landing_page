@@ -741,16 +741,96 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                                 </svg>
                                 <span>SRKR × ToriiMinds Student Portal</span>
                             </div>
-                            <h2 id="srkr-reg-title">Register for <span>{program.open ? program.programName : 'Torii Programs'}</span></h2>
-                            {program.open && <p>{program.audience}{gated ? ' · SkillUp Coder shortlist only' : ''}</p>}
+                            <h2 id="srkr-reg-title">
+                                {program.open
+                                    ? <>Register for <span>{program.programName}</span></>
+                                    : <>Registrations are <span>Closed</span></>}
+                            </h2>
+                            <p>
+                                {program.open
+                                    ? `${program.audience}${gated ? ' · SkillUp Coder shortlist only' : ''}`
+                                    : 'Thank you for the overwhelming response — this intake is no longer accepting entries.'}
+                            </p>
                         </div>
 
+                        {/* Closed intake: no form at all. The student gets the status of
+                            every intake, a way to jump to one that is still open, and the
+                            community link where the next intake is announced. */}
+                        {!program.open && (
+                            <div className="srkr-reg-closed-card" role="status" aria-live="polite">
+                                <div className="srkr-reg-closed-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="4" y="10" width="16" height="10" rx="2" />
+                                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                                        <path d="M12 14v2" />
+                                    </svg>
+                                </div>
+
+                                <h3>The {program.programName} intake has closed</h3>
+                                <p className="srkr-reg-closed-sub">
+                                    We are no longer accepting registrations
+                                    {program.yearLabel ? ` for the ${program.yearLabel} batch` : ''}. If you already
+                                    registered, your seat is confirmed — there is nothing more to do.
+                                </p>
+
+                                <ul className="srkr-reg-closed-list">
+                                    {REGISTRATION_PROGRAMS.map((p) => (
+                                        <li key={p.key} className={p.key === program.key ? 'is-current' : undefined}>
+                                            <span className="srkr-reg-closed-list__main">
+                                                <strong>{p.programName}</strong>
+                                                <small>{p.audience}</small>
+                                            </span>
+                                            <span className={`srkr-reg-closed-list__tag ${p.open ? 'is-open' : ''}`}>
+                                                {p.open ? 'Open' : 'Closed'}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* Only rendered while some other intake is live, so reopening
+                                    one never leaves a student stuck on this panel. */}
+                                {REGISTRATION_PROGRAMS.some((p) => p.open) && (
+                                    <div className="srkr-reg-closed-switch">
+                                        {REGISTRATION_PROGRAMS.filter((p) => p.open).map((p) => (
+                                            <button
+                                                key={p.key}
+                                                type="button"
+                                                className="srkr-reg-closed-switch__btn"
+                                                onClick={() => selectValue('programKey', p.key)}
+                                            >
+                                                Register for {p.programName}
+                                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                    <path d="M5 12h14M13 6l6 6-6 6" />
+                                                </svg>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="srkr-reg-closed-actions">
+                                    <a
+                                        href={WHATSAPP_COMMUNITY_URL}
+                                        target="_blank" rel="noopener noreferrer"
+                                        className="srkr-btn-whatsapp-join"
+                                    >
+                                        <WhatsAppGlyph size={18} />
+                                        <span>Join Official WhatsApp Community</span>
+                                    </a>
+                                    <button type="button" className="srkr-btn-done" onClick={onClose}>Close</button>
+                                </div>
+
+                                <p className="srkr-reg-closed-foot">
+                                    Every new intake is announced in the ToriiMinds community group first.
+                                </p>
+                            </div>
+                        )}
+
                         {/* Step 1 (roster-gated intakes): find yourself in the shortlist */}
-                        {gated && !identity && (
+                        {program.open && gated && !identity && (
                             <ShortlistFinder programKey={program.key} onPick={handlePick} />
                         )}
 
-                        {gated && identity && (
+                        {program.open && gated && identity && (
                             <div className="srkr-reg-picked" role="status">
                                 <span className="srkr-reg-picked-avatar" aria-hidden="true">{initialsOf(formData.fullName || identity.student.fullName)}</span>
                                 <div className="srkr-reg-picked-main">
@@ -771,7 +851,7 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                             </div>
                         )}
 
-                        {gated && !identity && (
+                        {program.open && gated && !identity && (
                             <div className="srkr-reg-locked" aria-live="polite">
                                 <svg {...ico} width="18" height="18" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
                                 <div>
@@ -800,7 +880,7 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                         {/* Step 2 (roster-gated intakes): the three things only the student knows.
                             Everything else is taken from their SkillUp Coder registration on the
                             server, so there is no form to re-check or edit. */}
-                        {gated && identity && !blocked && (
+                        {program.open && gated && identity && !blocked && (
                         <form onSubmit={handleSubmit} className="srkr-reg-form srkr-reg-form--quick" noValidate>
                             <div className="srkr-reg-quick-head" role="status">
                                 <span className="srkr-reg-step-no" aria-hidden="true">2</span>
@@ -829,8 +909,8 @@ const RegistrationModal = ({ isOpen, onClose, initialProgramKey }) => {
                         </form>
                         )}
 
-                        {/* Open-to-all intakes: the full form (every such intake is closed right now). */}
-                        {!gated && (
+                        {/* Open-to-all intakes: the full form. */}
+                        {program.open && !gated && (
                         <form onSubmit={handleSubmit} className="srkr-reg-form" noValidate>
                             {/* Row 1: Full Name & Roll Number */}
                             <div className="srkr-reg-row-2">

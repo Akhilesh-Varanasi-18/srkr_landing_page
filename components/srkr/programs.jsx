@@ -128,32 +128,37 @@ const Programs = ({ onOpenRegister }) => {
                                             alt={`${program.name} Banner`} 
                                             className="srkr-program-banner-img"
                                         />
-                                        <span className="srkr-program-year-pill">{program.year}</span>
-                                        {program.registrationsClosed && (
-                                            <span className="srkr-program-closed-badge">
-                                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                                    <rect x="4" y="10" width="16" height="10" rx="2" />
-                                                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-                                                </svg>
-                                                Registrations Closed
-                                            </span>
-                                        )}
-                                        {/* Live intake: a green badge-button on the banner that opens
-                                            the form directly on this program (mirrors the closed badge). */}
-                                        {program.registrationsOpen && (
-                                            <button
-                                                type="button"
-                                                className="srkr-program-open-badge"
-                                                onClick={() => handleRegister(program)}
-                                                aria-label={`Registrations are open now for ${program.name} — register`}
-                                            >
-                                                <span className="srkr-program-open-dot" aria-hidden="true" />
-                                                <span className="srkr-program-open-text">Registrations are open now</span>
-                                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                                    <path d="M5 12h14M13 6l6 6-6 6" />
-                                                </svg>
-                                            </button>
-                                        )}
+                                        {/* Status badge (left) and year pill (right) share one
+                                            row, so a long year label can never collide with the
+                                            badge on a narrow card. */}
+                                        <div className="srkr-program-banner-top">
+                                            {program.registrationsClosed && (
+                                                <span className="srkr-program-closed-badge">
+                                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <rect x="4" y="10" width="16" height="10" rx="2" />
+                                                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                                                    </svg>
+                                                    Registrations Closed
+                                                </span>
+                                            )}
+                                            {/* Live intake: a green badge-button on the banner that opens
+                                                the form directly on this program (mirrors the closed badge). */}
+                                            {program.registrationsOpen && (
+                                                <button
+                                                    type="button"
+                                                    className="srkr-program-open-badge"
+                                                    onClick={() => handleRegister(program)}
+                                                    aria-label={`Registrations are open now for ${program.name} — register`}
+                                                >
+                                                    <span className="srkr-program-open-dot" aria-hidden="true" />
+                                                    <span className="srkr-program-open-text">Registrations are open now</span>
+                                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                                    </svg>
+                                                </button>
+                                            )}
+                                            <span className="srkr-program-year-pill">{program.year}</span>
+                                        </div>
                                     </div>
 
                                     {/* Card Content Body */}
